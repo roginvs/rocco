@@ -45,7 +45,7 @@ export const OPERATORS = [
 ] as const;
 export type Operator = typeof OPERATORS[number];
 
-const PUNCTUATORS = ["{", "}", "=", ";"] as const;
+const PUNCTUATORS = ["{", "}", ";"] as const;
 export type Punctuator = typeof PUNCTUATORS[number];
 
 const OP_OR_PUNCS = [...OPERATORS, ...PUNCTUATORS] as const;
@@ -271,12 +271,31 @@ export function createScanner(str: string) {
     let currentOpOrPuncPos = 0;
     let opOrPuncCandidates = [...OP_OR_PUNCS];
     while (true) {
+      const lastRoundCandidates = [...opOrPuncCandidates];
       opOrPuncCandidates = opOrPuncCandidates.filter(
         (op) =>
           op[currentOpOrPuncPos] &&
           op[currentOpOrPuncPos] === lookAhead(currentOpOrPuncPos)
       );
       if (opOrPuncCandidates.length === 0) {
+        if (currentOpOrPuncPos > 0) {
+          // we must have lastRoundCandidates
+          if (lastRoundCandidates.length === 0) {
+            scanError("Internal error");
+          } else {
+            const lastRoundExactLengthCandidates = lastRoundCandidates.filter(
+              (op) => op.length === currentOpOrPuncPos
+            );
+            if (lastRoundExactLengthCandidates.length === 1) {
+              pos += currentOpOrPuncPos;
+              return {
+                type: "operator_or_punctuator",
+                start,
+                value: lastRoundExactLengthCandidates[0],
+              };
+            }
+          }
+        }
         return null;
       }
 
@@ -294,14 +313,14 @@ export function createScanner(str: string) {
   }
 
   function scan(): Token {
+    scanWhitespace();
+
     if (pos >= end) {
       return {
         type: "end",
         start: pos,
       };
     }
-
-    scanWhitespace();
 
     if (isLetter(current())) {
       return scanIdentifierOrKeyword();
