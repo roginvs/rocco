@@ -8,6 +8,7 @@ int test(char a, char *b, char **c)
 {
   a *= 2;
   b = 2;
+  // b-- -----;
 };
 
 int main(int argc, char **argv)
