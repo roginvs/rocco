@@ -167,7 +167,6 @@ export function createParser(scanner: Scanner) {
         };
         left = newLeft;
       } else {
-        // @TODO other productions
         break;
       }
     }
