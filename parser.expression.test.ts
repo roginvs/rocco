@@ -21,6 +21,19 @@ describe("Parser test", () => {
     expect(scanner.current().type).toBe("end");
   });
 
+  it("Reads primary expression number int with brackets", () => {
+    const scanner = new Scanner(createScannerFunc("((223))"));
+    const parser = createParser(scanner);
+    const node = parser.readPrimaryExpression();
+    expect(node).toMatchObject({
+      type: "const",
+      subtype: "int",
+      value: 223,
+    });
+
+    expect(scanner.current().type).toBe("end");
+  });
+
   it("Reads primary expression number float", () => {
     const scanner = new Scanner(createScannerFunc("123.5"));
     const parser = createParser(scanner);
