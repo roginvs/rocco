@@ -163,7 +163,7 @@ export function createParser(scanner: Scanner) {
 
   function readExpression() {
     // @todo
-    return readPrimaryExpression();
+    return readPostfixExpression();
   }
 
   return {
