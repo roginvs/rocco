@@ -61,7 +61,7 @@ export function createParser(scanner: Scanner) {
     );
   }
 
-  function readPrimaryExpression(): PrimaryExpressionNode | undefined {
+  function readPrimaryExpression(): ExpressionNode | undefined {
     const token = scanner.current();
     if (token.type === "identifier") {
       scanner.readNext();
@@ -133,7 +133,10 @@ export function createParser(scanner: Scanner) {
           args,
         };
         left = newLeft;
-      } else if (token.type === "punc" && token.value === ".") {
+      } else if (
+        token.type === "punc" &&
+        (token.value === "." || token.value === "->")
+      ) {
         scanner.readNext();
         const identifierToken = scanner.current();
         if (identifierToken.type !== "identifier") {
@@ -141,7 +144,7 @@ export function createParser(scanner: Scanner) {
         }
         scanner.readNext();
         const newLeft: PostfixExpressionNode = {
-          type: "struct access",
+          type: token.value === "." ? "struct access" : "struct pointer access",
           field: {
             type: "identifier",
             value: identifierToken.text,

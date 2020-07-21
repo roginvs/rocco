@@ -126,4 +126,22 @@ describe("Parser test", () => {
 
     expect(scanner.current().type).toBe("end");
   });
+
+  it("Reads postfix expression, struct pointer access", () => {
+    const scanner = new Scanner(createScannerFunc("qwe()->fghh"));
+    const parser = createParser(scanner);
+    const node = parser.readPostfixExpression();
+
+    expect(node).toMatchObject({
+      type: "struct pointer access",
+      field: { type: "identifier", value: "fghh" },
+      target: {
+        type: "function call",
+        target: { type: "identifier", value: "qwe" },
+        args: [],
+      },
+    });
+
+    expect(scanner.current().type).toBe("end");
+  });
 });
