@@ -70,6 +70,7 @@ export function createParser(scanner: Scanner) {
         value: token.text,
       };
     } else if (token.type === "const") {
+      scanner.readNext();
       return {
         type: "const",
         subtype: token.subtype,
@@ -107,7 +108,6 @@ export function createParser(scanner: Scanner) {
         if (!expression) {
           parseError("Expected expression");
         }
-        scanner.readNext();
         const closing = scanner.current();
         if (closing.type !== "punc" || closing.value !== "]") {
           parseError("Expected ]");
