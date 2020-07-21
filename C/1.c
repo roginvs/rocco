@@ -7,14 +7,17 @@ gcc -Wall -o 1.bin 1.c
 int test(char a, char *b, char **c)
 {
   a *= 2;
-  b = 2;
-  //typedef int kek;
+  b = (char *)2;
+
   int kek = 4;
 
-  //  a = kek;
-  a = (kek)100;
+  // typedef int kek;
+
+  int size = sizeof 2 + 3;
 
   // b-- -----;
+
+  return 3;
 };
 
 int main(int argc, char **argv)
