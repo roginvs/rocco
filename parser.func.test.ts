@@ -49,11 +49,30 @@ describe("Parser test", () => {
 
   it("Reads postfix expression", () => {
     const parser = parse("asd[2]");
-    const node = parser.readPrimaryExpression();
+    const node = parser.readPostfixExpression();
     console.info(node);
     expect(node).toMatchObject({
       type: "subscript operator",
-      target: null,
+      target: {
+        type: "identifier",
+        value: "asd",
+      },
+      index: { type: "const", subtype: "int", value: 2 },
+    });
+  });
+
+  it("Reads postfix expression 2", () => {
+    const parser = parse("zxc[2][4]");
+    const node = parser.readPostfixExpression();
+    console.info(node);
+    expect(node).toMatchObject({
+      type: "subscript operator",
+      target: {
+        type: "subscript operator",
+        target: { type: "identifier", value: "zxc" },
+        index: { type: "const", subtype: "int", value: 2 },
+      },
+      index: { type: "const", subtype: "int", value: 4 },
     });
   });
 });
