@@ -48,6 +48,44 @@ export type PostfixExpressionNode =
       target: PostfixExpressionNode;
     };
 
+export const UNARY_OPERATORS = ["&", "*", "+", "-", "~", "!"] as const;
+export type UnaryOperator = typeof UNARY_OPERATORS[number];
+
+export type UnaryExpressionNode =
+  | PostfixExpressionNode
+  | {
+      type: "prefix --";
+      target: UnaryExpressionNode;
+    }
+  | {
+      type: "prefix ++";
+      target: UnaryExpressionNode;
+    }
+  | {
+      type: "unary-operator";
+      operator: UnaryOperator;
+      target: CastExpressionNode;
+    }
+  | {
+      type: "sizeof expression";
+      target: UnaryExpressionNode;
+    }
+  | {
+      type: "sizeof type";
+      target: TypeNameNode;
+    };
+
+export type CastExpressionNode =
+  | UnaryExpressionNode
+  | {
+      type: "typecast";
+      cast: TypeNameNode;
+      target: CastExpressionNode;
+    };
+
+// @TODO
+export type TypeNameNode = unknown;
+
 // @TODO
 export type AssignmentExpressionNode = unknown;
 
