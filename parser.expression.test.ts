@@ -47,10 +47,9 @@ describe("Parser test", () => {
     });
   });
 
-  it("Reads postfix expression", () => {
+  it("Reads postfix expression subscript", () => {
     const parser = parse("asd[2]");
     const node = parser.readPostfixExpression();
-    console.info(node);
     expect(node).toMatchObject({
       type: "subscript operator",
       target: {
@@ -61,10 +60,9 @@ describe("Parser test", () => {
     });
   });
 
-  it("Reads postfix expression 2", () => {
+  it("Reads postfix expression, nested subscript", () => {
     const parser = parse("zxc[2][4]");
     const node = parser.readPostfixExpression();
-    console.info(node);
     expect(node).toMatchObject({
       type: "subscript operator",
       target: {
@@ -73,6 +71,17 @@ describe("Parser test", () => {
         index: { type: "const", subtype: "int", value: 2 },
       },
       index: { type: "const", subtype: "int", value: 4 },
+    });
+  });
+
+  it("Reads postfix expression, function call", () => {
+    const parser = parse("qwe()");
+    const node = parser.readPostfixExpression();
+    console.info(node);
+    expect(node).toMatchObject({
+      type: "function call",
+      target: { type: "identifier", value: "qwe" },
+      args: [],
     });
   });
 });

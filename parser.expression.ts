@@ -27,7 +27,7 @@ export type PostfixExpressionNode =
   | {
       type: "function call";
       target: PostfixExpressionNode;
-      args: ArgumentExpressionNode[];
+      args: AssignmentExpressionNode[];
     }
   | {
       type: "struct access";
@@ -49,7 +49,7 @@ export type PostfixExpressionNode =
     };
 
 // @TODO
-export type ArgumentExpressionNode = unknown;
+export type AssignmentExpressionNode = unknown;
 
 // @TODO: Update me
 export type ExpressionNode = PostfixExpressionNode;
@@ -119,12 +119,30 @@ export function createParser(scanner: Scanner) {
           index: expression,
         };
         left = newLeft;
+      } else if (token.type === "punc" && token.value === "(") {
+        scanner.readNext();
+        const args = readArgumentExpressionList();
+        const closing = scanner.current();
+        if (closing.type !== "punc" || closing.value !== ")") {
+          parseError("Expected )");
+        }
+        scanner.readNext();
+        const newLeft: PostfixExpressionNode = {
+          type: "function call",
+          target: left,
+          args,
+        };
+        left = newLeft;
       } else {
         // @TODO other productions
         break;
       }
     }
     return left;
+  }
+
+  function readArgumentExpressionList() {
+    return [] as AssignmentExpressionNode[];
   }
 
   function readExpression() {
