@@ -383,15 +383,3 @@ export function createScanner(str: string) {
 
   return scan;
 }
-
-import * as fs from "fs";
-import { stderr } from "process";
-const fdata = fs.readFileSync(__dirname + "/C/1.c").toString();
-const scanner = createScanner(fdata);
-while (true) {
-  const token = scanner();
-  console.info(token);
-  if (token.type === "end") {
-    break;
-  }
-}
