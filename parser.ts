@@ -1,11 +1,11 @@
 import { Scanner } from "./scanner";
 
-type IdentifierNode = {
+export type IdentifierNode = {
   type: "identifier";
   value: string;
 };
 
-type PrimaryExpressionNode =
+export type PrimaryExpressionNode =
   | IdentifierNode
   | {
       type: "const";
@@ -17,7 +17,7 @@ type PrimaryExpressionNode =
       value: string;
     };
 
-type PostfixExpressionNode =
+export type PostfixExpressionNode =
   | PrimaryExpressionNode
   | {
       type: "subscript operator";
@@ -49,12 +49,12 @@ type PostfixExpressionNode =
     };
 
 // @TODO
-type ArgumentExpressionNode = unknown;
+export type ArgumentExpressionNode = unknown;
 
 // @TODO: Update me
-type ExpressionNode = PostfixExpressionNode;
+export type ExpressionNode = PostfixExpressionNode;
 
-function parse(scanner: Scanner) {
+export function createParser(scanner: Scanner) {
   function parseError(info: string): never {
     throw new Error(
       `${info} at line=${scanner.current().line} pos=${scanner.current().pos}`

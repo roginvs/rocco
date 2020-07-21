@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { createScanner } from "./scanner.func";
+import { createScannerFunc } from "./scanner.func";
 
 const fdata = `
 /*
@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 
 describe("Scanner", () => {
   it(`Scans`, () => {
-    const scanner = createScanner(fdata);
+    const scanner = createScannerFunc(fdata);
 
     while (true) {
       const token = scanner();
@@ -46,5 +46,13 @@ describe("Scanner", () => {
         expect(token.pos).toStrictEqual(3);
       }
     }
+  });
+  it(`Scans simple 123`, () => {
+    const scanner = createScannerFunc("123");
+    expect(scanner()).toMatchObject({
+      type: "const",
+      subtype: "int",
+      value: 123,
+    });
   });
 });

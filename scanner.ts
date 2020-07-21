@@ -1,4 +1,4 @@
-import { createScanner, Token } from "./scanner.func";
+import { createScannerFunc, Token } from "./scanner.func";
 
 export class Scanner {
   private currentToken: Token;

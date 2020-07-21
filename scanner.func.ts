@@ -94,7 +94,7 @@ export type Token = (
     }
 ) & { pos: number; line: number; length: number };
 
-export function createScanner(str: string) {
+export function createScannerFunc(str: string) {
   let pos = 0;
   const end = str.length;
 
