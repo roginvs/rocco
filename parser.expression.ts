@@ -152,6 +152,20 @@ export function createParser(scanner: Scanner) {
           target: left,
         };
         left = newLeft;
+      } else if (token.type === "punc" && token.value === "++") {
+        scanner.readNext();
+        const newLeft: PostfixExpressionNode = {
+          type: "postfix ++",
+          target: left,
+        };
+        left = newLeft;
+      } else if (token.type === "punc" && token.value === "--") {
+        scanner.readNext();
+        const newLeft: PostfixExpressionNode = {
+          type: "postfix --",
+          target: left,
+        };
+        left = newLeft;
       } else {
         // @TODO other productions
         break;

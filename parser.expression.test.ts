@@ -144,4 +144,32 @@ describe("Parser test", () => {
 
     expect(scanner.current().type).toBe("end");
   });
+
+  it("Reads postfix expression, ++", () => {
+    const scanner = new Scanner(createScannerFunc("qwe()[arr[n++]++]"));
+    const parser = createParser(scanner);
+    const node = parser.readPostfixExpression();
+
+    console.info(JSON.stringify(node));
+    expect(node).toMatchObject({
+      type: "subscript operator",
+      target: {
+        type: "function call",
+        target: { type: "identifier", value: "qwe" },
+        args: [],
+      },
+      index: {
+        type: "postfix ++",
+        target: {
+          type: "subscript operator",
+          target: { type: "identifier", value: "arr" },
+          index: {
+            type: "postfix ++",
+            target: { type: "identifier", value: "n" },
+          },
+        },
+      },
+    });
+    expect(scanner.current().type).toBe("end");
+  });
 });
