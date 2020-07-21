@@ -98,7 +98,7 @@ export function createScannerFunc(str: string) {
   let pos = 0;
   const end = str.length;
 
-  function current() {
+  function current(): string | undefined {
     return str[pos];
   }
   function lookAhead(charCount: number) {
@@ -175,11 +175,14 @@ export function createScannerFunc(str: string) {
   }
 
   function isDigit(char: string) {
-    return char.length === 1 && "0123456789".indexOf(char) > -1;
+    return (
+      char !== undefined && char.length === 1 && "0123456789".indexOf(char) > -1
+    );
   }
 
-  function isLetter(char: string) {
+  function isLetter(char: string | undefined) {
     return (
+      char !== undefined &&
       char.length === 1 &&
       "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_".indexOf(char) > -1
     );
