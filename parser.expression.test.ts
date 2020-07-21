@@ -163,7 +163,6 @@ describe("Parser test", () => {
     const parser = createParser(scanner);
     const node = parser.readPostfixExpression();
 
-    console.info(JSON.stringify(node));
     expect(node).toMatchObject({
       type: "subscript operator",
       target: {
@@ -183,6 +182,72 @@ describe("Parser test", () => {
         },
       },
     });
+    expect(scanner.current().type).toBe("end");
+  });
+
+  it("Reads unary expression 1", () => {
+    const scanner = new Scanner(createScannerFunc("++--88++"));
+    const parser = createParser(scanner);
+    const node = parser.readUnaryExpression();
+    expect(node).toMatchObject({
+      type: "prefix ++",
+      target: {
+        type: "prefix --",
+        target: {
+          type: "postfix ++",
+          target: { type: "const", subtype: "int", value: 88 },
+        },
+      },
+    });
+
+    expect(scanner.current().type).toBe("end");
+  });
+
+  it("Reads unary expression 2", () => {
+    const scanner = new Scanner(createScannerFunc("*+kek"));
+    const parser = createParser(scanner);
+    const node = parser.readUnaryExpression();
+
+    expect(node).toMatchObject({
+      type: "unary-operator",
+      operator: "*",
+      target: {
+        type: "unary-operator",
+        operator: "+",
+        target: { type: "identifier", value: "kek" },
+      },
+    });
+
+    expect(scanner.current().type).toBe("end");
+  });
+
+  it("Reads unary expression, sizeof kek", () => {
+    const scanner = new Scanner(createScannerFunc("sizeof kek"));
+    const parser = createParser(scanner);
+    const node = parser.readUnaryExpression();
+
+    expect(node).toMatchObject({
+      type: "sizeof",
+      //@TODO: Add case with type!
+      target: {
+        expression: { type: "identifier", value: "kek" },
+        typename: undefined,
+      },
+    });
+
+    expect(scanner.current().type).toBe("end");
+  });
+
+  it.skip("Reads unary expression, sizeof (kek)", () => {
+    const scanner = new Scanner(createScannerFunc("sizeof (kek)"));
+    const parser = createParser(scanner);
+    const node = parser.readUnaryExpression();
+    console.info(JSON.stringify(node));
+    expect(node).toMatchObject({
+      type: "sizeof",
+      target: { expression: { type: "identifier", value: "kek" } },
+    });
+
     expect(scanner.current().type).toBe("end");
   });
 });

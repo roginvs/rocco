@@ -122,7 +122,6 @@ export function createParser(scanner: Scanner) {
     } else if (token.type === "punc" && token.value === "(") {
       scanner.readNext();
       const expression = readExpression();
-      scanner.readNext();
       const closing = scanner.current();
       if (closing.type !== "punc" || closing.value !== ")") {
         throwError("Expecting closing brace");
@@ -132,7 +131,7 @@ export function createParser(scanner: Scanner) {
     }
   }
 
-  function readPostfixExpression(): ExpressionNode {
+  function readPostfixExpression(): ExpressionNode | undefined {
     let left: ExpressionNode | undefined = readPrimaryExpression();
     if (!left) {
       return undefined;
@@ -161,7 +160,7 @@ export function createParser(scanner: Scanner) {
         const args = readArgumentExpressionList();
         const closing = scanner.current();
         if (closing.type !== "punc" || closing.value !== ")") {
-          throwError("Expected )");
+          throwError("Postfix-expression expected ) ");
         }
         scanner.readNext();
         const newLeft: PostfixExpressionNode = {
@@ -270,7 +269,7 @@ export function createParser(scanner: Scanner) {
         typenameNode = readTypeName();
         const closing = scanner.current();
         if (closing.type !== "punc" || closing.value !== ")") {
-          throwError("Expected )");
+          throwError("Unary-expression expected )");
         }
         scanner.readNext();
       }
@@ -295,9 +294,6 @@ export function createParser(scanner: Scanner) {
       };
     } else {
       const postfixExpression = readPostfixExpression();
-      if (!postfixExpression) {
-        throwError("Expecting postfix-expression or unary-expression");
-      }
       return postfixExpression;
     }
   }
@@ -320,5 +316,6 @@ export function createParser(scanner: Scanner) {
   return {
     readPrimaryExpression,
     readPostfixExpression,
+    readUnaryExpression,
   };
 }
