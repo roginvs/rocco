@@ -267,6 +267,7 @@ export function createScanner(str: string) {
 
   function scanOperatorOrPunc(): Token | null {
     const start = pos;
+    // Oh-la-la! Complicated and tricky!
     let currentOpOrPuncPos = 0;
     let opOrPuncCandidates = [...OP_OR_PUNCS];
     while (true) {
