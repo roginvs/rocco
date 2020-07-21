@@ -77,11 +77,29 @@ describe("Parser test", () => {
   it("Reads postfix expression, function call", () => {
     const parser = parse("qwe()");
     const node = parser.readPostfixExpression();
-    console.info(node);
+
     expect(node).toMatchObject({
       type: "function call",
       target: { type: "identifier", value: "qwe" },
       args: [],
     });
+  });
+
+  it("Reads postfix expression, struct access", () => {
+    const scanner = new Scanner(createScannerFunc("qwe().fghh"));
+    const parser = createParser(scanner);
+    const node = parser.readPostfixExpression();
+
+    expect(node).toMatchObject({
+      type: "struct access",
+      field: { type: "identifier", value: "fghh" },
+      target: {
+        type: "function call",
+        target: { type: "identifier", value: "qwe" },
+        args: [],
+      },
+    });
+
+    expect(scanner.current().type).toBe("end");
   });
 });

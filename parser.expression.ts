@@ -133,6 +133,22 @@ export function createParser(scanner: Scanner) {
           args,
         };
         left = newLeft;
+      } else if (token.type === "punc" && token.value === ".") {
+        scanner.readNext();
+        const identifierToken = scanner.current();
+        if (identifierToken.type !== "identifier") {
+          parseError("Expected identifier");
+        }
+        scanner.readNext();
+        const newLeft: PostfixExpressionNode = {
+          type: "struct access",
+          field: {
+            type: "identifier",
+            value: identifierToken.text,
+          },
+          target: left,
+        };
+        left = newLeft;
       } else {
         // @TODO other productions
         break;
