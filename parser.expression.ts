@@ -55,7 +55,7 @@ export type AssignmentExpressionNode = unknown;
 export type ExpressionNode = PostfixExpressionNode;
 
 export function createParser(scanner: Scanner) {
-  function parseError(info: string): never {
+  function throwError(info: string): never {
     throw new Error(
       `${info} at line=${scanner.current().line} pos=${scanner.current().pos}`
     );
@@ -88,7 +88,7 @@ export function createParser(scanner: Scanner) {
       scanner.readNext();
       const closing = scanner.current();
       if (closing.type !== "punc" || closing.value !== ")") {
-        parseError("Expecting closing brace");
+        throwError("Expecting closing brace");
       }
       scanner.readNext();
       return expression;
@@ -106,11 +106,11 @@ export function createParser(scanner: Scanner) {
         scanner.readNext();
         const expression = readExpression();
         if (!expression) {
-          parseError("Expected expression");
+          throwError("Expected expression");
         }
         const closing = scanner.current();
         if (closing.type !== "punc" || closing.value !== "]") {
-          parseError("Expected ]");
+          throwError("Expected ]");
         }
         scanner.readNext();
         const newLeft: PostfixExpressionNode = {
@@ -124,7 +124,7 @@ export function createParser(scanner: Scanner) {
         const args = readArgumentExpressionList();
         const closing = scanner.current();
         if (closing.type !== "punc" || closing.value !== ")") {
-          parseError("Expected )");
+          throwError("Expected )");
         }
         scanner.readNext();
         const newLeft: PostfixExpressionNode = {
@@ -140,7 +140,7 @@ export function createParser(scanner: Scanner) {
         scanner.readNext();
         const identifierToken = scanner.current();
         if (identifierToken.type !== "identifier") {
-          parseError("Expected identifier");
+          throwError("Expected identifier");
         }
         scanner.readNext();
         const newLeft: PostfixExpressionNode = {
