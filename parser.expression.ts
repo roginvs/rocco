@@ -21,31 +21,31 @@ export type PostfixExpressionNode =
   | PrimaryExpressionNode
   | {
       type: "subscript operator";
-      target: PostfixExpressionNode;
+      target: ExpressionNode;
       index: ExpressionNode;
     }
   | {
       type: "function call";
-      target: PostfixExpressionNode;
+      target: ExpressionNode;
       args: AssignmentExpressionNode[];
     }
   | {
       type: "struct access";
-      target: PostfixExpressionNode;
+      target: ExpressionNode;
       field: IdentifierNode;
     }
   | {
       type: "struct pointer access";
-      target: PostfixExpressionNode;
+      target: ExpressionNode;
       field: IdentifierNode;
     }
   | {
       type: "postfix ++";
-      target: PostfixExpressionNode;
+      target: ExpressionNode;
     }
   | {
       type: "postfix --";
-      target: PostfixExpressionNode;
+      target: ExpressionNode;
     };
 
 export const UNARY_OPERATORS = ["&", "*", "+", "-", "~", "!"] as const;
@@ -55,20 +55,20 @@ export type UnaryExpressionNode =
   | PostfixExpressionNode
   | {
       type: "prefix --";
-      target: UnaryExpressionNode;
+      target: ExpressionNode;
     }
   | {
       type: "prefix ++";
-      target: UnaryExpressionNode;
+      target: ExpressionNode;
     }
   | {
       type: "unary-operator";
       operator: UnaryOperator;
-      target: CastExpressionNode;
+      target: ExpressionNode;
     }
   | {
       type: "sizeof expression";
-      target: UnaryExpressionNode;
+      target: ExpressionNode;
     }
   | {
       type: "sizeof type";
@@ -80,7 +80,7 @@ export type CastExpressionNode =
   | {
       type: "typecast";
       cast: TypeNameNode;
-      target: CastExpressionNode;
+      target: ExpressionNode;
     };
 
 // @TODO
@@ -90,7 +90,7 @@ export type TypeNameNode = unknown;
 export type AssignmentExpressionNode = unknown;
 
 // @TODO: Update me
-export type ExpressionNode = PostfixExpressionNode;
+export type ExpressionNode = CastExpressionNode;
 
 export function createParser(scanner: Scanner) {
   function throwError(info: string): never {
@@ -133,8 +133,8 @@ export function createParser(scanner: Scanner) {
     }
   }
 
-  function readPostfixExpression(): PostfixExpressionNode {
-    let left: PostfixExpressionNode | undefined = readPrimaryExpression();
+  function readPostfixExpression(): ExpressionNode {
+    let left: ExpressionNode | undefined = readPrimaryExpression();
     if (!left) {
       return undefined;
     }
