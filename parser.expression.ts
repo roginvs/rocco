@@ -257,9 +257,10 @@ export function createParser(scanner: Scanner) {
     } else if (token.type === "keyword" && token.keyword === "sizeof") {
       scanner.readNext();
       scanner.makeControlPoint();
+      // @TODO : what if it throws? Can it actually throw?
       const unaryExpressionNode = readUnaryExpression();
       const rolledBackTokensUnaryExpression = scanner.rollbackControlPoint();
-      //@todo: use rolledBackTokensUnaryExpression
+      // @TODO: use rolledBackTokensUnaryExpression
 
       scanner.makeControlPoint();
       let typenameNode: TypeNameNode | undefined = undefined;
