@@ -174,7 +174,20 @@ export function createParser(scanner: Scanner) {
   }
 
   function readArgumentExpressionList() {
-    return [] as AssignmentExpressionNode[];
+    const nodes: AssignmentExpressionNode[] = [];
+    while (true) {
+      const node = readAssignmentExpression();
+      if (node) {
+        nodes.push(node);
+      } else {
+        break;
+      }
+    }
+    return nodes;
+  }
+
+  function readAssignmentExpression(): AssignmentExpressionNode | undefined {
+    return undefined;
   }
 
   function readExpression() {
