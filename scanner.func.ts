@@ -67,49 +67,32 @@ export const KEYWORDS = [
 ] as const;
 export type Keyword = typeof KEYWORDS[number];
 
-export type Token =
+export type Token = (
   | {
       type: "keyword";
-      pos: number;
-      line: number;
-      length: number;
       keyword: Keyword;
     }
   | {
       type: "identifier";
-      pos: number;
-      line: number;
-      length: number;
       text: string;
     }
   | {
       type: "const";
-      pos: number;
-      line: number;
-      length: number;
       subtype: "int" | "float" | "char";
       value: number;
     }
   | {
       type: "string-literal";
-      pos: number;
-      line: number;
-      length: number;
       value: string;
     }
   | {
       type: "operator_or_punctuator";
-      pos: number;
-      line: number;
-      length: number;
       value: Operator | Punctuator;
     }
   | {
       type: "end";
-      pos: number;
-      line: number;
-      length: number;
-    };
+    }
+) & { pos: number; line: number; length: number };
 
 export function createScanner(str: string) {
   let pos = 0;
