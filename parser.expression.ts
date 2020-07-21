@@ -258,7 +258,8 @@ export function createParser(scanner: Scanner) {
       scanner.readNext();
       scanner.makeControlPoint();
       const unaryExpressionNode = readUnaryExpression();
-      scanner.rollbackControlPoint();
+      const rolledBackTokensUnaryExpression = scanner.rollbackControlPoint();
+      //@todo: use rolledBackTokensUnaryExpression
 
       scanner.makeControlPoint();
       let typenameNode: TypeNameNode | undefined = undefined;
