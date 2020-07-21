@@ -1,10 +1,12 @@
 import { Scanner } from "./scanner";
 
-type ExpressionNode =
-  | {
-      type: "identifier";
-      value: string;
-    }
+type IdentifierNode = {
+  type: "identifier";
+  value: string;
+};
+
+type PrimaryExpressionNode =
+  | IdentifierNode
   | {
       type: "const";
       subtype: "int" | "float" | "char";
@@ -15,6 +17,43 @@ type ExpressionNode =
       value: string;
     };
 
+type PostfixExpressionNode =
+  | PrimaryExpressionNode
+  | {
+      type: "subscript operator";
+      target: PostfixExpressionNode;
+      index: ExpressionNode;
+    }
+  | {
+      type: "function call";
+      target: PostfixExpressionNode;
+      args: ArgumentExpressionNode[];
+    }
+  | {
+      type: "struct access";
+      target: PostfixExpressionNode;
+      field: IdentifierNode;
+    }
+  | {
+      type: "struct pointer access";
+      target: PostfixExpressionNode;
+      field: IdentifierNode;
+    }
+  | {
+      type: "postfix ++";
+      target: PostfixExpressionNode;
+    }
+  | {
+      type: "postfix --";
+      target: PostfixExpressionNode;
+    };
+
+// @TODO
+type ArgumentExpressionNode = unknown;
+
+// @TODO: Update me
+type ExpressionNode = PostfixExpressionNode;
+
 function parse(scanner: Scanner) {
   function parseError(info: string): never {
     throw new Error(
@@ -22,7 +61,7 @@ function parse(scanner: Scanner) {
     );
   }
 
-  function readPrimaryExpression(): ExpressionNode | undefined {
+  function readPrimaryExpression(): PrimaryExpressionNode | undefined {
     const token = scanner.current();
     if (token.type === "identifier") {
       scanner.readNext();
@@ -55,8 +94,46 @@ function parse(scanner: Scanner) {
     }
   }
 
+  function readPostfixExpression(): PostfixExpressionNode {
+    let left: PostfixExpressionNode | undefined = readPrimaryExpression();
+    if (!left) {
+      return undefined;
+    }
+    while (true) {
+      const token = scanner.current();
+      if (token.type === "punc" && token.value === "[") {
+        scanner.readNext();
+        const expression = readExpression();
+        if (!expression) {
+          parseError("Expected expression");
+        }
+        scanner.readNext();
+        const closing = scanner.current();
+        if (closing.type !== "punc" || closing.value !== "]") {
+          parseError("Expected ]");
+        }
+        scanner.readNext();
+        const newLeft: PostfixExpressionNode = {
+          type: "subscript operator",
+          target: left,
+          index: expression,
+        };
+        left = newLeft;
+      } else {
+        // @TODO other productions
+        break;
+      }
+    }
+    return left;
+  }
+
   function readExpression() {
     // @todo
-    return undefined;
+    return readPrimaryExpression();
   }
+
+  return {
+    readPrimaryExpression,
+    readPostfixExpression,
+  };
 }
