@@ -1,4 +1,4 @@
-import { createParser } from "./parser.func";
+import { createParser } from "./parser.expression";
 import { Scanner } from "./scanner";
 import { createScannerFunc } from "./scanner.func";
 import { assert } from "console";
