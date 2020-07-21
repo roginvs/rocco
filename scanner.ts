@@ -70,33 +70,39 @@ export type Keyword = typeof KEYWORDS[number];
 export type Token =
   | {
       type: "keyword";
-      start: number;
+      pos: number;
+      line: number;
       keyword: Keyword;
     }
   | {
       type: "identifier";
-      start: number;
+      pos: number;
+      line: number;
       text: string;
     }
   | {
       type: "const";
-      start: number;
+      pos: number;
+      line: number;
       subtype: "int" | "float" | "char";
       value: number;
     }
   | {
       type: "string-literal";
-      start: number;
+      pos: number;
+      line: number;
       value: string;
     }
   | {
       type: "operator_or_punctuator";
-      start: number;
+      pos: number;
+      line: number;
       value: Operator | Punctuator;
     }
   | {
       type: "end";
-      start: number;
+      pos: number;
+      line: number;
     };
 
 export function createScanner(str: string) {
@@ -112,50 +118,55 @@ export function createScanner(str: string) {
   function next() {
     return lookAhead(1);
   }
+  let lineNumber = 1;
+  let inlinePos = 1;
+  function incPos(n = 1) {
+    for (let i = 0; i < n; i++) {
+      // TODO: update linenum and pos in line
+      if (current() === "\n") {
+        lineNumber += 1;
+        inlinePos = 1;
+      } else {
+        inlinePos++;
+      }
+      pos++;
+    }
+  }
+  function location() {
+    return {
+      pos: inlinePos,
+      line: lineNumber,
+    };
+  }
 
   function isWhitespace(char: string) {
     return char === " " || char === "\n" || char === "\r" || char === "\t";
   }
 
-  function scanError(text: string): never {
-    let posInLine = 0;
-    let lineNum = 0;
-    let i = 0;
-    while (i < pos) {
-      if (str[i] === "\n") {
-        lineNum += 1;
-        posInLine = 0;
-      } else {
-        posInLine++;
-      }
-      i++;
-    }
-    throw new Error(
-      `${text} at ${pos} (line ${lineNum + 1}, pos ${posInLine + 1})`
-    );
+  function throwError(text: string): never {
+    throw new Error(`${text} at ${pos} (line ${lineNumber}, pos ${inlinePos})`);
   }
 
   function scanWhitespace() {
-    const start = pos;
     while (pos < end && isWhitespace(current())) {
-      pos++;
+      incPos();
     }
     if (current() === "/" && next() === "*") {
-      pos += 2;
+      incPos(2);
       while (true) {
         if (current() === "*" && next() === "/") {
-          pos += 2;
+          incPos(2);
           break;
         }
-        pos++;
+        incPos();
       }
       scanWhitespace();
     }
 
     if (current() === "/" && next() == "/") {
-      pos += 2;
+      incPos(2);
       while (current() !== "\n") {
-        pos++;
+        incPos();
       }
       scanWhitespace();
     }
@@ -176,23 +187,23 @@ export function createScanner(str: string) {
     const start = pos;
     // We expect that initial symbol is letter
     while (isDigit(current()) || isLetter(current())) {
-      pos++;
+      incPos();
     }
     const value = str.slice(start, pos);
     if (value.length === 0) {
-      scanError("Unexpected state");
+      throwError("Unexpected state");
     }
     const keyword = KEYWORDS.find((x) => x === value);
     if (keyword) {
       return {
         type: "keyword",
         keyword,
-        start,
+        ...location(),
       };
     } else {
       return {
         type: "identifier",
-        start,
+        ...location(),
         text: value,
       };
     }
@@ -205,12 +216,12 @@ export function createScanner(str: string) {
       if (current() === ".") {
         if (!dotSeen) {
           dotSeen = true;
-          pos++;
+          incPos();
         } else {
           break;
         }
       } else if (isDigit(current())) {
-        pos++;
+        incPos();
       } else {
         break;
       }
@@ -219,14 +230,14 @@ export function createScanner(str: string) {
     if (dotSeen) {
       return {
         type: "const",
-        start,
+        ...location(),
         subtype: "float",
         value: parseFloat(value),
       };
     } else {
       return {
         type: "const",
-        start,
+        ...location(),
         subtype: "int",
         value: parseInt(value),
       };
@@ -235,16 +246,16 @@ export function createScanner(str: string) {
 
   function scanChar(): Token {
     const start = pos;
-    pos++;
+    incPos();
     const char = current();
-    pos++;
+    incPos();
     if (current() !== "'") {
-      scanError("Failed to parse char");
+      throwError("Failed to parse char");
     }
-    pos++;
+    incPos();
     return {
       type: "const",
-      start,
+      ...location(),
       subtype: "char",
       value: str.slice(start, start + 1).charCodeAt(0),
     };
@@ -252,15 +263,15 @@ export function createScanner(str: string) {
 
   function scanString(): Token {
     const start = pos;
-    pos++;
+    incPos();
     while (current() !== '"') {
-      pos++;
+      incPos();
     }
     const value = str.slice(start + 1, pos);
-    pos++;
+    incPos();
     return {
       type: "string-literal",
-      start: start,
+      ...location(),
       value,
     };
   }
@@ -281,16 +292,16 @@ export function createScanner(str: string) {
         if (currentOpOrPuncPos > 0) {
           // we must have lastRoundCandidates
           if (lastRoundCandidates.length === 0) {
-            scanError("Internal error");
+            throwError("Internal error");
           } else {
             const lastRoundExactLengthCandidates = lastRoundCandidates.filter(
               (op) => op.length === currentOpOrPuncPos
             );
             if (lastRoundExactLengthCandidates.length === 1) {
-              pos += currentOpOrPuncPos;
+              incPos(currentOpOrPuncPos);
               return {
                 type: "operator_or_punctuator",
-                start,
+                ...location(),
                 value: lastRoundExactLengthCandidates[0],
               };
             }
@@ -300,10 +311,10 @@ export function createScanner(str: string) {
       }
 
       if (opOrPuncCandidates.length === 1) {
-        pos += currentOpOrPuncPos + 1;
+        incPos(currentOpOrPuncPos + 1);
         return {
           type: "operator_or_punctuator",
-          start,
+          ...location(),
           value: opOrPuncCandidates[0],
         };
       }
@@ -318,7 +329,7 @@ export function createScanner(str: string) {
     if (pos >= end) {
       return {
         type: "end",
-        start: pos,
+        ...location(),
       };
     }
 
@@ -342,7 +353,7 @@ export function createScanner(str: string) {
       return possibleOpOrPunc;
     }
 
-    scanError("Unknown symbols");
+    throwError("Unknown symbols");
   }
 
   return scan;
