@@ -86,7 +86,7 @@ export type Token = (
       value: string;
     }
   | {
-      type: "operator_or_punctuator";
+      type: "punc";
       value: Operator | Punctuator;
     }
   | {
@@ -305,7 +305,7 @@ export function createScanner(str: string) {
                 throwError("Internal error");
               }
               return {
-                type: "operator_or_punctuator",
+                type: "punc",
                 ...savedLocation(),
                 value: lastRoundExactLengthCandidates[0],
               };
@@ -321,7 +321,7 @@ export function createScanner(str: string) {
           throwError("Internal error");
         }
         return {
-          type: "operator_or_punctuator",
+          type: "punc",
           ...savedLocation(),
           value: opOrPuncCandidates[0],
         };
