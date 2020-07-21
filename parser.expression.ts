@@ -67,19 +67,18 @@ export type UnaryExpressionNode =
       target: ExpressionNode;
     }
   | {
-      type: "sizeof expression";
-      target: ExpressionNode;
-    }
-  | {
-      type: "sizeof type";
-      target: TypeNameNode;
+      type: "sizeof";
+      target: {
+        expression?: ExpressionNode;
+        typename?: TypeNameNode;
+      };
     };
 
 export type CastExpressionNode =
   | UnaryExpressionNode
   | {
       type: "typecast";
-      cast: TypeNameNode;
+      typename: TypeNameNode;
       target: ExpressionNode;
     };
 
@@ -222,6 +221,88 @@ export function createParser(scanner: Scanner) {
       }
     }
     return nodes;
+  }
+
+  function readUnaryExpression(): ExpressionNode | undefined {
+    const token = scanner.current();
+
+    const unaryOperator = UNARY_OPERATORS.find(
+      (op) => token.type === "punc" && op === token.value
+    );
+
+    if (unaryOperator) {
+      scanner.readNext();
+      const right = readUnaryExpression();
+      if (!right) {
+        throwError("Expecting postfix-expression or unary-expression");
+      }
+      return {
+        type: "unary-operator",
+        operator: unaryOperator,
+        target: right,
+      };
+    } else if (
+      token.type === "punc" &&
+      (token.value === "++" || token.value === "--")
+    ) {
+      scanner.readNext();
+      const right = readUnaryExpression();
+      if (!right) {
+        throwError("Expecting postfix-expression or unary-expression");
+      }
+      return {
+        type: token.value === "++" ? "prefix ++" : "prefix --",
+        target: right,
+      };
+    } else if (token.type === "keyword" && token.keyword === "sizeof") {
+      scanner.readNext();
+      scanner.makeControlPoint();
+      const unaryExpressionNode = readUnaryExpression();
+      scanner.rollbackControlPoint();
+
+      scanner.makeControlPoint();
+      let typenameNode: TypeNameNode | undefined = undefined;
+      const token = scanner.current();
+      if (token.type === "punc" && token.value === "(") {
+        scanner.readNext();
+        typenameNode = readTypeName();
+        const closing = scanner.current();
+        if (closing.type !== "punc" || closing.value !== ")") {
+          throwError("Expected )");
+        }
+        scanner.readNext();
+      }
+      scanner.rollbackControlPoint();
+
+      // Here is a trick for forward
+      if (unaryExpressionNode) {
+        readUnaryExpression();
+      } else if (typenameNode) {
+        scanner.readNext();
+        readTypeName();
+        scanner.readNext();
+      } else {
+        throwError("Expecting unary-expression or type-name");
+      }
+      return {
+        type: "sizeof",
+        target: {
+          expression: unaryExpressionNode,
+          typename: typenameNode,
+        },
+      };
+    } else {
+      const postfixExpression = readPostfixExpression();
+      if (!postfixExpression) {
+        throwError("Expecting postfix-expression or unary-expression");
+      }
+      return postfixExpression;
+    }
+  }
+
+  function readTypeName(): TypeNameNode | undefined {
+    // @TODO
+    return undefined;
   }
 
   function readAssignmentExpression(): AssignmentExpressionNode | undefined {
