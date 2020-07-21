@@ -225,6 +225,7 @@ export function createParser(scanner: Scanner) {
   }
 
   function readAssignmentExpression(): AssignmentExpressionNode | undefined {
+    // @todo
     return undefined;
   }
 
