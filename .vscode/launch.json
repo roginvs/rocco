@@ -7,9 +7,23 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Запустить программу",
+      "name": "Run this file",
       "args": ["${relativeFile}"],
       "runtimeArgs": ["--nolazy", "-r", "ts-node/register/transpile-only"],
+      "sourceMaps": true,
+      "cwd": "${workspaceRoot}",
+      "protocol": "inspector"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/.bin/jest",
+      "name": "Run jest for this file",
+      "args": ["${fileBasenameNoExtension}", "--config", "jest.config.js"],
+      "windows": {
+        "program": "${workspaceFolder}/node_modules/jest/bin/jest"
+      },
+      //"runtimeArgs": ["--nolazy", "-r", "ts-node/register/transpile-only"],
       "sourceMaps": true,
       "cwd": "${workspaceRoot}",
       "protocol": "inspector"
