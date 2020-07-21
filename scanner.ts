@@ -72,18 +72,21 @@ export type Token =
       type: "keyword";
       pos: number;
       line: number;
+      length: number;
       keyword: Keyword;
     }
   | {
       type: "identifier";
       pos: number;
       line: number;
+      length: number;
       text: string;
     }
   | {
       type: "const";
       pos: number;
       line: number;
+      length: number;
       subtype: "int" | "float" | "char";
       value: number;
     }
@@ -91,18 +94,21 @@ export type Token =
       type: "string-literal";
       pos: number;
       line: number;
+      length: number;
       value: string;
     }
   | {
       type: "operator_or_punctuator";
       pos: number;
       line: number;
+      length: number;
       value: Operator | Punctuator;
     }
   | {
       type: "end";
       pos: number;
       line: number;
+      length: number;
     };
 
 export function createScanner(str: string) {
@@ -132,10 +138,23 @@ export function createScanner(str: string) {
       pos++;
     }
   }
-  function location() {
+
+  let savedPos = pos;
+  let savedInlinePos = inlinePos;
+  let savedLineNumber = lineNumber;
+  function saveLocation() {
+    savedPos = pos;
+    savedInlinePos = inlinePos;
+    savedLineNumber = lineNumber;
+  }
+  function sliceFromSavedPoint() {
+    return str.slice(savedPos, pos);
+  }
+  function savedLocation() {
     return {
-      pos: inlinePos,
-      line: lineNumber,
+      pos: savedInlinePos,
+      line: savedLineNumber,
+      length: pos - savedPos,
     };
   }
 
@@ -184,12 +203,12 @@ export function createScanner(str: string) {
   }
 
   function scanIdentifierOrKeyword(): Token {
-    const start = pos;
+    saveLocation();
     // We expect that initial symbol is letter
     while (isDigit(current()) || isLetter(current())) {
       incPos();
     }
-    const value = str.slice(start, pos);
+    const value = sliceFromSavedPoint();
     if (value.length === 0) {
       throwError("Unexpected state");
     }
@@ -198,19 +217,19 @@ export function createScanner(str: string) {
       return {
         type: "keyword",
         keyword,
-        ...location(),
+        ...savedLocation(),
       };
     } else {
       return {
         type: "identifier",
-        ...location(),
+        ...savedLocation(),
         text: value,
       };
     }
   }
 
   function scanNumber(): Token {
-    const start = pos;
+    saveLocation();
     let dotSeen = false;
     while (true) {
       if (current() === ".") {
@@ -226,18 +245,18 @@ export function createScanner(str: string) {
         break;
       }
     }
-    const value = str.slice(start, pos);
+    const value = sliceFromSavedPoint();
     if (dotSeen) {
       return {
         type: "const",
-        ...location(),
+        ...savedLocation(),
         subtype: "float",
         value: parseFloat(value),
       };
     } else {
       return {
         type: "const",
-        ...location(),
+        ...savedLocation(),
         subtype: "int",
         value: parseInt(value),
       };
@@ -245,7 +264,7 @@ export function createScanner(str: string) {
   }
 
   function scanChar(): Token {
-    const start = pos;
+    saveLocation();
     incPos();
     const char = current();
     incPos();
@@ -255,29 +274,29 @@ export function createScanner(str: string) {
     incPos();
     return {
       type: "const",
-      ...location(),
+      ...savedLocation(),
       subtype: "char",
-      value: str.slice(start, start + 1).charCodeAt(0),
+      value: char.charCodeAt(0),
     };
   }
 
   function scanString(): Token {
-    const start = pos;
+    saveLocation();
     incPos();
     while (current() !== '"') {
       incPos();
     }
-    const value = str.slice(start + 1, pos);
     incPos();
+    const value = sliceFromSavedPoint().slice(1, -1);
     return {
       type: "string-literal",
-      ...location(),
+      ...savedLocation(),
       value,
     };
   }
 
   function scanOperatorOrPunc(): Token | null {
-    const start = pos;
+    saveLocation();
     // Oh-la-la! Complicated and tricky!
     let currentOpOrPuncPos = 0;
     let opOrPuncCandidates = [...OP_OR_PUNCS];
@@ -299,9 +318,12 @@ export function createScanner(str: string) {
             );
             if (lastRoundExactLengthCandidates.length === 1) {
               incPos(currentOpOrPuncPos);
+              if (sliceFromSavedPoint() !== lastRoundExactLengthCandidates[0]) {
+                throwError("Internal error");
+              }
               return {
                 type: "operator_or_punctuator",
-                ...location(),
+                ...savedLocation(),
                 value: lastRoundExactLengthCandidates[0],
               };
             }
@@ -312,9 +334,12 @@ export function createScanner(str: string) {
 
       if (opOrPuncCandidates.length === 1) {
         incPos(currentOpOrPuncPos + 1);
+        if (sliceFromSavedPoint() !== opOrPuncCandidates[0]) {
+          throwError("Internal error");
+        }
         return {
           type: "operator_or_punctuator",
-          ...location(),
+          ...savedLocation(),
           value: opOrPuncCandidates[0],
         };
       }
@@ -329,7 +354,7 @@ export function createScanner(str: string) {
     if (pos >= end) {
       return {
         type: "end",
-        ...location(),
+        ...savedLocation(),
       };
     }
 
@@ -360,6 +385,7 @@ export function createScanner(str: string) {
 }
 
 import * as fs from "fs";
+import { stderr } from "process";
 const fdata = fs.readFileSync(__dirname + "/C/1.c").toString();
 const scanner = createScanner(fdata);
 while (true) {
