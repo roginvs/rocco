@@ -9,46 +9,60 @@ function parse(str: string) {
 
 describe("Parser test", () => {
   it("Reads primary expression number int", () => {
-    const parser = parse("123");
+    const scanner = new Scanner(createScannerFunc("123"));
+    const parser = createParser(scanner);
     const node = parser.readPrimaryExpression();
     expect(node).toMatchObject({
       type: "const",
       subtype: "int",
       value: 123,
     });
+
+    expect(scanner.current().type).toBe("end");
   });
 
   it("Reads primary expression number float", () => {
-    const parser = parse("123.5");
+    const scanner = new Scanner(createScannerFunc("123.5"));
+    const parser = createParser(scanner);
     const node = parser.readPrimaryExpression();
     expect(node).toMatchObject({
       type: "const",
       subtype: "float",
       value: 123.5,
     });
+
+    expect(scanner.current().type).toBe("end");
   });
 
   it("Reads primary expression char", () => {
-    const parser = parse("'a'");
+    const scanner = new Scanner(createScannerFunc("'a'"));
+    const parser = createParser(scanner);
     const node = parser.readPrimaryExpression();
     expect(node).toMatchObject({
       type: "const",
       subtype: "char",
       value: "a".charCodeAt(0),
     });
+
+    expect(scanner.current().type).toBe("end");
   });
 
   it("Reads primary expression identifier", () => {
-    const parser = parse("asdf");
+    const scanner = new Scanner(createScannerFunc("asdf"));
+    const parser = createParser(scanner);
     const node = parser.readPrimaryExpression();
     expect(node).toMatchObject({
       type: "identifier",
       value: "asdf",
     });
+
+    expect(scanner.current().type).toBe("end");
   });
 
   it("Reads postfix expression subscript", () => {
-    const parser = parse("asd[2]");
+    const scanner = new Scanner(createScannerFunc("asd[2]"));
+    const parser = createParser(scanner);
+
     const node = parser.readPostfixExpression();
     expect(node).toMatchObject({
       type: "subscript operator",
@@ -58,10 +72,14 @@ describe("Parser test", () => {
       },
       index: { type: "const", subtype: "int", value: 2 },
     });
+
+    expect(scanner.current().type).toBe("end");
   });
 
   it("Reads postfix expression, nested subscript", () => {
-    const parser = parse("zxc[2][4]");
+    const scanner = new Scanner(createScannerFunc("zxc[2][4]"));
+    const parser = createParser(scanner);
+
     const node = parser.readPostfixExpression();
     expect(node).toMatchObject({
       type: "subscript operator",
@@ -72,10 +90,14 @@ describe("Parser test", () => {
       },
       index: { type: "const", subtype: "int", value: 4 },
     });
+
+    expect(scanner.current().type).toBe("end");
   });
 
   it("Reads postfix expression, function call", () => {
-    const parser = parse("qwe()");
+    const scanner = new Scanner(createScannerFunc("qwe()"));
+    const parser = createParser(scanner);
+
     const node = parser.readPostfixExpression();
 
     expect(node).toMatchObject({
@@ -83,6 +105,8 @@ describe("Parser test", () => {
       target: { type: "identifier", value: "qwe" },
       args: [],
     });
+
+    expect(scanner.current().type).toBe("end");
   });
 
   it("Reads postfix expression, struct access", () => {
