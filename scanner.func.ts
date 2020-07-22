@@ -184,7 +184,7 @@ export function createScannerFunc(str: string) {
     };
   }
 
-  function isWhitespace(char: string) {
+  function isWhitespace(char: string | undefined) {
     return char === " " || char === "\n" || char === "\r" || char === "\t";
   }
 
@@ -217,7 +217,7 @@ export function createScannerFunc(str: string) {
     }
   }
 
-  function isDigit(char: string) {
+  function isDigit(char: string | undefined) {
     return (
       char !== undefined && char.length === 1 && "0123456789".indexOf(char) > -1
     );
@@ -296,9 +296,12 @@ export function createScannerFunc(str: string) {
     saveLocation();
     incPos();
     const char = current();
+    if (!char) {
+      throwError("Failed to parse char, no char");
+    }
     incPos();
     if (current() !== "'") {
-      throwError("Failed to parse char");
+      throwError("Failed to parse char, expecting closing '");
     }
     incPos();
     return {
