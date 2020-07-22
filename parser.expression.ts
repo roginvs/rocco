@@ -99,7 +99,14 @@ export type BinaryOperatorNode =
       right: ExpressionNode;
     };
 
-//export type TurnaryOperatorNode =
+export type ConditionalExpressionNode =
+  | BinaryOperatorNode
+  | {
+      type: "conditional expression";
+      condition: ExpressionNode;
+      iftrue: ExpressionNode;
+      iffalse: ExpressionNode;
+    };
 
 // @TODO
 export type TypeNameNode =
@@ -113,7 +120,7 @@ export type TypeNameNode =
 export type AssignmentExpressionNode = unknown;
 
 // @TODO: Update me
-export type ExpressionNode = BinaryOperatorNode;
+export type ExpressionNode = ConditionalExpressionNode;
 
 const MAX_BINARY_OP_INDEX = 10;
 
@@ -483,6 +490,38 @@ export function createParser(scanner: Scanner) {
     return read(MAX_BINARY_OP_INDEX);
   }
 
+  function readConditionalExpression(): ExpressionNode | undefined {
+    const condition = readLogicalOrExpression();
+    if (!condition) {
+      return undefined;
+    }
+
+    const questionToken = scanner.current();
+    if (questionToken.type === "punc" && questionToken.value === "?") {
+      scanner.readNext();
+      const iftrue = readExpression();
+      if (!iftrue) {
+        throwError(`Expecting expression`);
+      }
+      const colonToken = scanner.current();
+      if (colonToken.type !== "punc" || colonToken.value !== ":") {
+        throwError("Expecting colon");
+      }
+      const iffalse = readConditionalExpression();
+      if (!iffalse) {
+        throwError("Expecting conditional-expression");
+      }
+      return {
+        type: "conditional expression",
+        condition,
+        iftrue,
+        iffalse,
+      };
+    } else {
+      return condition;
+    }
+  }
+
   function readTypeName(): TypeNameNode | undefined {
     // @TODO
     const token = scanner.current();
@@ -513,7 +552,7 @@ export function createParser(scanner: Scanner) {
 
   function readExpression() {
     // @todo
-    return readLogicalOrExpression();
+    return readConditionalExpression();
   }
 
   return {
