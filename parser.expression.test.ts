@@ -6,7 +6,7 @@ describe("Parser test", () => {
   it("Reads primary expression number int", () => {
     const scanner = new Scanner(createScannerFunc("123"));
     const parser = createParser(scanner);
-    const node = parser.readPrimaryExpression();
+    const node = parser.readExpression();
     expect(node).toMatchObject({
       type: "const",
       subtype: "int",
@@ -19,7 +19,7 @@ describe("Parser test", () => {
   it("Reads primary expression number int with brackets", () => {
     const scanner = new Scanner(createScannerFunc("((223))"));
     const parser = createParser(scanner);
-    const node = parser.readPrimaryExpression();
+    const node = parser.readExpression();
     expect(node).toMatchObject({
       type: "const",
       subtype: "int",
@@ -32,7 +32,7 @@ describe("Parser test", () => {
   it("Reads primary expression number float", () => {
     const scanner = new Scanner(createScannerFunc("123.5"));
     const parser = createParser(scanner);
-    const node = parser.readPrimaryExpression();
+    const node = parser.readExpression();
     expect(node).toMatchObject({
       type: "const",
       subtype: "float",
@@ -45,7 +45,7 @@ describe("Parser test", () => {
   it("Reads primary expression char", () => {
     const scanner = new Scanner(createScannerFunc("'a'"));
     const parser = createParser(scanner);
-    const node = parser.readPrimaryExpression();
+    const node = parser.readExpression();
     expect(node).toMatchObject({
       type: "const",
       subtype: "char",
@@ -58,7 +58,7 @@ describe("Parser test", () => {
   it("Reads primary expression identifier", () => {
     const scanner = new Scanner(createScannerFunc("asdf"));
     const parser = createParser(scanner);
-    const node = parser.readPrimaryExpression();
+    const node = parser.readExpression();
     expect(node).toMatchObject({
       type: "identifier",
       value: "asdf",
@@ -71,7 +71,7 @@ describe("Parser test", () => {
     const scanner = new Scanner(createScannerFunc("asd[2]"));
     const parser = createParser(scanner);
 
-    const node = parser.readPostfixExpression();
+    const node = parser.readExpression();
     expect(node).toMatchObject({
       type: "subscript operator",
       target: {
@@ -88,7 +88,7 @@ describe("Parser test", () => {
     const scanner = new Scanner(createScannerFunc("zxc[2][4]"));
     const parser = createParser(scanner);
 
-    const node = parser.readPostfixExpression();
+    const node = parser.readExpression();
     expect(node).toMatchObject({
       type: "subscript operator",
       target: {
@@ -106,7 +106,7 @@ describe("Parser test", () => {
     const scanner = new Scanner(createScannerFunc("qwe()"));
     const parser = createParser(scanner);
 
-    const node = parser.readPostfixExpression();
+    const node = parser.readExpression();
 
     expect(node).toMatchObject({
       type: "function call",
@@ -120,7 +120,7 @@ describe("Parser test", () => {
   it("Reads postfix expression, struct access", () => {
     const scanner = new Scanner(createScannerFunc("qwe().fghh"));
     const parser = createParser(scanner);
-    const node = parser.readPostfixExpression();
+    const node = parser.readExpression();
 
     expect(node).toMatchObject({
       type: "struct access",
@@ -138,7 +138,7 @@ describe("Parser test", () => {
   it("Reads postfix expression, struct pointer access", () => {
     const scanner = new Scanner(createScannerFunc("qwe()->fghh"));
     const parser = createParser(scanner);
-    const node = parser.readPostfixExpression();
+    const node = parser.readExpression();
 
     expect(node).toMatchObject({
       type: "struct pointer access",
@@ -156,7 +156,7 @@ describe("Parser test", () => {
   it("Reads postfix expression, ++", () => {
     const scanner = new Scanner(createScannerFunc("qwe()[arr[n++]++]"));
     const parser = createParser(scanner);
-    const node = parser.readPostfixExpression();
+    const node = parser.readExpression();
 
     expect(node).toMatchObject({
       type: "subscript operator",
@@ -183,7 +183,7 @@ describe("Parser test", () => {
   it("Reads unary expression 1", () => {
     const scanner = new Scanner(createScannerFunc("++--88++"));
     const parser = createParser(scanner);
-    const node = parser.readUnaryExpression();
+    const node = parser.readExpression();
     expect(node).toMatchObject({
       type: "prefix ++",
       target: {
@@ -201,7 +201,7 @@ describe("Parser test", () => {
   it("Reads unary expression 2", () => {
     const scanner = new Scanner(createScannerFunc("*+kek"));
     const parser = createParser(scanner);
-    const node = parser.readUnaryExpression();
+    const node = parser.readExpression();
 
     expect(node).toMatchObject({
       type: "unary-operator",
@@ -219,7 +219,7 @@ describe("Parser test", () => {
   it("Reads unary expression, sizeof kek", () => {
     const scanner = new Scanner(createScannerFunc("sizeof kek"));
     const parser = createParser(scanner);
-    const node = parser.readUnaryExpression();
+    const node = parser.readExpression();
 
     expect(node).toMatchObject({
       type: "sizeof",
@@ -236,7 +236,7 @@ describe("Parser test", () => {
   it("Reads unary expression, sizeof (int)", () => {
     const scanner = new Scanner(createScannerFunc("sizeof (int)"));
     const parser = createParser(scanner);
-    const node = parser.readUnaryExpression();
+    const node = parser.readExpression();
     //console.info(JSON.stringify(node));
     expect(node).toMatchObject({
       type: "sizeof",
@@ -260,7 +260,7 @@ describe("Parser test", () => {
     it(`Reads cast expression '${prefix}3++${suffix}'`, () => {
       const scanner = new Scanner(createScannerFunc(`${prefix}3++${suffix}`));
       const parser = createParser(scanner);
-      const node = parser.readCastExpression();
+      const node = parser.readExpression();
       //console.info(JSON.stringify(node));
       expect(node).toMatchObject({
         type: "postfix ++",
@@ -274,7 +274,7 @@ describe("Parser test", () => {
   it(`Reads cast expression (int)(kek)`, () => {
     const scanner = new Scanner(createScannerFunc(`(int)(kek)`));
     const parser = createParser(scanner);
-    const node = parser.readCastExpression();
+    const node = parser.readExpression();
 
     expect(node).toMatchObject({
       type: "typecast",
@@ -288,7 +288,7 @@ describe("Parser test", () => {
   it(`Reads cast expression (int)(int)(kek)`, () => {
     const scanner = new Scanner(createScannerFunc(`(int)(int)(kek)`));
     const parser = createParser(scanner);
-    const node = parser.readCastExpression();
+    const node = parser.readExpression();
 
     expect(node).toMatchObject({
       type: "typecast",
@@ -306,7 +306,7 @@ describe("Parser test", () => {
   it(`Reads cast expression (int)(kek)`, () => {
     const scanner = new Scanner(createScannerFunc(`(int)(int)kek`));
     const parser = createParser(scanner);
-    const node = parser.readCastExpression();
+    const node = parser.readExpression();
 
     expect(node).toMatchObject({
       type: "typecast",

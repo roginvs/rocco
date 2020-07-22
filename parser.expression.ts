@@ -498,14 +498,10 @@ export function createParser(scanner: Scanner) {
 
   function readExpression() {
     // @todo
-    return readLogicalOrExpression();
+    return readCastExpression();
   }
 
   return {
     readExpression,
-    readPrimaryExpression,
-    readPostfixExpression,
-    readUnaryExpression,
-    readCastExpression,
   };
 }
