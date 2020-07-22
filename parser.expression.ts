@@ -412,7 +412,7 @@ export function createParser(scanner: Scanner) {
 
   function readExpression() {
     // @todo
-    return readPostfixExpression();
+    return readCastExpression();
   }
 
   return {
