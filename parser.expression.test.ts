@@ -371,4 +371,28 @@ describe("Parser test", () => {
       },
     },
   });
+
+  checkExpression("2?3?4:5:6", {
+    type: "conditional expression",
+    condition: { type: "const", subtype: "int", value: 2 },
+    iftrue: {
+      type: "conditional expression",
+      condition: { type: "const", subtype: "int", value: 3 },
+      iftrue: { type: "const", subtype: "int", value: 4 },
+      iffalse: { type: "const", subtype: "int", value: 5 },
+    },
+    iffalse: { type: "const", subtype: "int", value: 6 },
+  });
+
+  checkExpression("2?3:4?5:6", {
+    type: "conditional expression",
+    condition: { type: "const", subtype: "int", value: 2 },
+    iftrue: { type: "const", subtype: "int", value: 3 },
+    iffalse: {
+      type: "conditional expression",
+      condition: { type: "const", subtype: "int", value: 4 },
+      iftrue: { type: "const", subtype: "int", value: 5 },
+      iffalse: { type: "const", subtype: "int", value: 6 },
+    },
+  });
 });

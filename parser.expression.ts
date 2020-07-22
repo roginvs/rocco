@@ -507,6 +507,7 @@ export function createParser(scanner: Scanner) {
       if (colonToken.type !== "punc" || colonToken.value !== ":") {
         throwError("Expecting colon");
       }
+      scanner.readNext();
       const iffalse = readConditionalExpression();
       if (!iffalse) {
         throwError("Expecting conditional-expression");
