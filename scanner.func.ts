@@ -51,18 +51,40 @@ const OP_OR_PUNCS = [...OPERATORS, ...PUNCTUATORS] as const;
 const OP_OR_PUNCS_MAX_LEN = Math.max(...OP_OR_PUNCS.map((op) => op.length));
 
 export const KEYWORDS = [
+  "auto",
   "break",
+  "case",
   "char",
+  "const",
   "continue",
-  "float",
+  "default",
+  "do",
+
+  "double",
   "else",
+  "enum",
+  "extern",
+  "float",
   "for",
+  "goto",
   "if",
+
   "int",
+  "long",
+  "register",
   "return",
+  "short",
+  "signed",
   "sizeof",
+  "static",
+
   "struct",
+  "switch",
+  "typedef",
+  "union",
+  "unsigned",
   "void",
+  "volatile",
   "while",
 ] as const;
 export type Keyword = typeof KEYWORDS[number];
