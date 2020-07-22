@@ -233,14 +233,20 @@ describe("Parser test", () => {
     expect(scanner.current().type).toBe("end");
   });
 
-  it.skip("Reads unary expression, sizeof (int)", () => {
+  it("Reads unary expression, sizeof (int)", () => {
     const scanner = new Scanner(createScannerFunc("sizeof (int)"));
     const parser = createParser(scanner);
     const node = parser.readUnaryExpression();
-    console.info(JSON.stringify(node));
+    //console.info(JSON.stringify(node));
     expect(node).toMatchObject({
       type: "sizeof",
-      target: { expression: { type: "identifier", value: "int" } },
+      target: {
+        expression: undefined,
+        typename: {
+          type: "simple type",
+          typename: "int",
+        },
+      },
     });
 
     expect(scanner.current().type).toBe("end");
