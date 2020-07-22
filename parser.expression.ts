@@ -99,6 +99,8 @@ export type BinaryOperatorNode =
       right: ExpressionNode;
     };
 
+//export type TurnaryOperatorNode =
+
 // @TODO
 export type TypeNameNode =
   | IdentifierNode
@@ -435,7 +437,6 @@ export function createParser(scanner: Scanner) {
   }
 
   function readLogicalOrExpression(): ExpressionNode {
-    // todo
     function read(currentPriority: number): ExpressionNode {
       if (currentPriority === 0) {
         return readCastExpression();
