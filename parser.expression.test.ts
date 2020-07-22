@@ -251,4 +251,23 @@ describe("Parser test", () => {
 
     expect(scanner.current().type).toBe("end");
   });
+
+  for (const [prefix, suffix] of [
+    ["", ""],
+    ["(", ")"],
+    ["((", "))"],
+  ] as const) {
+    it(`Reads cast expression '${prefix}3++${suffix}'`, () => {
+      const scanner = new Scanner(createScannerFunc(`${prefix}3++${suffix}`));
+      const parser = createParser(scanner);
+      const node = parser.readCastExpression();
+      //console.info(JSON.stringify(node));
+      expect(node).toMatchObject({
+        type: "postfix ++",
+        target: { type: "const", subtype: "int", value: 3 },
+      });
+
+      expect(scanner.current().type).toBe("end");
+    });
+  }
 });
