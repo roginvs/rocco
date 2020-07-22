@@ -57,6 +57,8 @@ export const SIMPLE_TYPE_KEYWORDS = [
   "long",
   "short",
 ] as const;
+export type SimpleType = typeof SIMPLE_TYPE_KEYWORDS[number];
+
 export const KEYWORDS = [
   ...SIMPLE_TYPE_KEYWORDS,
   "auto",

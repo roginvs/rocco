@@ -1,4 +1,5 @@
 import { Scanner } from "./scanner";
+import { SimpleType, SIMPLE_TYPE_KEYWORDS } from "./scanner.func";
 
 export type IdentifierNode = {
   type: "identifier";
@@ -86,7 +87,8 @@ export type CastExpressionNode =
 export type TypeNameNode =
   | IdentifierNode
   | {
-      type: "built-in";
+      type: "simple type";
+      typename: SimpleType;
     };
 
 // @TODO
@@ -318,7 +320,17 @@ export function createParser(scanner: Scanner) {
   function readTypeName(): TypeNameNode | undefined {
     // @TODO
     const token = scanner.current();
-    if (token.type === "identifier") {
+
+    const simpleType = SIMPLE_TYPE_KEYWORDS.find(
+      (x) => token.type === "keyword" && x === token.keyword
+    );
+    if (simpleType) {
+      scanner.readNext();
+      return {
+        type: "simple type",
+        typename: simpleType,
+      };
+    } else if (token.type === "identifier") {
       scanner.readNext();
       return {
         type: "identifier",
