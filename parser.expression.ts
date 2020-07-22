@@ -83,7 +83,11 @@ export type CastExpressionNode =
     };
 
 // @TODO
-export type TypeNameNode = unknown;
+export type TypeNameNode =
+  | IdentifierNode
+  | {
+      type: "built-in";
+    };
 
 // @TODO
 export type AssignmentExpressionNode = unknown;
@@ -313,6 +317,14 @@ export function createParser(scanner: Scanner) {
 
   function readTypeName(): TypeNameNode | undefined {
     // @TODO
+    const token = scanner.current();
+    if (token.type === "identifier") {
+      scanner.readNext();
+      return {
+        type: "identifier",
+        value: token.text,
+      };
+    }
     return undefined;
   }
 
