@@ -423,6 +423,9 @@ export function createParser(scanner: Scanner) {
     const rightNode = readCastExpression();
     if (!rightNode) {
       // We are the last in the chain, so it is unary-expression
+      if (!unaryExpressionNode) {
+        throwError("Expecting cast-expression");
+      }
       return unaryExpressionNode;
     } else {
       if (!typenameNode) {
@@ -436,13 +439,17 @@ export function createParser(scanner: Scanner) {
     }
   }
 
-  function readLogicalOrExpression(): ExpressionNode {
-    function read(currentPriority: number): ExpressionNode {
+  function readLogicalOrExpression(): ExpressionNode | undefined {
+    function read(currentPriority: number): ExpressionNode | undefined {
       if (currentPriority === 0) {
         return readCastExpression();
       }
 
       let left = read(currentPriority - 1);
+
+      if (!left) {
+        return undefined;
+      }
 
       while (true) {
         const token = scanner.current();
@@ -460,6 +467,9 @@ export function createParser(scanner: Scanner) {
 
         scanner.readNext();
         const right = read(currentPriority - 1);
+        if (!right) {
+          throwError(`Expected expression in binary operator`);
+        }
         const newLeft: ExpressionNode = {
           type: "binary operator",
           operator: binaryOperator,
