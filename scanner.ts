@@ -45,7 +45,10 @@ export class Scanner {
       dataInControlPoint.forEach(() => controlPoint.pop());
     });
 
-    dataInControlPoint.forEach((token) => this.pushedBackTokens.push(token));
+    dataInControlPoint
+      .slice()
+      .reverse()
+      .forEach((token) => this.pushedBackTokens.unshift(token));
     this.readNext();
   }
 }

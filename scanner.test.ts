@@ -140,6 +140,36 @@ describe("Scanner", () => {
     expect(scanner.current().pos).toBe(5);
   });
 
+  it(`Scans with two control points, each rolledback 2`, () => {
+    const scanner = new Scanner(createDemoReader());
+
+    scanner.readNext();
+    expect(scanner.current().pos).toBe(2);
+
+    scanner.makeControlPoint();
+    scanner.readNext();
+    expect(scanner.current().pos).toBe(3);
+    scanner.readNext();
+    expect(scanner.current().pos).toBe(4);
+    scanner.readNext();
+    expect(scanner.current().pos).toBe(5);
+    scanner.rollbackControlPoint();
+
+    scanner.makeControlPoint();
+    expect(scanner.current().pos).toBe(2);
+    scanner.readNext();
+    expect(scanner.current().pos).toBe(3);
+    scanner.rollbackControlPoint();
+
+    expect(scanner.current().pos).toBe(2);
+    scanner.readNext();
+    expect(scanner.current().pos).toBe(3);
+    scanner.readNext();
+    expect(scanner.current().pos).toBe(4);
+    scanner.readNext();
+    expect(scanner.current().pos).toBe(5);
+  });
+
   it(`Scans with two control points, first cleared, second rolledback`, () => {
     const scanner = new Scanner(createDemoReader());
     scanner.readNext();
