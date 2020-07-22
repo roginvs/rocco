@@ -317,6 +317,11 @@ export function createParser(scanner: Scanner) {
     }
   }
 
+  function readCastExpression() {
+    // Also hacky
+    const token = scanner.current();
+  }
+
   function readTypeName(): TypeNameNode | undefined {
     // @TODO
     const token = scanner.current();

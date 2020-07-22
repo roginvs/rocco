@@ -1,11 +1,6 @@
 import { createParser } from "./parser.expression";
 import { Scanner } from "./scanner";
 import { createScannerFunc } from "./scanner.func";
-import { assert } from "console";
-
-function parse(str: string) {
-  return createParser(new Scanner(createScannerFunc(str)));
-}
 
 describe("Parser test", () => {
   it("Reads primary expression number int", () => {
@@ -238,14 +233,14 @@ describe("Parser test", () => {
     expect(scanner.current().type).toBe("end");
   });
 
-  it.skip("Reads unary expression, sizeof (kek)", () => {
-    const scanner = new Scanner(createScannerFunc("sizeof (kek)"));
+  it.skip("Reads unary expression, sizeof (int)", () => {
+    const scanner = new Scanner(createScannerFunc("sizeof (int)"));
     const parser = createParser(scanner);
     const node = parser.readUnaryExpression();
     console.info(JSON.stringify(node));
     expect(node).toMatchObject({
       type: "sizeof",
-      target: { expression: { type: "identifier", value: "kek" } },
+      target: { expression: { type: "identifier", value: "int" } },
     });
 
     expect(scanner.current().type).toBe("end");

@@ -1,4 +1,3 @@
-import * as fs from "fs";
 import { createScannerFunc } from "./scanner.func";
 
 const fdata = `
