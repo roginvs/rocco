@@ -118,8 +118,8 @@ const MAX_BINARY_OP_INDEX = 10;
 function isPuncBinaryOperatorAtPrioLevel(
   prioLevel: number,
   op: Operator | Punctuator
-) {
-  function check(...binaryOps: BinaryOperator[]) {
+): BinaryOperator | undefined {
+  function check(...binaryOps: BinaryOperator[]): BinaryOperator | undefined {
     const binaryOp = binaryOps.find((x) => x === op);
     return binaryOp;
   }
@@ -453,13 +453,17 @@ export function createParser(scanner: Scanner) {
           token.value
         );
 
+        if (!binaryOperator) {
+          return left;
+        }
+
         scanner.readNext();
         const right = read(currentPriority - 1);
         const newLeft: ExpressionNode = {
           type: "binary operator",
+          operator: binaryOperator,
           left,
           right,
-          operator: binaryOperator,
         };
         left = newLeft;
       }
@@ -498,7 +502,7 @@ export function createParser(scanner: Scanner) {
 
   function readExpression() {
     // @todo
-    return readCastExpression();
+    return readLogicalOrExpression();
   }
 
   return {

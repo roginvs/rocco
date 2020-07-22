@@ -1,4 +1,4 @@
-import { createParser } from "./parser.expression";
+import { createParser, ExpressionNode } from "./parser.expression";
 import { Scanner } from "./scanner";
 import { createScannerFunc } from "./scanner.func";
 
@@ -319,5 +319,56 @@ describe("Parser test", () => {
     });
 
     expect(scanner.current().type).toBe("end");
+  });
+
+  function checkExpression(str: string, ast?: ExpressionNode) {
+    it(`Reads '${str}'`, () => {
+      const scanner = new Scanner(createScannerFunc(str));
+      const parser = createParser(scanner);
+      const node = parser.readExpression();
+
+      if (ast) {
+        expect(node).toMatchObject(ast);
+      } else {
+        console.info(JSON.stringify(node));
+      }
+
+      expect(scanner.current().type).toBe("end");
+    });
+  }
+
+  checkExpression("2+2", {
+    type: "binary operator",
+    left: { type: "const", subtype: "int", value: 2 },
+    right: { type: "const", subtype: "int", value: 2 },
+    operator: "+",
+  });
+
+  checkExpression("2 + (int)4/3++*-2", {
+    type: "binary operator",
+    operator: "+",
+    left: { type: "const", subtype: "int", value: 2 },
+    right: {
+      type: "binary operator",
+      operator: "*",
+      left: {
+        type: "binary operator",
+        operator: "/",
+        left: {
+          type: "typecast",
+          target: { type: "const", subtype: "int", value: 4 },
+          typename: { type: "simple type", typename: "int" },
+        },
+        right: {
+          type: "postfix ++",
+          target: { type: "const", subtype: "int", value: 3 },
+        },
+      },
+      right: {
+        type: "unary-operator",
+        operator: "-",
+        target: { type: "const", subtype: "int", value: 2 },
+      },
+    },
   });
 });
