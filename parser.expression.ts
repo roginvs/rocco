@@ -317,9 +317,69 @@ export function createParser(scanner: Scanner) {
     }
   }
 
-  function readCastExpression() {
-    // Also hacky
+  function readCastExpression(): ExpressionNode | undefined {
+    // Also hacky, and copy-pasted from readUnaryExpression
     const token = scanner.current();
+
+    if (token.type !== "punc" || token.value !== "(") {
+      const unaryExpression = readUnaryExpression();
+      return unaryExpression;
+    }
+
+    let unaryExpressionNode: ExpressionNode | undefined;
+    scanner.makeControlPoint();
+    try {
+      unaryExpressionNode = readUnaryExpression();
+    } catch (e) {
+      // do nothing
+    }
+    scanner.rollbackControlPoint();
+
+    let typenameNode: TypeNameNode | undefined = undefined;
+    scanner.makeControlPoint();
+    try {
+      const token = scanner.current();
+      if (token.type === "punc" && token.value === "(") {
+        scanner.readNext();
+        typenameNode = readTypeName();
+        const closing = scanner.current();
+        if (closing.type !== "punc" || closing.value !== ")") {
+          throwError("Unary-expression expected )");
+        }
+        scanner.readNext();
+      }
+    } catch (e) {
+      // do nothing
+    }
+    scanner.rollbackControlPoint();
+
+    // Here is a trick for forward
+    // Well, I assume that unary-expression and type-name will consume same amount of tokens
+    // Maybe I am wrong
+    if (unaryExpressionNode) {
+      readUnaryExpression();
+    } else if (typenameNode) {
+      scanner.readNext();
+      readTypeName();
+      scanner.readNext();
+    } else {
+      return undefined;
+    }
+
+    const rightNode = readCastExpression();
+    if (!rightNode) {
+      // We are the last in the chain, so it is unary-expression
+      return unaryExpressionNode;
+    } else {
+      if (!typenameNode) {
+        throwError("Expecting type");
+      }
+      return {
+        type: "typecast",
+        target: rightNode,
+        typename: typenameNode,
+      };
+    }
   }
 
   function readTypeName(): TypeNameNode | undefined {
@@ -359,5 +419,6 @@ export function createParser(scanner: Scanner) {
     readPrimaryExpression,
     readPostfixExpression,
     readUnaryExpression,
+    readCastExpression,
   };
 }
