@@ -270,4 +270,54 @@ describe("Parser test", () => {
       expect(scanner.current().type).toBe("end");
     });
   }
+
+  it(`Reads cast expression (int)(kek)`, () => {
+    const scanner = new Scanner(createScannerFunc(`(int)(kek)`));
+    const parser = createParser(scanner);
+    const node = parser.readCastExpression();
+
+    expect(node).toMatchObject({
+      type: "typecast",
+      target: { type: "identifier", value: "kek" },
+      typename: { type: "simple type", typename: "int" },
+    });
+
+    expect(scanner.current().type).toBe("end");
+  });
+
+  it(`Reads cast expression (int)(int)(kek)`, () => {
+    const scanner = new Scanner(createScannerFunc(`(int)(int)(kek)`));
+    const parser = createParser(scanner);
+    const node = parser.readCastExpression();
+
+    expect(node).toMatchObject({
+      type: "typecast",
+      target: {
+        type: "typecast",
+        target: { type: "identifier", value: "kek" },
+        typename: { type: "simple type", typename: "int" },
+      },
+      typename: { type: "simple type", typename: "int" },
+    });
+
+    expect(scanner.current().type).toBe("end");
+  });
+
+  it(`Reads cast expression (int)(kek)`, () => {
+    const scanner = new Scanner(createScannerFunc(`(int)(int)kek`));
+    const parser = createParser(scanner);
+    const node = parser.readCastExpression();
+
+    expect(node).toMatchObject({
+      type: "typecast",
+      target: {
+        type: "typecast",
+        target: { type: "identifier", value: "kek" },
+        typename: { type: "simple type", typename: "int" },
+      },
+      typename: { type: "simple type", typename: "int" },
+    });
+
+    expect(scanner.current().type).toBe("end");
+  });
 });
