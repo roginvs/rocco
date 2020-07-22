@@ -255,23 +255,36 @@ export function createParser(scanner: Scanner) {
       };
     } else if (token.type === "keyword" && token.keyword === "sizeof") {
       scanner.readNext();
-      scanner.makeControlPoint();
-      // @TODO : what if it throws? Can it actually throw?
-      const unaryExpressionNode = readUnaryExpression();
-      const rolledBackTokensUnaryExpression = scanner.rollbackControlPoint();
-      // @TODO: use rolledBackTokensUnaryExpression
 
+      // This is quite hacky implementation
+      // Expections should be exceptional
+
+      // @TODO: Check type-name grammar
+
+      let unaryExpressionNode: ExpressionNode | undefined;
       scanner.makeControlPoint();
+      try {
+        unaryExpressionNode = readUnaryExpression();
+      } catch (e) {
+        // do nothing
+      }
+      scanner.rollbackControlPoint();
+
       let typenameNode: TypeNameNode | undefined = undefined;
-      const token = scanner.current();
-      if (token.type === "punc" && token.value === "(") {
-        scanner.readNext();
-        typenameNode = readTypeName();
-        const closing = scanner.current();
-        if (closing.type !== "punc" || closing.value !== ")") {
-          throwError("Unary-expression expected )");
+      scanner.makeControlPoint();
+      try {
+        const token = scanner.current();
+        if (token.type === "punc" && token.value === "(") {
+          scanner.readNext();
+          typenameNode = readTypeName();
+          const closing = scanner.current();
+          if (closing.type !== "punc" || closing.value !== ")") {
+            throwError("Unary-expression expected )");
+          }
+          scanner.readNext();
         }
-        scanner.readNext();
+      } catch (e) {
+        // do nothing
       }
       scanner.rollbackControlPoint();
 
