@@ -1,5 +1,12 @@
 import { Scanner } from "./scanner";
-import { SimpleType, SIMPLE_TYPE_KEYWORDS } from "./scanner.func";
+import {
+  SimpleType,
+  SIMPLE_TYPE_KEYWORDS,
+  Operator,
+  Punctuator,
+  BinaryOperator,
+} from "./scanner.func";
+import { match } from "assert";
 
 export type IdentifierNode = {
   type: "identifier";
@@ -83,6 +90,15 @@ export type CastExpressionNode =
       target: ExpressionNode;
     };
 
+export type BinaryOperatorNode =
+  | CastExpressionNode
+  | {
+      type: "binary operator";
+      operator: BinaryOperator;
+      left: ExpressionNode;
+      right: ExpressionNode;
+    };
+
 // @TODO
 export type TypeNameNode =
   | IdentifierNode
@@ -95,7 +111,43 @@ export type TypeNameNode =
 export type AssignmentExpressionNode = unknown;
 
 // @TODO: Update me
-export type ExpressionNode = CastExpressionNode;
+export type ExpressionNode = BinaryOperatorNode;
+
+const MAX_BINARY_OP_INDEX = 10;
+
+function isPuncBinaryOperatorAtPrioLevel(
+  prioLevel: number,
+  op: Operator | Punctuator
+) {
+  function check(...binaryOps: BinaryOperator[]) {
+    const binaryOp = binaryOps.find((x) => x === op);
+    return binaryOp;
+  }
+  switch (prioLevel) {
+    case 1:
+      return check("*", "/", "%");
+    case 2:
+      return check("+", "-");
+    case 3:
+      return check("<<", ">>");
+    case 4:
+      return check("<", ">", "<=", ">=");
+    case 5:
+      return check("==", "!=");
+    case 6:
+      return check("&");
+    case 7:
+      return check("^");
+    case 8:
+      return check("|");
+    case 9:
+      return check("&&");
+    case 10:
+      return check("||");
+    default:
+      throw new Error(`Unknown prio level`);
+  }
+}
 
 export function createParser(scanner: Scanner) {
   function throwError(info: string): never {
@@ -382,6 +434,40 @@ export function createParser(scanner: Scanner) {
     }
   }
 
+  function readLogicalOrExpression(): ExpressionNode {
+    // todo
+    function read(currentPriority: number): ExpressionNode {
+      if (currentPriority === 0) {
+        return readCastExpression();
+      }
+
+      let left = read(currentPriority - 1);
+
+      while (true) {
+        const token = scanner.current();
+        if (token.type !== "punc") {
+          return left;
+        }
+        const binaryOperator = isPuncBinaryOperatorAtPrioLevel(
+          currentPriority,
+          token.value
+        );
+
+        scanner.readNext();
+        const right = read(currentPriority - 1);
+        const newLeft: ExpressionNode = {
+          type: "binary operator",
+          left,
+          right,
+          operator: binaryOperator,
+        };
+        left = newLeft;
+      }
+    }
+
+    return read(MAX_BINARY_OP_INDEX);
+  }
+
   function readTypeName(): TypeNameNode | undefined {
     // @TODO
     const token = scanner.current();
@@ -412,10 +498,11 @@ export function createParser(scanner: Scanner) {
 
   function readExpression() {
     // @todo
-    return readCastExpression();
+    return readLogicalOrExpression();
   }
 
   return {
+    readExpression,
     readPrimaryExpression,
     readPostfixExpression,
     readUnaryExpression,

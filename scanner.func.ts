@@ -1,20 +1,9 @@
-export const OPERATORS = [
-  "[",
-  "]",
-  "(",
-  ")",
-  ".",
-  "->",
-  "++",
-  "--",
-  "&",
+export const BINARY_OPERATORS = [
   "*",
-  "+",
-  "-",
-  "~",
-  "!",
   "/",
   "%",
+  "+",
+  "-",
   "<<",
   ">>",
   "<",
@@ -23,10 +12,28 @@ export const OPERATORS = [
   ">=",
   "==",
   "!=",
+  "&",
   "^",
   "|",
   "&&",
   "||",
+] as const;
+export type BinaryOperator = typeof BINARY_OPERATORS[number];
+
+export const OPERATORS = [
+  ...BINARY_OPERATORS,
+  "[",
+  "]",
+  "(",
+  ")",
+  ".",
+  "->",
+  "++",
+  "--",
+
+  "~",
+  "!",
+
   "?",
   ":",
   "=",
@@ -48,6 +55,14 @@ const PUNCTUATORS = ["{", "}", ";"] as const;
 export type Punctuator = typeof PUNCTUATORS[number];
 
 const OP_OR_PUNCS = [...OPERATORS, ...PUNCTUATORS] as const;
+
+if (
+  OP_OR_PUNCS.filter((op1, idx1) =>
+    OP_OR_PUNCS.find((op2, idx2) => op1 === op2 && idx1 !== idx2)
+  ).length > 0
+) {
+  throw new Error("Duplicates found");
+}
 
 export const SIMPLE_TYPE_KEYWORDS = [
   "char",
