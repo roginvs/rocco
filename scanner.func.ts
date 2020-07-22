@@ -48,32 +48,36 @@ const PUNCTUATORS = ["{", "}", ";"] as const;
 export type Punctuator = typeof PUNCTUATORS[number];
 
 const OP_OR_PUNCS = [...OPERATORS, ...PUNCTUATORS] as const;
-const OP_OR_PUNCS_MAX_LEN = Math.max(...OP_OR_PUNCS.map((op) => op.length));
 
+export const SIMPLE_TYPE_KEYWORDS = [
+  "char",
+  "double",
+  "float",
+  "int",
+  "long",
+  "short",
+] as const;
 export const KEYWORDS = [
+  ...SIMPLE_TYPE_KEYWORDS,
   "auto",
+
   "break",
   "case",
-  "char",
   "const",
   "continue",
   "default",
   "do",
 
-  "double",
   "else",
   "enum",
   "extern",
-  "float",
   "for",
   "goto",
   "if",
 
-  "int",
-  "long",
   "register",
   "return",
-  "short",
+
   "signed",
   "sizeof",
   "static",
