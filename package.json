@@ -11,7 +11,8 @@
   "dependencies": {
     "@types/node": "^14.0.23",
     "ts-node": "^8.10.2",
-    "typescript": "^3.9.7"
+    "typescript": "^3.9.7",
+    "wabt": "^1.0.19"
   },
   "devDependencies": {
     "@types/jest": "^26.0.5",

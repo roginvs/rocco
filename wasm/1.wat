@@ -15,7 +15,7 @@
 
  
 
-  (func $add (param $how_many_to_add i32)(result i32)
+  (func $savingadd (param $how_many_to_add i32)(result i32)
     nop
 
 
@@ -38,4 +38,5 @@
     i32.load
   )
  
+   (export "savingadd" (func $savingadd))
 )

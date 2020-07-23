@@ -20,3 +20,5 @@ cmake --build . && \
 
 https://developer.mozilla.org/ru/docs/WebAssembly/Understanding_the_text_format
 https://rsms.me/wasm-intro#addressing-memory
+
+https://blog.scottlogic.com/2018/04/26/webassembly-by-hand.html
