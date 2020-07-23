@@ -10,8 +10,10 @@ async function main() {
   const wasmModule = wabt.parseWat(inputWat, inputData);
 
   const wasmdata = wasmModule.toBinary({
-    log: false,
+    log: true,
   });
+
+  console.info(wasmdata.log);
 
   const module = await WebAssembly.compile(wasmdata.buffer);
   const instance = await WebAssembly.instantiate(module);

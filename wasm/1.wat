@@ -13,13 +13,17 @@
   )
 
 
- 
+  (func $savingadd2 (param $how_many_to_add i32)(result i32)
+    nop
+    local.get $how_many_to_add
+    call $savingadd
+  )
 
   (func $savingadd (param $how_many_to_add i32)(result i32)
     nop
 
 
-    ;; at pos 4
+    ;; at pos 0x22
 
     i32.const 0x22
 
@@ -37,6 +41,31 @@
     i32.const 0x22
     i32.load
   )
+
+  
+  (func $ifelse (param $val i32)(result i32)
+  nop
+  nop 
+  nop
+
+
+  
+    (if (result i32) (local.get 0)
+        (then (i32.const 77))
+        (else (i32.const 78)) )
+
+
+  )
  
-   (export "savingadd" (func $savingadd))
+  (func $init  
+    nop
+      i32.const 0x22
+      i32.const 10
+      i32.store
+    nop
+  )
+
+  (start $init)
+
+   (export "savingadd" (func $savingadd2))
 )
