@@ -13,7 +13,7 @@
   )
 
 
-  (func $savingadd2 (param $how_many_to_add i32)(result i32)
+  (func $savingadd2 (param $how_many_to_add i32)(result i32)(local i32)
     nop
     local.get $how_many_to_add
     call $savingadd
