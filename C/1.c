@@ -23,6 +23,25 @@ int test(char a, char *b, char **c)
 
   int size2 = sizeof(kek2);
   // b-- -----;
+  return 3;
+};
+int test2()
+{
+  struct S1
+  {
+    int a1;
+    int a2;
+    int a3
+  } s1;
+
+  struct S2
+  {
+    int b1;
+    int b2;
+    int b3
+  } p = (struct S2)s1;
+
+  //struct SSS pp;
 
   return 3;
 };
