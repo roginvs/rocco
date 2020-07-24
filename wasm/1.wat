@@ -66,12 +66,14 @@
 
   (func $loop1 (export "loop1") (result i32)
     i32.const 0
+    ; Returns fine
     (loop $loop1
       nop
       nop
     )
   )
   (func $loop2 (export "loop2") (result i32)
+    ; Loops forever
     (loop $loop1
       nop
       br $loop1
