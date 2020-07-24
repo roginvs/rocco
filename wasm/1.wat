@@ -54,13 +54,29 @@
     
 
     i32.const 1
-    if  (result i32)     
+    if $kek (result i32)     
       i32.const 79
     else 
       i32.const 80
     end
     drop
 
+  )
+
+
+  (func $loop1 (export "loop1") (result i32)
+    i32.const 0
+    (loop $loop1
+      nop
+      nop
+    )
+  )
+  (func $loop2 (export "loop2") (result i32)
+    (loop $loop1
+      nop
+      br $loop1
+    )
+    i32.const 222
   )
 
   (func $block 

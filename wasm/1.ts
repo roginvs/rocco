@@ -25,6 +25,9 @@ async function main() {
   console.info(savingadd(1));
   console.info(savingadd(1));
   console.info(savingadd(1));
+
+  console.info("loop1()=", (instance.exports as any).loop1());
+  console.info("loop2()=", (instance.exports as any).loop2());
 }
 
 main().catch((e) => {
