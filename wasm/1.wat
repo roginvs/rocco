@@ -40,21 +40,44 @@
 
     i32.const 0x22
     i32.load
+
+
   )
 
   
-  (func $ifelse (param $val i32)(result i32)
-  nop
-  nop 
-  nop
-
-
-  
+  (func $ifelse (param $val i32)  
     (if (result i32) (local.get 0)
         (then (i32.const 77))
         (else (i32.const 78)) )
+    drop
 
+    
 
+    i32.const 1
+    if  (result i32)     
+      i32.const 79
+    else 
+      i32.const 80
+    end
+    drop
+
+  )
+
+  (func $block 
+  
+    block $kek (result i32)
+      nop
+      i32.const 0x40
+    end
+    
+    drop
+    nop
+    nop
+
+    (block (result i32) nop i32.const 0x41)
+    drop
+    nop
+    nop 
   )
  
   (func $init  
