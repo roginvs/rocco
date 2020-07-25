@@ -128,8 +128,7 @@ export type Token = (
       value: string;
     }
   | {
-      type: "punc";
-      value: Punctuator;
+      type: Punctuator;
     }
   | {
       type: "end";
@@ -353,9 +352,8 @@ export function createScannerFunc(str: string) {
                 throwError("Internal error");
               }
               return {
-                type: "punc",
+                type: lastRoundExactLengthCandidates[0],
                 ...savedLocation(),
-                value: lastRoundExactLengthCandidates[0],
               };
             }
           }
@@ -369,9 +367,8 @@ export function createScannerFunc(str: string) {
           throwError("Internal error");
         }
         return {
-          type: "punc",
+          type: opOrPuncCandidates[0],
           ...savedLocation(),
-          value: opOrPuncCandidates[0],
         };
       }
 
