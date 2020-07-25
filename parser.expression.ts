@@ -4,6 +4,7 @@ import {
   SIMPLE_TYPE_KEYWORDS,
   Punctuator,
   BinaryOperator,
+  Token,
 } from "./scanner.func";
 import { match } from "assert";
 
@@ -123,12 +124,12 @@ export type ExpressionNode = ConditionalExpressionNode;
 
 const MAX_BINARY_OP_INDEX = 10;
 
-function isPuncBinaryOperatorAtPrioLevel(
+function isTokenBinaryOperatorAtPrioLevel(
   prioLevel: number,
-  op: Punctuator
+  token: Token
 ): BinaryOperator | undefined {
   function check(...binaryOps: BinaryOperator[]): BinaryOperator | undefined {
-    const binaryOp = binaryOps.find((x) => x === op);
+    const binaryOp = binaryOps.find((x) => x === token.type);
     return binaryOp;
   }
   switch (prioLevel) {
@@ -185,11 +186,11 @@ export function createParser(scanner: Scanner) {
         type: "string-literal",
         value: token.value,
       };
-    } else if (token.type === "punc" && token.value === "(") {
+    } else if (token.type === "(") {
       scanner.readNext();
       const expression = readExpression();
       const closing = scanner.current();
-      if (closing.type !== "punc" || closing.value !== ")") {
+      if (closing.type !== ")") {
         throwError("Expecting closing brace");
       }
       scanner.readNext();
@@ -204,14 +205,14 @@ export function createParser(scanner: Scanner) {
     }
     while (true) {
       const token = scanner.current();
-      if (token.type === "punc" && token.value === "[") {
+      if (token.type === "[") {
         scanner.readNext();
         const expression = readExpression();
         if (!expression) {
           throwError("Expected expression");
         }
         const closing = scanner.current();
-        if (closing.type !== "punc" || closing.value !== "]") {
+        if (closing.type !== "]") {
           throwError("Expected ]");
         }
         scanner.readNext();
@@ -221,11 +222,11 @@ export function createParser(scanner: Scanner) {
           index: expression,
         };
         left = newLeft;
-      } else if (token.type === "punc" && token.value === "(") {
+      } else if (token.type === "(") {
         scanner.readNext();
         const args = readArgumentExpressionList();
         const closing = scanner.current();
-        if (closing.type !== "punc" || closing.value !== ")") {
+        if (closing.type !== ")") {
           throwError("Postfix-expression expected ) ");
         }
         scanner.readNext();
@@ -235,10 +236,7 @@ export function createParser(scanner: Scanner) {
           args,
         };
         left = newLeft;
-      } else if (
-        token.type === "punc" &&
-        (token.value === "." || token.value === "->")
-      ) {
+      } else if (token.type === "." || token.type === "->") {
         scanner.readNext();
         const identifierToken = scanner.current();
         if (identifierToken.type !== "identifier") {
@@ -246,7 +244,7 @@ export function createParser(scanner: Scanner) {
         }
         scanner.readNext();
         const newLeft: PostfixExpressionNode = {
-          type: token.value === "." ? "struct access" : "struct pointer access",
+          type: token.type === "." ? "struct access" : "struct pointer access",
           field: {
             type: "identifier",
             value: identifierToken.text,
@@ -254,14 +252,14 @@ export function createParser(scanner: Scanner) {
           target: left,
         };
         left = newLeft;
-      } else if (token.type === "punc" && token.value === "++") {
+      } else if (token.type === "++") {
         scanner.readNext();
         const newLeft: PostfixExpressionNode = {
           type: "postfix ++",
           target: left,
         };
         left = newLeft;
-      } else if (token.type === "punc" && token.value === "--") {
+      } else if (token.type === "--") {
         scanner.readNext();
         const newLeft: PostfixExpressionNode = {
           type: "postfix --",
@@ -291,9 +289,7 @@ export function createParser(scanner: Scanner) {
   function readUnaryExpression(): ExpressionNode | undefined {
     const token = scanner.current();
 
-    const unaryOperator = UNARY_OPERATORS.find(
-      (op) => token.type === "punc" && op === token.value
-    );
+    const unaryOperator = UNARY_OPERATORS.find((op) => op === token.type);
 
     if (unaryOperator) {
       scanner.readNext();
@@ -306,17 +302,14 @@ export function createParser(scanner: Scanner) {
         operator: unaryOperator,
         target: right,
       };
-    } else if (
-      token.type === "punc" &&
-      (token.value === "++" || token.value === "--")
-    ) {
+    } else if (token.type === "++" || token.type === "--") {
       scanner.readNext();
       const right = readUnaryExpression();
       if (!right) {
         throwError("Expecting postfix-expression or unary-expression");
       }
       return {
-        type: token.value === "++" ? "prefix ++" : "prefix --",
+        type: token.type === "++" ? "prefix ++" : "prefix --",
         target: right,
       };
     } else if (token.type === "keyword" && token.keyword === "sizeof") {
@@ -340,11 +333,11 @@ export function createParser(scanner: Scanner) {
       scanner.makeControlPoint();
       try {
         const token = scanner.current();
-        if (token.type === "punc" && token.value === "(") {
+        if (token.type === "(") {
           scanner.readNext();
           typenameNode = readTypeName();
           const closing = scanner.current();
-          if (closing.type !== "punc" || closing.value !== ")") {
+          if (closing.type !== ")") {
             throwError("Unary-expression expected )");
           }
           scanner.readNext();
@@ -381,7 +374,7 @@ export function createParser(scanner: Scanner) {
     // Also hacky, and copy-pasted from readUnaryExpression
     const token = scanner.current();
 
-    if (token.type !== "punc" || token.value !== "(") {
+    if (token.type !== "(") {
       const unaryExpression = readUnaryExpression();
       return unaryExpression;
     }
@@ -399,11 +392,11 @@ export function createParser(scanner: Scanner) {
     scanner.makeControlPoint();
     try {
       const token = scanner.current();
-      if (token.type === "punc" && token.value === "(") {
+      if (token.type === "(") {
         scanner.readNext();
         typenameNode = readTypeName();
         const closing = scanner.current();
-        if (closing.type !== "punc" || closing.value !== ")") {
+        if (closing.type !== ")") {
           throwError("Unary-expression expected )");
         }
         scanner.readNext();
@@ -459,12 +452,10 @@ export function createParser(scanner: Scanner) {
 
       while (true) {
         const token = scanner.current();
-        if (token.type !== "punc") {
-          return left;
-        }
-        const binaryOperator = isPuncBinaryOperatorAtPrioLevel(
+
+        const binaryOperator = isTokenBinaryOperatorAtPrioLevel(
           currentPriority,
-          token.value
+          token
         );
 
         if (!binaryOperator) {
@@ -496,14 +487,14 @@ export function createParser(scanner: Scanner) {
     }
 
     const questionToken = scanner.current();
-    if (questionToken.type === "punc" && questionToken.value === "?") {
+    if (questionToken.type === "?") {
       scanner.readNext();
       const iftrue = readExpression();
       if (!iftrue) {
         throwError(`Expecting expression`);
       }
       const colonToken = scanner.current();
-      if (colonToken.type !== "punc" || colonToken.value !== ":") {
+      if (colonToken.type !== ":") {
         throwError("Expecting colon");
       }
       scanner.readNext();
