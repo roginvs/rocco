@@ -2,7 +2,6 @@ import { Scanner } from "./scanner";
 import {
   SimpleType,
   SIMPLE_TYPE_KEYWORDS,
-  Operator,
   Punctuator,
   BinaryOperator,
 } from "./scanner.func";
@@ -126,7 +125,7 @@ const MAX_BINARY_OP_INDEX = 10;
 
 function isPuncBinaryOperatorAtPrioLevel(
   prioLevel: number,
-  op: Operator | Punctuator
+  op: Punctuator
 ): BinaryOperator | undefined {
   function check(...binaryOps: BinaryOperator[]): BinaryOperator | undefined {
     const binaryOp = binaryOps.find((x) => x === op);

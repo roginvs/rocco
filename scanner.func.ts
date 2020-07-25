@@ -20,7 +20,7 @@ export const BINARY_OPERATORS = [
 ] as const;
 export type BinaryOperator = typeof BINARY_OPERATORS[number];
 
-export const OPERATORS = [
+export const PUNCTUATORS = [
   ...BINARY_OPERATORS,
   "[",
   "]",
@@ -48,17 +48,16 @@ export const OPERATORS = [
   "^=",
   "|=",
   ",",
+  "{",
+  "}",
+  ";",
 ] as const;
-export type Operator = typeof OPERATORS[number];
 
-const PUNCTUATORS = ["{", "}", ";"] as const;
 export type Punctuator = typeof PUNCTUATORS[number];
 
-const OP_OR_PUNCS = [...OPERATORS, ...PUNCTUATORS] as const;
-
 if (
-  OP_OR_PUNCS.filter((op1, idx1) =>
-    OP_OR_PUNCS.find((op2, idx2) => op1 === op2 && idx1 !== idx2)
+  PUNCTUATORS.filter((op1, idx1) =>
+    PUNCTUATORS.find((op2, idx2) => op1 === op2 && idx1 !== idx2)
   ).length > 0
 ) {
   throw new Error("Duplicates found");
@@ -130,7 +129,7 @@ export type Token = (
     }
   | {
       type: "punc";
-      value: Operator | Punctuator;
+      value: Punctuator;
     }
   | {
       type: "end";
@@ -331,7 +330,7 @@ export function createScannerFunc(str: string) {
     saveLocation();
     // Oh-la-la! Complicated and tricky!
     let currentOpOrPuncPos = 0;
-    let opOrPuncCandidates = [...OP_OR_PUNCS];
+    let opOrPuncCandidates = [...PUNCTUATORS];
     while (true) {
       const lastRoundCandidates = [...opOrPuncCandidates];
       opOrPuncCandidates = opOrPuncCandidates.filter(
