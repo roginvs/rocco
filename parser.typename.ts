@@ -9,6 +9,7 @@ import {
   TypeSignedUnsigned,
   ArithmeticType,
 } from "./scanner.func";
+import { ExpressionNode } from "./parser.expression";
 
 export type Typename =
   | { type: "void" }
@@ -27,6 +28,16 @@ export type Typename =
       type: "enum";
       const?: boolean;
       // @TODO
+    }
+  | {
+      type: "pointer";
+      const?: boolean;
+      pointsTo: Typename;
+    }
+  | {
+      type: "array";
+      elementsTypename: Typename;
+      size?: ExpressionNode;
     };
 
 export function createTypeParser(scanner: Scanner) {
@@ -83,6 +94,14 @@ export function createTypeParser(scanner: Scanner) {
         : false;
 
     return isIt;
+  }
+
+  function isQualifiersListHaveDuplicates(qualifiers: TypeQualifier[]) {
+    return (
+      qualifiers.filter((s1, idx1) =>
+        qualifiers.find((s2, idx2) => s1 === s2 && idx1 !== idx2)
+      ).length > 0
+    );
   }
 
   function readSpecifierQualifierList() {
@@ -160,23 +179,62 @@ export function createTypeParser(scanner: Scanner) {
       specifier.const = true;
     }
 
-    if (
-      qualifiers.filter((s1, idx1) =>
-        qualifiers.find((s2, idx2) => s1 === s2 && idx1 !== idx2)
-      ).length > 0
-    ) {
+    if (isQualifiersListHaveDuplicates(qualifiers)) {
       throwError("Got duplicated qualifiers");
     }
 
     return specifier;
   }
 
+  function readPointers(base: Typename): Typename {
+    const token = scanner.current();
+    if (token.type !== "*") {
+      return base;
+    }
+    scanner.readNext();
+
+    const pointer: Typename = {
+      type: "pointer",
+      pointsTo: base,
+    };
+
+    const qualifiers: TypeQualifier[] = [];
+    while (true) {
+      const qualifier = isCurrentTokenTypeQualifier();
+      if (qualifier) {
+        scanner.readNext();
+        qualifiers.push(qualifier);
+      } else {
+        break;
+      }
+    }
+
+    if (isQualifiersListHaveDuplicates(qualifiers)) {
+      throwError("Qualifiers have duplicates");
+    }
+
+    if (qualifiers.indexOf("const") > -1) {
+      pointer.const = true;
+    }
+
+    return readPointers(pointer);
+  }
+
+  function readDirectAbstractDeclarator(base: Typename) {
+    //asd @TODO
+    return base;
+  }
+
+  function readAbstractDeclarator(base: Typename): Typename {
+    const afterPointers = readPointers(base);
+
+    return readDirectAbstractDeclarator(afterPointers);
+  }
+
   function readTypeName() {
     const base = readSpecifierQualifierList();
 
-    // @TODO
-
-    return base;
+    return readAbstractDeclarator(base);
   }
 
   return {

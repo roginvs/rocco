@@ -68,4 +68,21 @@ describe("Parsing typename", () => {
     signedUnsigned: "unsigned",
     const: true,
   });
+
+  checkTypename("char **const", {
+    type: "pointer",
+    pointsTo: {
+      type: "pointer",
+      pointsTo: { type: "arithmetic", arithmeticType: "char" },
+    },
+    const: true,
+  });
+  checkTypename("char *const*", {
+    type: "pointer",
+    pointsTo: {
+      type: "pointer",
+      pointsTo: { type: "arithmetic", arithmeticType: "char" },
+      const: true,
+    },
+  });
 });
