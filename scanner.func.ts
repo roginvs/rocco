@@ -73,13 +73,18 @@ export const SIMPLE_TYPE_KEYWORDS = [
 ] as const;
 export type SimpleType = typeof SIMPLE_TYPE_KEYWORDS[number];
 
+export const TYPE_QUALIFIERS = ["restrict", "const", "volatile"] as const;
+
+export type TypeQualifier = typeof TYPE_QUALIFIERS[number];
+
 export const KEYWORDS = [
   ...SIMPLE_TYPE_KEYWORDS,
+  ...TYPE_QUALIFIERS,
   "auto",
 
   "break",
   "case",
-  "const",
+
   "continue",
   "default",
   "do",
@@ -104,7 +109,6 @@ export const KEYWORDS = [
   "union",
   "unsigned",
   "void",
-  "volatile",
   "while",
 ] as const;
 export type Keyword = typeof KEYWORDS[number];

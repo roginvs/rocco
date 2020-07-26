@@ -8,5 +8,7 @@ import {
 } from "./scanner.func";
 
 export function createTypeParser(scanner: Scanner) {
-  // asdads
+  function readSpecifierQualifierList() {}
+
+  function readTypeName() {}
 }
