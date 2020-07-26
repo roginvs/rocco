@@ -228,13 +228,73 @@ export function createTypeParser(scanner: Scanner) {
   function readAbstractDeclarator(base: Typename): Typename {
     const afterPointers = readPointers(base);
 
+    // @TODO
     return readDirectAbstractDeclarator(afterPointers);
+  }
+
+  type TypeFabric = (base: Typename) => Typename;
+
+  function readPointersFabric(): TypeFabric {
+    const token = scanner.current();
+    if (token.type !== "*") {
+      return (base) => base;
+    }
+    scanner.readNext();
+
+    const qualifiers: TypeQualifier[] = [];
+    while (true) {
+      const qualifier = isCurrentTokenTypeQualifier();
+      if (qualifier) {
+        scanner.readNext();
+        qualifiers.push(qualifier);
+      } else {
+        break;
+      }
+    }
+
+    if (isQualifiersListHaveDuplicates(qualifiers)) {
+      throwError("Qualifiers have duplicates");
+    }
+    const isConst = qualifiers.indexOf("const") > -1;
+
+    /*
+    const nextPartFabric = readPointersFabric();
+    return (base) => {
+      return {
+        type: "pointer",
+        pointsTo: nextPartFabric(base),
+        const: isConst,
+      };
+    };
+    */
+
+    const nextPartFabric = readPointersFabric();
+    return (bypassingBase) => {
+      const pointsTo = nextPartFabric(bypassingBase);
+      return {
+        type: "pointer",
+        const: isConst,
+        pointsTo,
+      };
+    };
+  }
+
+  function readAbstractDeclaratorFabric(): TypeFabric {
+    const afterPointers = readPointersFabric();
+
+    // @TODO: Add read direct-abstract-declarator
+
+    return afterPointers;
   }
 
   function readTypeName() {
     const base = readSpecifierQualifierList();
 
-    return readAbstractDeclarator(base);
+    const abstractDeclaratorFabric = readAbstractDeclaratorFabric();
+
+    const typename = abstractDeclaratorFabric(base);
+
+    return typename;
   }
 
   return {
