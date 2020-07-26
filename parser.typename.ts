@@ -257,26 +257,19 @@ export function createTypeParser(scanner: Scanner) {
     }
     const isConst = qualifiers.indexOf("const") > -1;
 
-    /*
     const nextPartFabric = readPointersFabric();
-    return (base) => {
-      return {
-        type: "pointer",
-        pointsTo: nextPartFabric(base),
-        const: isConst,
-      };
-    };
-    */
 
-    const nextPartFabric = readPointersFabric();
-    return (bypassingBase) => {
-      const pointsTo = nextPartFabric(bypassingBase);
-      return {
+    const myFabric: TypeFabric = (base) => {
+      const me: Typename = {
         type: "pointer",
+        pointsTo: base,
         const: isConst,
-        pointsTo,
       };
+      const nextPart = nextPartFabric(me);
+      return nextPart;
     };
+
+    return myFabric;
   }
 
   function readAbstractDeclaratorFabric(): TypeFabric {
