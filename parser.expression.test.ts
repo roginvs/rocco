@@ -321,28 +321,23 @@ describe("Parser test", () => {
     expect(scanner.current().type).toBe("end");
   });
 
+  function checkExpressionSkip(str: string, ast?: ExpressionNode) {
+    it.skip(`Reads '${str}'`, () => {});
+  }
+
   function checkExpression(str: string, ast?: ExpressionNode) {
-    if (ast) {
-      it(`Reads '${str}'`, () => {
-        const scanner = new Scanner(createScannerFunc(str));
-        const parser = createExpressionParser(scanner);
-        const node = parser.readExpression();
+    it(`Reads '${str}'`, () => {
+      const scanner = new Scanner(createScannerFunc(str));
+      const parser = createExpressionParser(scanner);
+      const node = parser.readExpression();
 
+      if (ast) {
         expect(node).toMatchObject(ast);
-
-        expect(scanner.current().type).toBe("end");
-      });
-    } else {
-      it.skip(`Reads '${str}'`, () => {
-        const scanner = new Scanner(createScannerFunc(str));
-        const parser = createExpressionParser(scanner);
-        const node = parser.readExpression();
-
+      } else {
         console.info(JSON.stringify(node));
-
-        expect(scanner.current().type).toBe("end");
-      });
-    }
+      }
+      expect(scanner.current().type).toBe("end");
+    });
   }
 
   checkExpression("2+2", {
@@ -352,8 +347,7 @@ describe("Parser test", () => {
     operator: "+",
   });
 
-  checkExpression(
-    "2 + (int)4/3++*-2" /* {
+  checkExpressionSkip("2 + (int)4/3++*-2", {
     type: "binary operator",
     operator: "+",
     left: { type: "const", subtype: "int", value: 2 },
@@ -379,9 +373,7 @@ describe("Parser test", () => {
         target: { type: "const", subtype: "int", value: 2 },
       },
     },
-  }
-  */
-  );
+  });
 
   checkExpression("2?3?4:5:6", {
     type: "conditional expression",
@@ -407,3 +399,5 @@ describe("Parser test", () => {
     },
   });
 });
+
+// @TODO: Add throwing tests
