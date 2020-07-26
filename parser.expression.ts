@@ -148,7 +148,7 @@ function isTokenBinaryOperatorAtPrioLevel(
   }
 }
 
-export function createParser(scanner: Scanner) {
+export function createExpressionParser(scanner: Scanner) {
   function throwError(info: string): never {
     throw new Error(
       `${info} at line=${scanner.current().line} pos=${scanner.current().pos}`
