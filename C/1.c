@@ -34,16 +34,52 @@ int test2()
     int a3
   } s1;
 
+  /*
   struct S2
   {
     int b1;
     int b2;
     int b3
   } p = (struct S2)s1;
+  */
 
   //struct SSS pp;
 
   return 3;
+};
+
+struct TestS
+{
+  int x;
+  int y;
+  struct Test6
+  {
+    int a;
+    int b;
+  } s;
+};
+
+struct TestS test_struxts()
+{
+  struct TestS r;
+  r.s.a = 2;
+
+  return r;
+};
+
+void test3()
+{
+  int c = 3, d = c;
+};
+
+int z;
+char f(z)
+{
+  return 2;
+};
+
+char f()[]{
+
 };
 
 int main(int argc, char **argv)
@@ -51,6 +87,25 @@ int main(int argc, char **argv)
   int x = 1 + argc;
   int y = 2;
 
+  //char static xxxx;
+
+  // pointer to an array
+  char(*kek1)[3];
+
+  // array of pointers
+  char *kek22222[3];
+
+  (*kek1)[1] = 2;
+  kek22222[3] = &y;
+
+  // *kek1 = 2;
+  f();
+
+  //(char *[]) kkkk = 3;
+
+  int ssss = sizeof(char([2]));
+
   int z[x];
+
   return 0;
 }
