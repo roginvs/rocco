@@ -157,5 +157,16 @@ export function createTypeParser(scanner: Scanner) {
     return specifier;
   }
 
-  function readTypeName() {}
+  function readTypeName() {
+    const base = readSpecifierQualifierList();
+
+    // @TODO
+
+    return base;
+  }
+
+  return {
+    readTypeName,
+    isCurrentTokenLooksLikeTypeName,
+  };
 }
