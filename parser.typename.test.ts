@@ -60,7 +60,7 @@ describe("Parsing typename", () => {
   checkTypename("int", {
     type: "arithmetic",
     arithmeticType: "int",
-    const: undefined,
+    // const: undefined,
   });
   checkTypename("const unsigned char", {
     type: "arithmetic",

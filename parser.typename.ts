@@ -159,6 +159,7 @@ export function createTypeParser(scanner: Scanner) {
       }
       specifier.const = true;
     }
+
     if (
       qualifiers.filter((s1, idx1) =>
         qualifiers.find((s2, idx2) => s1 === s2 && idx1 !== idx2)
