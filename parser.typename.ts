@@ -14,7 +14,7 @@ export type Typename =
   | { type: "void" }
   | {
       type: "arithmetic";
-      keyword: ArithmeticType;
+      arithmeticType: ArithmeticType;
       signedUnsigned?: TypeSignedUnsigned;
       const?: boolean;
     }
@@ -108,17 +108,19 @@ export function createTypeParser(scanner: Scanner) {
         if (specifier) {
           throwError("Already have type specifier");
         }
+        scanner.readNext();
         specifier = {
           type: "void",
         };
       } else if (arithmeticSpecifier) {
         // @TODO Here we should update type if we see "long long"
-        if (!specifier) {
+        if (specifier) {
           throwError("Already have type specifier");
         }
+        scanner.readNext();
         specifier = {
           type: "arithmetic",
-          keyword: arithmeticSpecifier,
+          arithmeticType: arithmeticSpecifier,
         };
       } else if (
         token.type === "keyword" &&
@@ -127,6 +129,7 @@ export function createTypeParser(scanner: Scanner) {
         if (signedUnsigned) {
           throwError("Already have signed/unsigned");
         }
+        scanner.readNext();
         signedUnsigned = token.keyword;
       } else if (token.type === "keyword" && token.keyword === "struct") {
         throwError("Not implemented yet");
@@ -155,6 +158,13 @@ export function createTypeParser(scanner: Scanner) {
         throwError("Unable to add const for void");
       }
       specifier.const = true;
+    }
+    if (
+      qualifiers.filter((s1, idx1) =>
+        qualifiers.find((s2, idx2) => s1 === s2 && idx1 !== idx2)
+      ).length > 0
+    ) {
+      throwError("Got duplicated qualifiers");
     }
 
     return specifier;

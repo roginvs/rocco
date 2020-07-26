@@ -19,29 +19,37 @@ describe("PisCurrentTokenLooksLikeTypeName", () => {
 });
 
 describe("Parsing typename", () => {
-  function checkExpression(str: string, ast?: Typename) {
-    if (ast) {
-      it(`Reads '${str}'`, () => {
-        const scanner = new Scanner(createScannerFunc(str));
-        const parser = createTypeParser(scanner);
-        const node = parser.readTypeName();
-
+  function checkTypename(str: string, ast?: Typename) {
+    it(`Reads '${str}'`, () => {
+      const scanner = new Scanner(createScannerFunc(str));
+      const parser = createTypeParser(scanner);
+      const node = parser.readTypeName();
+      if (ast) {
         expect(node).toMatchObject(ast);
-
-        expect(scanner.current().type).toBe("end");
-      });
-    } else {
-      it.skip(`Reads '${str}'`, () => {
-        const scanner = new Scanner(createScannerFunc(str));
-        const parser = createTypeParser(scanner);
-        const node = parser.readTypeName();
-
+      } else {
         console.info(JSON.stringify(node));
+      }
 
-        expect(scanner.current().type).toBe("end");
-      });
-    }
+      expect(scanner.current().type).toBe("end");
+    });
   }
 
-  // @TODO
+  function checkFailingType(str: string) {
+    it(`Throws on '${str}'`, () => {
+      const scanner = new Scanner(createScannerFunc(str));
+      const parser = createTypeParser(scanner);
+      expect(() => parser.readTypeName()).toThrow();
+    });
+  }
+
+  checkFailingType("const");
+  checkFailingType("const const int");
+  checkFailingType("const unsigned unsigned int");
+  checkFailingType("const unsigned signed int");
+
+  checkTypename("const int", {
+    type: "arithmetic",
+    arithmeticType: "int",
+    const: true,
+  });
 });
