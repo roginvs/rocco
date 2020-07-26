@@ -6,7 +6,6 @@ import {
   BinaryOperator,
   Token,
 } from "./scanner.func";
-import { match } from "assert";
 
 export type IdentifierNode = {
   type: "identifier";
