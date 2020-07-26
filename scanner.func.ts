@@ -63,22 +63,28 @@ if (
   throw new Error("Duplicates found");
 }
 
-export const SIMPLE_TYPE_KEYWORDS = [
+export const ARITHMETIC_TYPE = [
   "char",
-  "double",
-  "float",
+  "short",
   "int",
   "long",
-  "short",
+  "float",
+  "double",
+  "_Bool",
+  "_Complex",
 ] as const;
-export type SimpleType = typeof SIMPLE_TYPE_KEYWORDS[number];
+export type ArithmeticType = typeof ARITHMETIC_TYPE[number];
+
+export const TYPE_SIGNED_UNSIGNED = ["signed", "unsigned"] as const;
+export type TypeSignedUnsigned = typeof TYPE_SIGNED_UNSIGNED[number];
 
 export const TYPE_QUALIFIERS = ["restrict", "const", "volatile"] as const;
 
 export type TypeQualifier = typeof TYPE_QUALIFIERS[number];
 
 export const KEYWORDS = [
-  ...SIMPLE_TYPE_KEYWORDS,
+  ...ARITHMETIC_TYPE,
+  ...TYPE_SIGNED_UNSIGNED,
   ...TYPE_QUALIFIERS,
   "auto",
 
@@ -99,7 +105,6 @@ export const KEYWORDS = [
   "register",
   "return",
 
-  "signed",
   "sizeof",
   "static",
 
@@ -107,7 +112,7 @@ export const KEYWORDS = [
   "switch",
   "typedef",
   "union",
-  "unsigned",
+
   "void",
   "while",
 ] as const;

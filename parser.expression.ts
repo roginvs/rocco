@@ -1,7 +1,6 @@
 import { Scanner } from "./scanner";
 import {
-  SimpleType,
-  SIMPLE_TYPE_KEYWORDS,
+  ARITHMETIC_TYPE,
   Punctuator,
   BinaryOperator,
   Token,
@@ -77,7 +76,7 @@ export type UnaryExpressionNode =
       type: "sizeof";
       target: {
         expression?: ExpressionNode;
-        typename?: TypeNameNode;
+        //  typename?: TypeNameNode;
       };
     };
 
@@ -85,7 +84,7 @@ export type CastExpressionNode =
   | UnaryExpressionNode
   | {
       type: "typecast";
-      typename: TypeNameNode;
+      // typename: TypeNameNode;
       target: ExpressionNode;
     };
 
@@ -105,14 +104,6 @@ export type ConditionalExpressionNode =
       condition: ExpressionNode;
       iftrue: ExpressionNode;
       iffalse: ExpressionNode;
-    };
-
-// @TODO
-export type TypeNameNode =
-  | IdentifierNode
-  | {
-      type: "simple type";
-      typename: SimpleType;
     };
 
 // @TODO
@@ -314,53 +305,19 @@ export function createParser(scanner: Scanner) {
     } else if (token.type === "keyword" && token.keyword === "sizeof") {
       scanner.readNext();
 
-      // This is quite hacky implementation
-      // Expections should be exceptional
+      // @TODO: Use isType and read as type
+
+      // Currently it only reads it as expression
 
       // @TODO: Check type-name grammar
 
-      let unaryExpressionNode: ExpressionNode | undefined;
-      scanner.makeControlPoint();
-      try {
-        unaryExpressionNode = readUnaryExpression();
-      } catch (e) {
-        // do nothing
-      }
-      scanner.rollbackControlPoint();
+      const unaryExpressionNode = readUnaryExpression();
 
-      let typenameNode: TypeNameNode | undefined = undefined;
-      scanner.makeControlPoint();
-      try {
-        const token = scanner.current();
-        if (token.type === "(") {
-          scanner.readNext();
-          typenameNode = readTypeName();
-          const closing = scanner.current();
-          if (closing.type !== ")") {
-            throwError("Unary-expression expected )");
-          }
-          scanner.readNext();
-        }
-      } catch (e) {
-        // do nothing
-      }
-      scanner.rollbackControlPoint();
-
-      // Here is a trick for forward
-      if (unaryExpressionNode) {
-        readUnaryExpression();
-      } else if (typenameNode) {
-        scanner.readNext();
-        readTypeName();
-        scanner.readNext();
-      } else {
-        throwError("Expecting unary-expression or type-name");
-      }
       return {
         type: "sizeof",
         target: {
           expression: unaryExpressionNode,
-          typename: typenameNode,
+          // typename: undefined,
         },
       };
     } else {
@@ -370,7 +327,8 @@ export function createParser(scanner: Scanner) {
   }
 
   function readCastExpression(): ExpressionNode | undefined {
-    // Also hacky, and copy-pasted from readUnaryExpression
+    // Same problems as above
+    // @TODO
     const token = scanner.current();
 
     if (token.type !== "(") {
@@ -378,63 +336,9 @@ export function createParser(scanner: Scanner) {
       return unaryExpression;
     }
 
-    let unaryExpressionNode: ExpressionNode | undefined;
-    scanner.makeControlPoint();
-    try {
-      unaryExpressionNode = readUnaryExpression();
-    } catch (e) {
-      // do nothing
-    }
-    scanner.rollbackControlPoint();
+    const unaryExpressionNode = readUnaryExpression();
 
-    let typenameNode: TypeNameNode | undefined = undefined;
-    scanner.makeControlPoint();
-    try {
-      const token = scanner.current();
-      if (token.type === "(") {
-        scanner.readNext();
-        typenameNode = readTypeName();
-        const closing = scanner.current();
-        if (closing.type !== ")") {
-          throwError("Unary-expression expected )");
-        }
-        scanner.readNext();
-      }
-    } catch (e) {
-      // do nothing
-    }
-    scanner.rollbackControlPoint();
-
-    // Here is a trick for forward
-    // Well, I assume that unary-expression and type-name will consume same amount of tokens
-    // Maybe I am wrong
-    if (unaryExpressionNode) {
-      readUnaryExpression();
-    } else if (typenameNode) {
-      scanner.readNext();
-      readTypeName();
-      scanner.readNext();
-    } else {
-      return undefined;
-    }
-
-    const rightNode = readCastExpression();
-    if (!rightNode) {
-      // We are the last in the chain, so it is unary-expression
-      if (!unaryExpressionNode) {
-        throwError("Expecting cast-expression");
-      }
-      return unaryExpressionNode;
-    } else {
-      if (!typenameNode) {
-        throwError("Expecting type");
-      }
-      return {
-        type: "typecast",
-        target: rightNode,
-        typename: typenameNode,
-      };
-    }
+    return unaryExpressionNode;
   }
 
   function readLogicalOrExpression(): ExpressionNode | undefined {
@@ -510,29 +414,6 @@ export function createParser(scanner: Scanner) {
     } else {
       return condition;
     }
-  }
-
-  function readTypeName(): TypeNameNode | undefined {
-    // @TODO
-    const token = scanner.current();
-
-    const simpleType = SIMPLE_TYPE_KEYWORDS.find(
-      (x) => token.type === "keyword" && x === token.keyword
-    );
-    if (simpleType) {
-      scanner.readNext();
-      return {
-        type: "simple type",
-        typename: simpleType,
-      };
-    } else if (token.type === "identifier") {
-      scanner.readNext();
-      return {
-        type: "identifier",
-        value: token.text,
-      };
-    }
-    return undefined;
   }
 
   function readAssignmentExpression(): AssignmentExpressionNode | undefined {
