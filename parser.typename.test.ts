@@ -18,22 +18,22 @@ describe("PisCurrentTokenLooksLikeTypeName", () => {
   }
 });
 
+function checkTypename(str: string, ast?: Typename) {
+  it(`Reads '${str}'`, () => {
+    const scanner = new Scanner(createScannerFunc(str));
+    const parser = createTypeParser(scanner);
+    const node = parser.readTypeName();
+    if (ast) {
+      expect(node).toMatchObject(ast);
+    } else {
+      console.info(JSON.stringify(node));
+    }
+
+    expect(scanner.current().type).toBe("end");
+  });
+}
+
 describe("Parsing typename", () => {
-  function checkTypename(str: string, ast?: Typename) {
-    it(`Reads '${str}'`, () => {
-      const scanner = new Scanner(createScannerFunc(str));
-      const parser = createTypeParser(scanner);
-      const node = parser.readTypeName();
-      if (ast) {
-        expect(node).toMatchObject(ast);
-      } else {
-        console.info(JSON.stringify(node));
-      }
-
-      expect(scanner.current().type).toBe("end");
-    });
-  }
-
   function checkFailingType(str: string) {
     it(`Throws on '${str}'`, () => {
       const scanner = new Scanner(createScannerFunc(str));
@@ -83,6 +83,52 @@ describe("Parsing typename", () => {
       type: "pointer",
       pointsTo: { type: "arithmetic", arithmeticType: "char" },
       const: true,
+    },
+  });
+
+  checkTypename("char *[3][7]", {
+    type: "array",
+    size: { type: "const", subtype: "int", value: 3 },
+    elementsTypename: {
+      type: "array",
+      size: { type: "const", subtype: "int", value: 7 },
+      elementsTypename: {
+        type: "pointer",
+        pointsTo: { type: "arithmetic", arithmeticType: "char" },
+        const: false,
+      },
+    },
+  });
+
+  checkTypename("char (*)[33]", {
+    type: "pointer",
+    pointsTo: {
+      type: "array",
+      size: { type: "const", subtype: "int", value: 33 },
+      elementsTypename: { type: "arithmetic", arithmeticType: "char" },
+    },
+    const: false,
+  });
+
+  checkTypename("char * const (* const *)[5][10]", {
+    type: "pointer",
+    const: false,
+    pointsTo: {
+      type: "pointer",
+      const: true,
+      pointsTo: {
+        type: "array",
+        size: { type: "const", subtype: "int", value: 5 },
+        elementsTypename: {
+          type: "array",
+          size: { type: "const", subtype: "int", value: 10 },
+          elementsTypename: {
+            type: "pointer",
+            const: true,
+            pointsTo: { type: "arithmetic", arithmeticType: "char" },
+          },
+        },
+      },
     },
   });
 });

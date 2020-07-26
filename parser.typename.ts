@@ -195,6 +195,7 @@ export function createTypeParser(scanner: Scanner) {
 
     const pointer: Typename = {
       type: "pointer",
+      const: false,
       pointsTo: base,
     };
 
@@ -262,8 +263,8 @@ export function createTypeParser(scanner: Scanner) {
     const myFabric: TypeFabric = (base) => {
       const me: Typename = {
         type: "pointer",
-        pointsTo: base,
         const: isConst,
+        pointsTo: base,
       };
       const nextPart = nextPartFabric(me);
       return nextPart;
@@ -273,11 +274,79 @@ export function createTypeParser(scanner: Scanner) {
   }
 
   function readAbstractDeclaratorFabric(): TypeFabric {
-    const afterPointers = readPointersFabric();
+    const afterPointersFabric = readPointersFabric();
 
-    // @TODO: Add read direct-abstract-declarator
+    const directAbstractDeclaratorFabric = readDirectAbstractDeclaratorFabric();
 
-    return afterPointers;
+    return (node) => {
+      const afterPointers = afterPointersFabric(node);
+      const directAbstract = directAbstractDeclaratorFabric(afterPointers);
+
+      return directAbstract;
+    };
+  }
+
+  function readDirectAbstractDeclaratorFabric(): TypeFabric {
+    const token = scanner.current();
+    if (token.type === "(") {
+      scanner.readNext();
+
+      const nextToken = scanner.current();
+      if (nextToken.type === ")") {
+        scanner.readNext();
+        // we have a func call
+        // @TODO
+      } else {
+        // Not a func call, but nested abstract-declarator
+        const abstractDeclaratorFabric = readAbstractDeclaratorFabric();
+
+        if (scanner.current().type !== ")") {
+          throwError("Expected )");
+        }
+        scanner.readNext();
+
+        const nextFabric = readDirectAbstractDeclaratorFabric();
+        return (node) => {
+          const childs = nextFabric(node);
+          const inParentheses = abstractDeclaratorFabric(childs);
+          return inParentheses;
+        };
+      }
+      return (node) => node;
+    } else if (token.type === "[") {
+      scanner.readNext();
+
+      // TODO TODO
+      const nextToken = scanner.current();
+      if (nextToken.type !== "const") {
+        throw new Error("TODO");
+      }
+      scanner.readNext();
+      const sizeNode = {
+        type: "const" as const,
+        subtype: "int" as const,
+        value: nextToken.value,
+      };
+
+      const closing = scanner.current();
+      if (closing.type !== "]") {
+        throwError("Expected ]");
+      }
+      scanner.readNext();
+
+      const nextFabric = readDirectAbstractDeclaratorFabric();
+
+      return (node) => {
+        const childs = nextFabric(node);
+        return {
+          type: "array",
+          size: sizeNode,
+          elementsTypename: childs,
+        };
+      };
+    } else {
+      return (node) => node;
+    }
   }
 
   function readTypeName() {
