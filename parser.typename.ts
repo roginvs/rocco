@@ -233,9 +233,9 @@ export function createTypeParser(scanner: Scanner) {
     return readDirectAbstractDeclarator(afterPointers);
   }
 
-  type TypeFabric = (base: Typename) => Typename;
+  type TypeCoreless = (base: Typename) => Typename;
 
-  function readPointersFabric(): TypeFabric {
+  function readPointersCoreless(): TypeCoreless {
     const token = scanner.current();
     if (token.type !== "*") {
       return (base) => base;
@@ -258,23 +258,23 @@ export function createTypeParser(scanner: Scanner) {
     }
     const isConst = qualifiers.indexOf("const") > -1;
 
-    const nextPartFabric = readPointersFabric();
+    const nextPartCoreless = readPointersCoreless();
 
-    const myFabric: TypeFabric = (base) => {
+    const myCoreless: TypeCoreless = (base) => {
       const me: Typename = {
         type: "pointer",
         const: isConst,
         pointsTo: base,
       };
-      const nextPart = nextPartFabric(me);
+      const nextPart = nextPartCoreless(me);
       return nextPart;
     };
 
-    return myFabric;
+    return myCoreless;
   }
 
-  function readAbstractDeclaratorFabric(): TypeFabric {
-    const afterPointersFabric = readPointersFabric();
+  function readAbstractDeclaratorFabric(): TypeCoreless {
+    const afterPointersFabric = readPointersCoreless();
 
     const directAbstractDeclaratorFabric = readDirectAbstractDeclaratorFabric();
 
@@ -286,7 +286,7 @@ export function createTypeParser(scanner: Scanner) {
     };
   }
 
-  function readDirectAbstractDeclaratorFabric(): TypeFabric {
+  function readDirectAbstractDeclaratorFabric(): TypeCoreless {
     const token = scanner.current();
     if (token.type === "(") {
       scanner.readNext();
