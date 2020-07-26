@@ -72,6 +72,9 @@ export function createTypeParser(scanner: Scanner) {
     const isIt =
       isCurrentTokenTypeVoid() ||
       isCurrentTokenTypeArithmeticSpecifier() ||
+      isCurrentTokenTypeQualifier() ||
+      (token.type === "keyword" && token.keyword === "signed") ||
+      (token.type === "keyword" && token.keyword === "unsigned") ||
       (token.type === "keyword" && token.keyword === "struct") ||
       (token.type === "keyword" && token.keyword === "union") ||
       (token.type === "keyword" && token.keyword === "enum") ||
