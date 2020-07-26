@@ -46,10 +46,26 @@ describe("Parsing typename", () => {
   checkFailingType("const const int");
   checkFailingType("const unsigned unsigned int");
   checkFailingType("const unsigned signed int");
+  checkFailingType("const void");
+  checkFailingType("void const");
+  checkFailingType("void unsigned");
+  checkFailingType("signed void");
 
   checkTypename("const int", {
     type: "arithmetic",
     arithmeticType: "int",
+    const: true,
+  });
+
+  checkTypename("int", {
+    type: "arithmetic",
+    arithmeticType: "int",
+    const: undefined,
+  });
+  checkTypename("const unsigned char", {
+    type: "arithmetic",
+    arithmeticType: "char",
+    signedUnsigned: "unsigned",
     const: true,
   });
 });
