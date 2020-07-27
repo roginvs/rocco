@@ -78,9 +78,12 @@ char f(z)
   return 2;
 };
 
-char f()[]{
-
-};
+void test5()
+{
+  int x = 4;
+  int y = 4;
+  char arr[x = 6, y = 5];
+}
 
 int main(int argc, char **argv)
 {
