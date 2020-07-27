@@ -10,6 +10,7 @@ import {
   PostfixExpressionNode,
   AssignmentExpressionNode,
   UNARY_OPERATORS,
+  Typename,
 } from "./parser.definitions";
 
 const MAX_BINARY_OP_INDEX = 10;
@@ -48,7 +49,13 @@ function isTokenBinaryOperatorAtPrioLevel(
   }
 }
 
-export function createExpressionParser(scanner: Scanner) {
+export function createExpressionParser(
+  scanner: Scanner,
+  typeParser: {
+    isCurrentTokenLooksLikeTypeName(): boolean;
+    readTypeName(): Typename;
+  }
+) {
   function throwError(info: string): never {
     throw new Error(
       `${info} at line=${scanner.current().line} pos=${scanner.current().pos}`
@@ -205,21 +212,46 @@ export function createExpressionParser(scanner: Scanner) {
     } else if (token.type === "keyword" && token.keyword === "sizeof") {
       scanner.readNext();
 
-      // @TODO: Use isType and read as type
+      if (scanner.current().type === "(") {
+        scanner.readNext();
 
-      // Currently it only reads it as expression
+        if (typeParser.isCurrentTokenLooksLikeTypeName()) {
+          const typename = typeParser.readTypeName();
+          if (scanner.current().type !== ")") {
+            throwError("Expected )");
+          }
+          scanner.readNext();
+          return {
+            type: "sizeof typename",
+            typename: typename,
+          };
+        } else {
+          // We could rollback and use "readUnaryExpression", but it does not matter
+          const expressionNode = readExpression();
+          if (!expressionNode) {
+            throwError("Expected expression");
+          }
 
-      // @TODO: Check type-name grammar
+          if (scanner.current().type !== ")") {
+            throwError("Expected )");
+          }
+          scanner.readNext();
 
-      const unaryExpressionNode = readUnaryExpression();
-
-      return {
-        type: "sizeof",
-        target: {
+          return {
+            type: "sizeof expression",
+            expression: expressionNode,
+          };
+        }
+      } else {
+        const unaryExpressionNode = readUnaryExpression();
+        if (!unaryExpressionNode) {
+          throwError("Expected unary expression");
+        }
+        return {
+          type: "sizeof expression",
           expression: unaryExpressionNode,
-          // typename: undefined,
-        },
-      };
+        };
+      }
     } else {
       const postfixExpression = readPostfixExpression();
       return postfixExpression;

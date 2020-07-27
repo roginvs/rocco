@@ -35,7 +35,7 @@ export type PostfixExpressionNode =
   | {
       type: "function call";
       target: ExpressionNode;
-      args: AssignmentExpressionNode[];
+      args: ArgumentExpressionList;
     }
   | {
       type: "struct access";
@@ -56,6 +56,9 @@ export type PostfixExpressionNode =
       target: ExpressionNode;
     };
 
+// @TODO PostfixExpressionNode:   ( type-name ) { initializer-list }
+// @TODO PostfixExpressionNode: ( type-name ) { initializer-list , }
+
 export const UNARY_OPERATORS = ["&", "*", "+", "-", "~", "!"] as const;
 export type UnaryOperator = typeof UNARY_OPERATORS[number];
 
@@ -75,18 +78,19 @@ export type UnaryExpressionNode =
       target: ExpressionNode;
     }
   | {
-      type: "sizeof";
-      target: {
-        expression?: ExpressionNode;
-        //  typename?: TypeNameNode;
-      };
+      type: "sizeof expression";
+      expression: ExpressionNode;
+    }
+  | {
+      type: "sizeof typename";
+      typename: Typename;
     };
 
 export type CastExpressionNode =
   | UnaryExpressionNode
   | {
       type: "typecast";
-      // typename: TypeNameNode;
+      typename: Typename;
       target: ExpressionNode;
     };
 
@@ -107,6 +111,8 @@ export type ConditionalExpressionNode =
       iftrue: ExpressionNode;
       iffalse: ExpressionNode;
     };
+
+export type ArgumentExpressionList = AssignmentExpressionNode[];
 
 // @TODO
 export type AssignmentExpressionNode = unknown;
