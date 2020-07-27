@@ -1,7 +1,33 @@
-import { createTypeParser } from "./parser.typename";
+import { createTypeParser, TypeParserDependencies } from "./parser.typename";
 import { Scanner } from "./scanner";
 import { createScannerFunc } from "./scanner.func";
 import { Typename } from "./parser.definitions";
+
+const createMockedExpressionParser = (scanner: Scanner) => {
+  const mock: TypeParserDependencies = {
+    readAssignmentExpression() {
+      const nextToken = scanner.current();
+      if (nextToken.type !== "const") {
+        throw new Error("Not implemented in mocked expression scanner");
+      }
+      scanner.readNext();
+      const constNode = {
+        type: "const" as const,
+        subtype: "int" as const,
+        value: nextToken.value,
+      };
+
+      const closing = scanner.current();
+      if (closing.type !== "]") {
+        throw new Error("Expected ]");
+      }
+      scanner.readNext();
+
+      return constNode;
+    },
+  };
+  return mock;
+};
 
 describe("PisCurrentTokenLooksLikeTypeName", () => {
   const YES = ["int", "void", "struct", "const", "signed", "unsigned"];
@@ -13,7 +39,10 @@ describe("PisCurrentTokenLooksLikeTypeName", () => {
   ]) {
     it(`Expects ${t.s} = ${t.yes}`, () => {
       const scanner = new Scanner(createScannerFunc(t.s));
-      const parser = createTypeParser(scanner);
+      const parser = createTypeParser(
+        scanner,
+        createMockedExpressionParser(scanner)
+      );
       expect(parser.isCurrentTokenLooksLikeTypeName()).toStrictEqual(t.yes);
     });
   }
@@ -22,7 +51,10 @@ describe("PisCurrentTokenLooksLikeTypeName", () => {
 function checkTypename(str: string, ast?: Typename) {
   it(`Reads '${str}'`, () => {
     const scanner = new Scanner(createScannerFunc(str));
-    const parser = createTypeParser(scanner);
+    const parser = createTypeParser(
+      scanner,
+      createMockedExpressionParser(scanner)
+    );
     const node = parser.readTypeName();
     if (ast) {
       expect(node).toMatchObject(ast);
@@ -38,7 +70,10 @@ describe("Parsing typename", () => {
   function checkFailingType(str: string) {
     it(`Throws on '${str}'`, () => {
       const scanner = new Scanner(createScannerFunc(str));
-      const parser = createTypeParser(scanner);
+      const parser = createTypeParser(
+        scanner,
+        createMockedExpressionParser(scanner)
+      );
       expect(() => parser.readTypeName()).toThrow();
     });
   }

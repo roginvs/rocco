@@ -9,9 +9,15 @@ import {
   TypeSignedUnsigned,
   ArithmeticType,
 } from "./scanner.func";
-import { Typename } from "./parser.definitions";
+import { Typename, ExpressionNode } from "./parser.definitions";
 
-export function createTypeParser(scanner: Scanner) {
+export interface TypeParserDependencies {
+  readAssignmentExpression: () => ExpressionNode;
+}
+export function createTypeParser(
+  scanner: Scanner,
+  expressionReader: TypeParserDependencies
+) {
   function throwError(info: string): never {
     throw new Error(
       `${info} at line=${scanner.current().line} pos=${scanner.current().pos}`
