@@ -20,7 +20,9 @@ export function createTypeParser(
 ) {
   function throwError(info: string): never {
     throw new Error(
-      `${info} at line=${scanner.current().line} pos=${scanner.current().pos}`
+      `${info} at line=${scanner.current().line} pos=${
+        scanner.current().pos
+      } (currentToken=${scanner.current().type})`
     );
   }
 
@@ -297,17 +299,7 @@ export function createTypeParser(
     } else if (token.type === "[") {
       scanner.readNext();
 
-      // TODO TODO
-      const nextToken = scanner.current();
-      if (nextToken.type !== "const") {
-        throw new Error("TODO");
-      }
-      scanner.readNext();
-      const sizeNode = {
-        type: "const" as const,
-        subtype: "int" as const,
-        value: nextToken.value,
-      };
+      const sizeExpression = expressionReader.readAssignmentExpression();
 
       const closing = scanner.current();
       if (closing.type !== "]") {
@@ -321,7 +313,7 @@ export function createTypeParser(
         const whatWeHaveToTheRight = rightPart(node);
         return {
           type: "array",
-          size: sizeNode,
+          size: sizeExpression,
           elementsTypename: whatWeHaveToTheRight,
         };
       };

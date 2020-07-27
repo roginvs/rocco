@@ -17,12 +17,6 @@ const createMockedExpressionParser = (scanner: Scanner) => {
         value: nextToken.value,
       };
 
-      const closing = scanner.current();
-      if (closing.type !== "]") {
-        throw new Error("Expected ]");
-      }
-      scanner.readNext();
-
       return constNode;
     },
   };
