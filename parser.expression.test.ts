@@ -183,26 +183,12 @@ describe("Parser test", () => {
     },
   });
 
-  it.skip("Reads unary expression, sizeof (int)", () => {
-    const scanner = new Scanner(createScannerFunc("sizeof (int)"));
-    const parser = createExpressionParser(
-      scanner,
-      createMockedTypeparser(scanner)
-    );
-    const node = parser.readExpression();
-    //console.info(JSON.stringify(node));
-    expect(node).toMatchObject({
-      type: "sizeof",
-      target: {
-        expression: undefined,
-        typename: {
-          type: "simple type",
-          typename: "int",
-        },
-      },
-    });
-
-    expect(scanner.current().type).toBe("end");
+  checkExpression("sizeof(int)", {
+    type: "sizeof typename",
+    typename: {
+      type: "arithmetic",
+      arithmeticType: "int",
+    },
   });
 
   for (const [prefix, suffix] of [
@@ -216,21 +202,16 @@ describe("Parser test", () => {
     });
   }
 
-  it.skip(`Reads cast expression (int)(kek)`, () => {
-    const scanner = new Scanner(createScannerFunc(`(int)(kek)`));
-    const parser = createExpressionParser(
-      scanner,
-      createMockedTypeparser(scanner)
-    );
-    const node = parser.readExpression();
-
-    expect(node).toMatchObject({
-      type: "typecast",
-      target: { type: "identifier", value: "kek" },
-      typename: { type: "simple type", typename: "int" },
-    });
-
-    expect(scanner.current().type).toBe("end");
+  checkExpression("(int)(kek)", {
+    type: "cast",
+    typename: {
+      type: "arithmetic",
+      arithmeticType: "int",
+    },
+    target: {
+      type: "identifier",
+      value: "kek",
+    },
   });
 
   it.skip(`Reads cast expression (int)(int)(kek)`, () => {
