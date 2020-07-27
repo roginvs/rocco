@@ -49,12 +49,14 @@ function isTokenBinaryOperatorAtPrioLevel(
   }
 }
 
+export interface ExpressionRequirements {
+  isCurrentTokenLooksLikeTypeName(): boolean;
+  readTypeName(): Typename;
+}
+
 export function createExpressionParser(
   scanner: Scanner,
-  typeParser: {
-    isCurrentTokenLooksLikeTypeName(): boolean;
-    readTypeName(): Typename;
-  }
+  typeParser: ExpressionRequirements
 ) {
   function throwError(info: string): never {
     throw new Error(
