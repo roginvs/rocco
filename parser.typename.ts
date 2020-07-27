@@ -315,13 +315,12 @@ export function createTypeParser(
         scanner.readNext();
 
         const savedLeft = left;
-        const newLeft: TypeCoreless = (node) =>
+        left = (node) =>
           savedLeft({
             type: "array",
             size: size,
             elementsTypename: node,
           });
-        left = newLeft;
       } else {
         return (node) => {
           const tree = left(node);
