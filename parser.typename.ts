@@ -117,6 +117,8 @@ export function createTypeParser(
         specifier = {
           type: "arithmetic",
           arithmeticType: arithmeticSpecifier,
+          const: false,
+          signedUnsigned: null,
         };
       } else if (
         token.type === "keyword" &&

@@ -30,6 +30,8 @@ const createMockedTypeparser = (scanner: Scanner) => {
         return {
           type: "arithmetic",
           arithmeticType: t.keyword === "int" ? "int" : "char",
+          signedUnsigned: null,
+          const: false,
         };
       }
       throw new Error("Not implemented in mocked version");
@@ -194,6 +196,8 @@ describe("Parser test", () => {
     typename: {
       type: "arithmetic",
       arithmeticType: "int",
+      const: false,
+      signedUnsigned: null,
     },
   });
 
@@ -213,6 +217,8 @@ describe("Parser test", () => {
     typename: {
       type: "arithmetic",
       arithmeticType: "int",
+      const: false,
+      signedUnsigned: null,
     },
     target: {
       type: "identifier",
@@ -226,12 +232,16 @@ describe("Parser test", () => {
       typename: {
         type: "arithmetic",
         arithmeticType: "int",
+        const: false,
+        signedUnsigned: null,
       },
       target: {
         type: "cast",
         typename: {
           type: "arithmetic",
           arithmeticType: "char",
+          const: false,
+          signedUnsigned: null,
         },
         target: {
           type: "identifier",
@@ -263,6 +273,8 @@ describe("Parser test", () => {
           typename: {
             type: "arithmetic",
             arithmeticType: "int",
+            const: false,
+            signedUnsigned: null,
           },
           target: { type: "const", subtype: "int", value: 4 },
           //typename: { type: "simple type", typename: "int" },

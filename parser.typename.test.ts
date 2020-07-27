@@ -91,12 +91,14 @@ describe("Parsing typename", () => {
     type: "arithmetic",
     arithmeticType: "int",
     const: true,
+    signedUnsigned: null,
   });
 
   checkTypename("int", {
     type: "arithmetic",
     arithmeticType: "int",
-    // const: undefined,
+    const: false,
+    signedUnsigned: null,
   });
   checkTypename("const unsigned char", {
     type: "arithmetic",
@@ -109,7 +111,13 @@ describe("Parsing typename", () => {
     type: "pointer",
     pointsTo: {
       type: "pointer",
-      pointsTo: { type: "arithmetic", arithmeticType: "char" },
+      pointsTo: {
+        type: "arithmetic",
+        arithmeticType: "char",
+        const: false,
+        signedUnsigned: null,
+      },
+      const: false,
     },
     const: true,
   });
@@ -117,9 +125,15 @@ describe("Parsing typename", () => {
     type: "pointer",
     pointsTo: {
       type: "pointer",
-      pointsTo: { type: "arithmetic", arithmeticType: "char" },
+      pointsTo: {
+        type: "arithmetic",
+        arithmeticType: "char",
+        const: false,
+        signedUnsigned: null,
+      },
       const: true,
     },
+    const: false,
   });
 
   checkTypename("char *[3][7]", {
@@ -130,7 +144,12 @@ describe("Parsing typename", () => {
       size: { type: "const", subtype: "int", value: 7 },
       elementsTypename: {
         type: "pointer",
-        pointsTo: { type: "arithmetic", arithmeticType: "char" },
+        pointsTo: {
+          type: "arithmetic",
+          arithmeticType: "char",
+          const: false,
+          signedUnsigned: null,
+        },
         const: false,
       },
     },
@@ -141,7 +160,12 @@ describe("Parsing typename", () => {
     pointsTo: {
       type: "array",
       size: { type: "const", subtype: "int", value: 33 },
-      elementsTypename: { type: "arithmetic", arithmeticType: "char" },
+      elementsTypename: {
+        type: "arithmetic",
+        arithmeticType: "char",
+        const: false,
+        signedUnsigned: null,
+      },
     },
     const: false,
   });
@@ -161,7 +185,12 @@ describe("Parsing typename", () => {
           elementsTypename: {
             type: "pointer",
             const: true,
-            pointsTo: { type: "arithmetic", arithmeticType: "char" },
+            pointsTo: {
+              type: "arithmetic",
+              arithmeticType: "char",
+              const: false,
+              signedUnsigned: null,
+            },
           },
         },
       },

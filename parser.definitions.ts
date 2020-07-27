@@ -129,26 +129,26 @@ export type Typename =
   | {
       type: "arithmetic";
       arithmeticType: ArithmeticType;
-      signedUnsigned?: TypeSignedUnsigned;
-      const?: boolean;
+      signedUnsigned: TypeSignedUnsigned | null;
+      const: boolean;
     }
   | {
       type: "struct";
-      const?: boolean;
+      const: boolean;
       // @TODO
     }
   | {
       type: "enum";
-      const?: boolean;
+      const: boolean;
       // @TODO
     }
   | {
       type: "pointer";
-      const?: boolean;
+      const: boolean;
       pointsTo: Typename;
     }
   | {
       type: "array";
       elementsTypename: Typename;
-      size?: ExpressionNode;
+      size: ExpressionNode | "*" | null;
     };
