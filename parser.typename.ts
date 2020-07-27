@@ -9,36 +9,7 @@ import {
   TypeSignedUnsigned,
   ArithmeticType,
 } from "./scanner.func";
-import { ExpressionNode } from "./parser.expression";
-
-export type Typename =
-  | { type: "void" }
-  | {
-      type: "arithmetic";
-      arithmeticType: ArithmeticType;
-      signedUnsigned?: TypeSignedUnsigned;
-      const?: boolean;
-    }
-  | {
-      type: "struct";
-      const?: boolean;
-      // @TODO
-    }
-  | {
-      type: "enum";
-      const?: boolean;
-      // @TODO
-    }
-  | {
-      type: "pointer";
-      const?: boolean;
-      pointsTo: Typename;
-    }
-  | {
-      type: "array";
-      elementsTypename: Typename;
-      size?: ExpressionNode;
-    };
+import { Typename } from "./parser.definitions";
 
 export function createTypeParser(scanner: Scanner) {
   function throwError(info: string): never {

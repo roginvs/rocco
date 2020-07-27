@@ -1,6 +1,7 @@
-import { Typename, createTypeParser } from "./parser.typename";
+import { createTypeParser } from "./parser.typename";
 import { Scanner } from "./scanner";
 import { createScannerFunc } from "./scanner.func";
+import { Typename } from "./parser.definitions";
 
 describe("PisCurrentTokenLooksLikeTypeName", () => {
   const YES = ["int", "void", "struct", "const", "signed", "unsigned"];

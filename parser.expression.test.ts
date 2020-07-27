@@ -1,6 +1,7 @@
-import { createExpressionParser, ExpressionNode } from "./parser.expression";
+import { createExpressionParser } from "./parser.expression";
 import { Scanner } from "./scanner";
 import { createScannerFunc } from "./scanner.func";
+import { ExpressionNode } from "./parser.definitions";
 
 describe("Parser test", () => {
   it("Reads primary expression number int", () => {
