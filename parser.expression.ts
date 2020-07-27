@@ -60,7 +60,9 @@ export function createExpressionParser(
 ) {
   function throwError(info: string): never {
     throw new Error(
-      `${info} at line=${scanner.current().line} pos=${scanner.current().pos}`
+      `${info} at line=${scanner.current().line} pos=${
+        scanner.current().pos
+      } tokenType=${scanner.current().type}`
     );
   }
 
