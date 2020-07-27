@@ -267,7 +267,9 @@ export function createTypeParser(
     };
   }
 
-  function readDirectAbstractDeclaratorCoreless(): TypeCoreless {
+  function readDirectAbstractDeclaratorCoreless(
+    canHaveAbstractDeclaratorInParentheses = true
+  ): TypeCoreless {
     const token = scanner.current();
     if (token.type === "(") {
       scanner.readNext();
@@ -278,6 +280,8 @@ export function createTypeParser(
         // we have a func call
         // @TODO
         return (node) => node;
+      } else if (!canHaveAbstractDeclaratorInParentheses) {
+        throwError("Unable to read nested (abstract-declarator)");
       } else {
         // Not a func call, but nested abstract-declarator
         const abstractDeclaratorCoreless = readAbstractDeclaratorCoreless();
@@ -287,7 +291,7 @@ export function createTypeParser(
         }
         scanner.readNext();
 
-        const rightPart = readDirectAbstractDeclaratorCoreless();
+        const rightPart = readDirectAbstractDeclaratorCoreless(false);
         return (node) => {
           const whatWeHaveToTheRight = rightPart(node);
           const inParentheses = abstractDeclaratorCoreless(
