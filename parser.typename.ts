@@ -267,7 +267,76 @@ export function createTypeParser(
     };
   }
 
-  function readDirectAbstractDeclaratorCoreless(
+  function readDirectAbstractDeclaratorCoreless(): TypeCoreless {
+    let left: TypeCoreless = (node) => node;
+
+    let nestedAbstractDeclarator: TypeCoreless | null = null;
+
+    while (true) {
+      const token = scanner.current();
+
+      if (token.type === "(") {
+        scanner.readNext();
+
+        const nextToken = scanner.current();
+        if (nextToken.type === ")" || isCurrentTokenLooksLikeTypeName()) {
+          scanner.readNext();
+          // we have a func call
+          // @TODO
+        } else {
+          if (nestedAbstractDeclarator) {
+            throwError("Already have nested abstract-declarator");
+          }
+          // Not a func call, but nested abstract-declarator
+          nestedAbstractDeclarator = readAbstractDeclaratorCoreless();
+
+          if (scanner.current().type !== ")") {
+            throwError("Expected )");
+          }
+          scanner.readNext();
+        }
+      } else if (token.type === "[") {
+        scanner.readNext();
+
+        let size: ExpressionNode | "*" | null = null;
+        if (scanner.current().type === "*") {
+          // @TODO: What if it is our expression, something line a[*b] ?
+          // Need to check next token, is it "]"
+          size = "*";
+          scanner.readNext();
+        } else if (scanner.current().type !== "]") {
+          size = expressionReader.readAssignmentExpression();
+        }
+
+        const closing = scanner.current();
+        if (closing.type !== "]") {
+          throwError("Expected ]");
+        }
+        scanner.readNext();
+
+        const savedLeft = left;
+        const newLeft: TypeCoreless = (node) =>
+          savedLeft({
+            type: "array",
+            size: size,
+            elementsTypename: node,
+          });
+        left = newLeft;
+      } else {
+        return (node) => {
+          const tree = left(node);
+          if (nestedAbstractDeclarator) {
+            const nestedTree = nestedAbstractDeclarator(tree);
+            return nestedTree;
+          } else {
+            return tree;
+          }
+        };
+      }
+    }
+  }
+
+  function readDirectAbstractDeclaratorCoreless2(
     canHaveAbstractDeclaratorInParentheses = true
   ): TypeCoreless {
     const token = scanner.current();
@@ -291,7 +360,7 @@ export function createTypeParser(
         }
         scanner.readNext();
 
-        const rightPart = readDirectAbstractDeclaratorCoreless(false);
+        const rightPart = readDirectAbstractDeclaratorCoreless2(false);
         return (node) => {
           const whatWeHaveToTheRight = rightPart(node);
           const inParentheses = abstractDeclaratorCoreless(
@@ -317,7 +386,7 @@ export function createTypeParser(
       }
       scanner.readNext();
 
-      const rightPart = readDirectAbstractDeclaratorCoreless();
+      const rightPart = readDirectAbstractDeclaratorCoreless2();
 
       return (node) => {
         const whatWeHaveToTheRight = rightPart(node);
