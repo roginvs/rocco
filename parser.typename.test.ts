@@ -190,4 +190,6 @@ describe("Parsing typename", () => {
       },
     },
   });
+
+  checkFailingType("char (*)(*)[2][][*]");
 });

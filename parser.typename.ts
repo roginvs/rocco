@@ -299,7 +299,13 @@ export function createTypeParser(
     } else if (token.type === "[") {
       scanner.readNext();
 
-      const sizeExpression = expressionReader.readAssignmentExpression();
+      let size: ExpressionNode | "*" | null = null;
+      if (scanner.current().type === "*") {
+        size = "*";
+        scanner.readNext();
+      } else if (scanner.current().type !== "]") {
+        size = expressionReader.readAssignmentExpression();
+      }
 
       const closing = scanner.current();
       if (closing.type !== "]") {
@@ -313,7 +319,7 @@ export function createTypeParser(
         const whatWeHaveToTheRight = rightPart(node);
         return {
           type: "array",
-          size: sizeExpression,
+          size: size,
           elementsTypename: whatWeHaveToTheRight,
         };
       };
