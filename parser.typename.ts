@@ -186,6 +186,7 @@ export function createTypeParser(scanner: Scanner) {
     return specifier;
   }
 
+  /*
   function readPointers(base: Typename): Typename {
     const token = scanner.current();
     if (token.type !== "*") {
@@ -220,19 +221,18 @@ export function createTypeParser(scanner: Scanner) {
 
     return readPointers(pointer);
   }
+  */
 
-  function readDirectAbstractDeclarator(base: Typename) {
-    //asd @TODO
-    return base;
-  }
-
-  function readAbstractDeclarator(base: Typename): Typename {
-    const afterPointers = readPointers(base);
-
-    // @TODO
-    return readDirectAbstractDeclarator(afterPointers);
-  }
-
+  /**
+   * Imagine this as nullable Typename, a chain of nested type where
+   *   last part is null because it is unknown at this moment.
+   * Example: When we read "char (*) ...", at the moment in parentheses
+   *   we know it will be a pointer, but we do not know yet what will it point to,
+   *   will it be just "char" or "char[]" or "char()"
+   *
+   * Providing a callback we also defer some calculations.
+   *
+   */
   type TypeCoreless = (base: Typename) => Typename;
 
   function readPointersCoreless(): TypeCoreless {
@@ -273,46 +273,48 @@ export function createTypeParser(scanner: Scanner) {
     return myCoreless;
   }
 
-  function readAbstractDeclaratorFabric(): TypeCoreless {
-    const afterPointersFabric = readPointersCoreless();
+  function readAbstractDeclaratorCoreless(): TypeCoreless {
+    const afterPointersCoreless = readPointersCoreless();
 
-    const directAbstractDeclaratorFabric = readDirectAbstractDeclaratorFabric();
+    const directAbstractDeclaratorCoreless = readDirectAbstractDeclaratorCoreless();
 
     return (node) => {
-      const afterPointers = afterPointersFabric(node);
-      const directAbstract = directAbstractDeclaratorFabric(afterPointers);
+      const afterPointers = afterPointersCoreless(node);
+      const directAbstract = directAbstractDeclaratorCoreless(afterPointers);
 
       return directAbstract;
     };
   }
 
-  function readDirectAbstractDeclaratorFabric(): TypeCoreless {
+  function readDirectAbstractDeclaratorCoreless(): TypeCoreless {
     const token = scanner.current();
     if (token.type === "(") {
       scanner.readNext();
 
       const nextToken = scanner.current();
-      if (nextToken.type === ")") {
+      if (nextToken.type === ")" || isCurrentTokenLooksLikeTypeName()) {
         scanner.readNext();
         // we have a func call
         // @TODO
+        return (node) => node;
       } else {
         // Not a func call, but nested abstract-declarator
-        const abstractDeclaratorFabric = readAbstractDeclaratorFabric();
+        const abstractDeclaratorCoreless = readAbstractDeclaratorCoreless();
 
         if (scanner.current().type !== ")") {
           throwError("Expected )");
         }
         scanner.readNext();
 
-        const nextFabric = readDirectAbstractDeclaratorFabric();
+        const rightPart = readDirectAbstractDeclaratorCoreless();
         return (node) => {
-          const childs = nextFabric(node);
-          const inParentheses = abstractDeclaratorFabric(childs);
+          const whatWeHaveToTheRight = rightPart(node);
+          const inParentheses = abstractDeclaratorCoreless(
+            whatWeHaveToTheRight
+          );
           return inParentheses;
         };
       }
-      return (node) => node;
     } else if (token.type === "[") {
       scanner.readNext();
 
@@ -334,14 +336,14 @@ export function createTypeParser(scanner: Scanner) {
       }
       scanner.readNext();
 
-      const nextFabric = readDirectAbstractDeclaratorFabric();
+      const rightPart = readDirectAbstractDeclaratorCoreless();
 
       return (node) => {
-        const childs = nextFabric(node);
+        const whatWeHaveToTheRight = rightPart(node);
         return {
           type: "array",
           size: sizeNode,
-          elementsTypename: childs,
+          elementsTypename: whatWeHaveToTheRight,
         };
       };
     } else {
@@ -352,9 +354,9 @@ export function createTypeParser(scanner: Scanner) {
   function readTypeName() {
     const base = readSpecifierQualifierList();
 
-    const abstractDeclaratorFabric = readAbstractDeclaratorFabric();
+    const abstractDeclaratorCoreless = readAbstractDeclaratorCoreless();
 
-    const typename = abstractDeclaratorFabric(base);
+    const typename = abstractDeclaratorCoreless(base);
 
     return typename;
   }
