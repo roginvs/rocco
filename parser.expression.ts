@@ -259,8 +259,6 @@ export function createExpressionParser(
   }
 
   function readCastExpression(): ExpressionNode | undefined {
-    // Same problems as above
-    // @TODO
     const token = scanner.current();
 
     if (token.type !== "(") {
@@ -268,9 +266,33 @@ export function createExpressionParser(
       return unaryExpression;
     }
 
-    const unaryExpressionNode = readUnaryExpression();
+    scanner.makeControlPoint();
 
-    return unaryExpressionNode;
+    scanner.readNext();
+
+    if (typeParser.isCurrentTokenLooksLikeTypeName()) {
+      scanner.clearControlPoint();
+      const typename = typeParser.readTypeName();
+      if (scanner.current().type !== ")") {
+        throwError("Expected )");
+      }
+      scanner.readNext();
+
+      const castTarget = readCastExpression();
+      if (!castTarget) {
+        throwError("Expected cast-expression");
+      }
+      return {
+        type: "cast",
+        typename: typename,
+        target: castTarget,
+      };
+    } else {
+      // This means that "(" is not a part of cast-expression, it is a unary-expression
+      scanner.rollbackControlPoint();
+      const unaryExpression = readUnaryExpression();
+      return unaryExpression;
+    }
   }
 
   function readLogicalOrExpression(): ExpressionNode | undefined {

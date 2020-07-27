@@ -89,7 +89,7 @@ export type UnaryExpressionNode =
 export type CastExpressionNode =
   | UnaryExpressionNode
   | {
-      type: "typecast";
+      type: "cast";
       typename: Typename;
       target: ExpressionNode;
     };
