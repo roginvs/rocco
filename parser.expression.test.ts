@@ -14,19 +14,25 @@ const createMockedTypeparser = (scanner: Scanner) => {
   const r: ExpressionRequirements = {
     isCurrentTokenLooksLikeTypeName() {
       const t = scanner.current();
-      return t.type === "keyword" && t.keyword === "int";
+      return (
+        t.type === "keyword" && (t.keyword === "int" || t.keyword === "char")
+      );
     },
     readTypeName() {
       const t = scanner.current();
-      if (!(t.type === "keyword" && t.keyword === "int")) {
-        throw new Error("Mocked read failed");
-      }
-      scanner.readNext();
 
-      return {
-        type: "arithmetic",
-        arithmeticType: "int",
-      };
+      if (
+        t.type === "keyword" &&
+        (t.keyword === "int" || t.keyword === "char")
+      ) {
+        scanner.readNext();
+
+        return {
+          type: "arithmetic",
+          arithmeticType: t.keyword === "int" ? "int" : "char",
+        };
+      }
+      throw new Error("Not implemented in mocked version");
     },
   };
   return r;
@@ -214,47 +220,26 @@ describe("Parser test", () => {
     },
   });
 
-  it.skip(`Reads cast expression (int)(int)(kek)`, () => {
-    const scanner = new Scanner(createScannerFunc(`(int)(int)(kek)`));
-    const parser = createExpressionParser(
-      scanner,
-      createMockedTypeparser(scanner)
-    );
-    const node = parser.readExpression();
-
-    expect(node).toMatchObject({
-      type: "typecast",
-      target: {
-        type: "typecast",
-        target: { type: "identifier", value: "kek" },
-        typename: { type: "simple type", typename: "int" },
+  for (const x of ["(int)(char)(kek)", "(int)(char)kek"]) {
+    checkExpression(x, {
+      type: "cast",
+      typename: {
+        type: "arithmetic",
+        arithmeticType: "int",
       },
-      typename: { type: "simple type", typename: "int" },
-    });
-
-    expect(scanner.current().type).toBe("end");
-  });
-
-  it.skip(`Reads cast expression (int)(int)(kek)`, () => {
-    const scanner = new Scanner(createScannerFunc(`(int)(int)kek`));
-    const parser = createExpressionParser(
-      scanner,
-      createMockedTypeparser(scanner)
-    );
-    const node = parser.readExpression();
-
-    expect(node).toMatchObject({
-      type: "typecast",
       target: {
-        type: "typecast",
-        target: { type: "identifier", value: "kek" },
-        typename: { type: "simple type", typename: "int" },
+        type: "cast",
+        typename: {
+          type: "arithmetic",
+          arithmeticType: "char",
+        },
+        target: {
+          type: "identifier",
+          value: "kek",
+        },
       },
-      typename: { type: "simple type", typename: "int" },
     });
-
-    expect(scanner.current().type).toBe("end");
-  });
+  }
 
   checkExpression("2+2", {
     type: "binary operator",
