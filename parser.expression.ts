@@ -67,7 +67,7 @@ export function createExpressionParser(
     );
   }
 
-  function readPrimaryExpression(): ExpressionNode | undefined {
+  function readPrimaryExpression(): ExpressionNode {
     const token = scanner.current();
     if (token.type === "identifier") {
       scanner.readNext();
@@ -97,22 +97,20 @@ export function createExpressionParser(
       }
       scanner.readNext();
       return expression;
+    } else {
+      throwError("Expecting primary-expression");
     }
   }
 
-  function readPostfixExpression(): ExpressionNode | undefined {
-    let left: ExpressionNode | undefined = readPrimaryExpression();
-    if (!left) {
-      return undefined;
-    }
+  function readPostfixExpression(): ExpressionNode {
+    let left: ExpressionNode = readPrimaryExpression();
+
     while (true) {
       const token = scanner.current();
       if (token.type === "[") {
         scanner.readNext();
         const expression = readExpression();
-        if (!expression) {
-          throwError("Expected expression");
-        }
+
         const closing = scanner.current();
         if (closing.type !== "]") {
           throwError("Expected ]");
@@ -188,7 +186,7 @@ export function createExpressionParser(
     return nodes;
   }
 
-  function readUnaryExpression(): ExpressionNode | undefined {
+  function readUnaryExpression(): ExpressionNode {
     const token = scanner.current();
 
     const unaryOperator = UNARY_OPERATORS.find((op) => op === token.type);
@@ -196,9 +194,7 @@ export function createExpressionParser(
     if (unaryOperator) {
       scanner.readNext();
       const right = readUnaryExpression();
-      if (!right) {
-        throwError("Expecting postfix-expression or unary-expression");
-      }
+
       return {
         type: "unary-operator",
         operator: unaryOperator,
@@ -207,9 +203,7 @@ export function createExpressionParser(
     } else if (token.type === "++" || token.type === "--") {
       scanner.readNext();
       const right = readUnaryExpression();
-      if (!right) {
-        throwError("Expecting postfix-expression or unary-expression");
-      }
+
       return {
         type: token.type === "++" ? "prefix ++" : "prefix --",
         target: right,
@@ -233,9 +227,6 @@ export function createExpressionParser(
         } else {
           // We could rollback and use "readUnaryExpression", but it does not matter
           const expressionNode = readExpression();
-          if (!expressionNode) {
-            throwError("Expected expression");
-          }
 
           if (scanner.current().type !== ")") {
             throwError("Expected )");
@@ -249,9 +240,7 @@ export function createExpressionParser(
         }
       } else {
         const unaryExpressionNode = readUnaryExpression();
-        if (!unaryExpressionNode) {
-          throwError("Expected unary expression");
-        }
+
         return {
           type: "sizeof expression",
           expression: unaryExpressionNode,
@@ -263,7 +252,7 @@ export function createExpressionParser(
     }
   }
 
-  function readCastExpression(): ExpressionNode | undefined {
+  function readCastExpression(): ExpressionNode {
     const token = scanner.current();
 
     if (token.type !== "(") {
@@ -284,9 +273,7 @@ export function createExpressionParser(
       scanner.readNext();
 
       const castTarget = readCastExpression();
-      if (!castTarget) {
-        throwError("Expected cast-expression");
-      }
+
       return {
         type: "cast",
         typename: typename,
@@ -300,17 +287,13 @@ export function createExpressionParser(
     }
   }
 
-  function readLogicalOrExpression(): ExpressionNode | undefined {
-    function read(currentPriority: number): ExpressionNode | undefined {
+  function readLogicalOrExpression(): ExpressionNode {
+    function read(currentPriority: number): ExpressionNode {
       if (currentPriority === 0) {
         return readCastExpression();
       }
 
       let left = read(currentPriority - 1);
-
-      if (!left) {
-        return undefined;
-      }
 
       while (true) {
         const token = scanner.current();
@@ -326,9 +309,7 @@ export function createExpressionParser(
 
         scanner.readNext();
         const right = read(currentPriority - 1);
-        if (!right) {
-          throwError(`Expected expression in binary operator`);
-        }
+
         const newLeft: ExpressionNode = {
           type: "binary operator",
           operator: binaryOperator,
@@ -342,28 +323,21 @@ export function createExpressionParser(
     return read(MAX_BINARY_OP_INDEX);
   }
 
-  function readConditionalExpression(): ExpressionNode | undefined {
+  function readConditionalExpression(): ExpressionNode {
     const condition = readLogicalOrExpression();
-    if (!condition) {
-      return undefined;
-    }
 
     const questionToken = scanner.current();
     if (questionToken.type === "?") {
       scanner.readNext();
       const iftrue = readExpression();
-      if (!iftrue) {
-        throwError(`Expecting expression`);
-      }
+
       const colonToken = scanner.current();
       if (colonToken.type !== ":") {
         throwError("Expecting colon");
       }
       scanner.readNext();
       const iffalse = readConditionalExpression();
-      if (!iffalse) {
-        throwError("Expecting conditional-expression");
-      }
+
       return {
         type: "conditional expression",
         condition,
@@ -375,14 +349,12 @@ export function createExpressionParser(
     }
   }
 
-  function readAssignmentExpression(): AssignmentExpressionNode | undefined {
+  function readAssignmentExpression(): AssignmentExpressionNode {
     const conditionExpression = readConditionalExpression();
-    if (!conditionExpression) {
-      return undefined;
-    }
-    const token = scanner.current();
+
+    const possibleAssignmentOperatorToken = scanner.current();
     const assignmentOperator = ASSIGNMENT_OPERATORS.find(
-      (op) => token.type === op
+      (op) => possibleAssignmentOperatorToken.type === op
     );
     if (!assignmentOperator) {
       return conditionExpression;
@@ -395,9 +367,7 @@ export function createExpressionParser(
     scanner.readNext();
 
     const rvalue = readAssignmentExpression();
-    if (!rvalue) {
-      throwError("Expected rvalue");
-    }
+
     return {
       type: "assignment",
       operator: assignmentOperator,
