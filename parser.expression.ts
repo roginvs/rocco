@@ -411,7 +411,13 @@ export function createExpressionParser(
     return readAssignmentExpression();
   }
 
+  function readConstantExpression() {
+    return readConditionalExpression();
+  }
+
   return {
     readExpression,
+    readAssignmentExpression,
+    readConstantExpression,
   };
 }
