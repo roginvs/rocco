@@ -124,8 +124,13 @@ export type AssignmentExpressionNode =
       rvalue: ExpressionNode;
     };
 
-// @TODO: Update me
-export type ExpressionNode = AssignmentExpressionNode;
+export type ExpressionNode =
+  | AssignmentExpressionNode
+  | {
+      type: "expression with sideeffect";
+      sizeeffect: ExpressionNode;
+      effectiveValue: ExpressionNode;
+    };
 
 //
 // ============= Types =============

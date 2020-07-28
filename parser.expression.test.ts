@@ -351,6 +351,31 @@ describe("Parser test", () => {
       },
     },
   });
+
+  checkExpression("a = 2, b = 3, c = 4", {
+    type: "expression with sideeffect",
+    sizeeffect: {
+      type: "assignment",
+      operator: "=",
+      lvalue: { type: "identifier", value: "a" },
+      rvalue: { type: "const", subtype: "int", value: 2 },
+    },
+    effectiveValue: {
+      type: "expression with sideeffect",
+      sizeeffect: {
+        type: "assignment",
+        operator: "=",
+        lvalue: { type: "identifier", value: "b" },
+        rvalue: { type: "const", subtype: "int", value: 3 },
+      },
+      effectiveValue: {
+        type: "assignment",
+        operator: "=",
+        lvalue: { type: "identifier", value: "c" },
+        rvalue: { type: "const", subtype: "int", value: 4 },
+      },
+    },
+  });
 });
 
 // @TODO: Add throwing tests

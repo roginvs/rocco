@@ -174,7 +174,9 @@ export function createExpressionParser(
   }
 
   function readArgumentExpressionList() {
-    const nodes: AssignmentExpressionNode[] = [];
+    const nodes: ExpressionNode[] = [];
+    // @TODO
+    return nodes;
     while (true) {
       const node = readAssignmentExpression();
       if (node) {
@@ -349,7 +351,7 @@ export function createExpressionParser(
     }
   }
 
-  function readAssignmentExpression(): AssignmentExpressionNode {
+  function readAssignmentExpression(): ExpressionNode {
     const conditionExpression = readConditionalExpression();
 
     const possibleAssignmentOperatorToken = scanner.current();
@@ -376,9 +378,19 @@ export function createExpressionParser(
     };
   }
 
-  function readExpression() {
-    // @todo
-    return readAssignmentExpression();
+  function readExpression(): ExpressionNode {
+    const left = readAssignmentExpression();
+    if (scanner.current().type === ",") {
+      scanner.readNext();
+      const effectiveValue = readExpression();
+      return {
+        type: "expression with sideeffect",
+        sizeeffect: left,
+        effectiveValue: effectiveValue,
+      };
+    } else {
+      return left;
+    }
   }
 
   function readConstantExpression() {
