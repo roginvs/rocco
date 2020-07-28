@@ -20,8 +20,26 @@ export const BINARY_OPERATORS = [
 ] as const;
 export type BinaryOperator = typeof BINARY_OPERATORS[number];
 
+export const ASSIGNMENT_OPERATORS = [
+  "=",
+  "*=",
+  "/=",
+  "%=",
+  "+=",
+  "-=",
+  "<<=",
+  ">>=",
+  "&=",
+  "^=",
+  "|=",
+] as const;
+
+export type AssignmentOperator = typeof ASSIGNMENT_OPERATORS[number];
+
 export const PUNCTUATORS = [
   ...BINARY_OPERATORS,
+  ...ASSIGNMENT_OPERATORS,
+
   "[",
   "]",
   "(",
@@ -36,17 +54,7 @@ export const PUNCTUATORS = [
 
   "?",
   ":",
-  "=",
-  "*=",
-  "/=",
-  "%=",
-  "+=",
-  "-=",
-  "<<=",
-  ">>=",
-  "&=",
-  "^=",
-  "|=",
+
   ",",
   "{",
   "}",

@@ -4,6 +4,7 @@ import {
   Punctuator,
   BinaryOperator,
   Token,
+  ASSIGNMENT_OPERATORS,
 } from "./scanner.func";
 import {
   ExpressionNode,
@@ -375,8 +376,30 @@ export function createExpressionParser(
   }
 
   function readAssignmentExpression(): AssignmentExpressionNode | undefined {
-    // @todo
-    return undefined;
+    const conditionExpression = readConditionalExpression();
+    if (!conditionExpression) {
+      return undefined;
+    }
+    const token = scanner.current();
+    const assignmentOperator = ASSIGNMENT_OPERATORS.find(
+      (op) => token.type === op
+    );
+    if (!assignmentOperator) {
+      return conditionExpression;
+    }
+
+    scanner.readNext();
+
+    const rvalue = readAssignmentExpression();
+    if (!rvalue) {
+      throwError("Expected rvalue");
+    }
+    return {
+      type: "assignment",
+      operator: assignmentOperator,
+      lvalue: conditionExpression,
+      rvalue: rvalue,
+    };
   }
 
   function readExpression() {

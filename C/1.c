@@ -88,10 +88,39 @@ void test5()
 void test6()
 {
   int i = 2;
+
   int *p = &i;
   *p = 22;
   char array[*p];
+
+  int ii = 4;
+
+  //int x =
+  int x;
+  int y;
+  //x || y = 2;
+  //f_return_lvalue() = 3;
 };
+
+void test7()
+{
+  struct T1
+  {
+    int a;
+    int b;
+  };
+  struct T2
+  {
+    int a;
+    int b;
+  };
+
+  struct T1 t1;
+  struct T1 t2;
+  t1 = t2;
+
+  // asd
+}
 
 int main(int argc, char **argv)
 {

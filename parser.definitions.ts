@@ -2,6 +2,7 @@ import {
   BinaryOperator,
   ArithmeticType,
   TypeSignedUnsigned,
+  AssignmentOperator,
 } from "./scanner.func";
 
 //
@@ -112,13 +113,19 @@ export type ConditionalExpressionNode =
       iffalse: ExpressionNode;
     };
 
-export type ArgumentExpressionList = AssignmentExpressionNode[];
+export type ArgumentExpressionList = ExpressionNode[];
 
-// @TODO
-export type AssignmentExpressionNode = unknown;
+export type AssignmentExpressionNode =
+  | ConditionalExpressionNode
+  | {
+      type: "assignment";
+      operator: AssignmentOperator;
+      lvalue: ExpressionNode;
+      rvalue: ExpressionNode;
+    };
 
 // @TODO: Update me
-export type ExpressionNode = ConditionalExpressionNode;
+export type ExpressionNode = AssignmentExpressionNode;
 
 //
 // ============= Types =============
