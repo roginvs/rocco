@@ -120,7 +120,15 @@ void test7()
   t1 = t2;
 
   // asd
-}
+};
+
+void test8()
+{
+  int x = 2;
+  if (x = 2, 4)
+  {
+  };
+};
 
 int main(int argc, char **argv)
 {
