@@ -124,7 +124,10 @@ export function createExpressionParser(
         left = newLeft;
       } else if (token.type === "(") {
         scanner.readNext();
-        const args = readArgumentExpressionList();
+
+        const args =
+          scanner.current().type !== ")" ? readArgumentExpressionList() : [];
+
         const closing = scanner.current();
         if (closing.type !== ")") {
           throwError("Postfix-expression expected ) ");
@@ -175,12 +178,12 @@ export function createExpressionParser(
 
   function readArgumentExpressionList() {
     const nodes: ExpressionNode[] = [];
-    // @TODO
-    return nodes;
     while (true) {
       const node = readAssignmentExpression();
-      if (node) {
-        nodes.push(node);
+      nodes.push(node);
+
+      if (scanner.current().type === ",") {
+        scanner.readNext();
       } else {
         break;
       }

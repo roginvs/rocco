@@ -376,6 +376,36 @@ describe("Parser test", () => {
       },
     },
   });
+
+  checkExpression("f(2)", {
+    type: "function call",
+    target: { type: "identifier", value: "f" },
+    args: [{ type: "const", subtype: "int", value: 2 }],
+  });
+  checkExpression("f()", {
+    type: "function call",
+    target: { type: "identifier", value: "f" },
+    args: [],
+  });
+  checkExpression("f(a=3, b=5, c++)", {
+    type: "function call",
+    target: { type: "identifier", value: "f" },
+    args: [
+      {
+        type: "assignment",
+        operator: "=",
+        lvalue: { type: "identifier", value: "a" },
+        rvalue: { type: "const", subtype: "int", value: 3 },
+      },
+      {
+        type: "assignment",
+        operator: "=",
+        lvalue: { type: "identifier", value: "b" },
+        rvalue: { type: "const", subtype: "int", value: 5 },
+      },
+      { type: "postfix ++", target: { type: "identifier", value: "c" } },
+    ],
+  });
 });
 
 // @TODO: Add throwing tests
