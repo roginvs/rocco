@@ -300,10 +300,17 @@ export function createTypeParser(
 
         let size: ExpressionNode | "*" | null = null;
         if (scanner.current().type === "*") {
-          // @TODO: What if it is our expression, something line a[*b] ?
-          // Need to check next token, is it "]"
-          size = "*";
+          scanner.makeControlPoint();
           scanner.readNext();
+          const nextSymbolIsClosingSquareBrace = scanner.current().type === "]";
+          scanner.rollbackControlPoint();
+
+          if (nextSymbolIsClosingSquareBrace) {
+            size = "*";
+            scanner.readNext();
+          } else {
+            size = expressionReader.readAssignmentExpression();
+          }
         } else if (scanner.current().type !== "]") {
           size = expressionReader.readAssignmentExpression();
         }

@@ -82,8 +82,16 @@ void test5()
 {
   int x = 4;
   int y = 4;
-  char arr[x = 6, y = 5];
-}
+  char arr[x = 6];
+};
+
+void test6()
+{
+  int i = 2;
+  int *p = &i;
+  *p = 22;
+  char array[*p];
+};
 
 int main(int argc, char **argv)
 {

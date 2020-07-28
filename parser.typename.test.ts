@@ -1,23 +1,39 @@
 import { createTypeParser, TypeParserDependencies } from "./parser.typename";
 import { Scanner } from "./scanner";
 import { createScannerFunc } from "./scanner.func";
-import { Typename } from "./parser.definitions";
+import { Typename, ExpressionNode } from "./parser.definitions";
 
 const createMockedExpressionParser = (scanner: Scanner) => {
   const mock: TypeParserDependencies = {
     readAssignmentExpression() {
       const nextToken = scanner.current();
-      if (nextToken.type !== "const") {
-        throw new Error("Not implemented in mocked expression scanner");
+      let node: ExpressionNode;
+      if (nextToken.type === "const") {
+        node = {
+          type: "const",
+          subtype: "int",
+          value: nextToken.value,
+        };
+      } else if (nextToken.type === "*") {
+        scanner.readNext();
+        const identifierToken = scanner.current();
+        if (identifierToken.type !== "identifier") {
+          throw new Error("Mocked expession parser expects identifier");
+        }
+        node = {
+          type: "unary-operator",
+          operator: "*",
+          target: {
+            type: "identifier",
+            value: "p",
+          },
+        };
+      } else {
+        throw new Error("Not implemented in mocked expression parser");
       }
       scanner.readNext();
-      const constNode = {
-        type: "const" as const,
-        subtype: "int" as const,
-        value: nextToken.value,
-      };
 
-      return constNode;
+      return node;
     },
   };
   return mock;
@@ -192,4 +208,19 @@ describe("Parsing typename", () => {
   });
 
   checkFailingType("char (*)(*)[2][][*]");
+
+  checkTypename("char [*p]", {
+    type: "array",
+    size: {
+      type: "unary-operator",
+      operator: "*",
+      target: { type: "identifier", value: "p" },
+    },
+    elementsTypename: {
+      type: "arithmetic",
+      arithmeticType: "char",
+      const: false,
+      signedUnsigned: null,
+    },
+  });
 });
