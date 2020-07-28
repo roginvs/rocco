@@ -315,6 +315,42 @@ describe("Parser test", () => {
       iffalse: { type: "const", subtype: "int", value: 6 },
     },
   });
+
+  checkExpression("a = b = 4", {
+    type: "assignment",
+    operator: "=",
+    lvalue: { type: "identifier", value: "a" },
+    rvalue: {
+      type: "assignment",
+      operator: "=",
+      lvalue: { type: "identifier", value: "b" },
+      rvalue: { type: "const", subtype: "int", value: 4 },
+    },
+  });
+
+  checkExpression("a++ += 2", {
+    type: "assignment",
+    operator: "+=",
+    lvalue: { type: "postfix ++", target: { type: "identifier", value: "a" } },
+    rvalue: { type: "const", subtype: "int", value: 2 },
+  });
+
+  checkExpression("a *= b >>= 2 + 3", {
+    type: "assignment",
+    operator: "*=",
+    lvalue: { type: "identifier", value: "a" },
+    rvalue: {
+      type: "assignment",
+      operator: ">>=",
+      lvalue: { type: "identifier", value: "b" },
+      rvalue: {
+        type: "binary operator",
+        operator: "+",
+        left: { type: "const", subtype: "int", value: 2 },
+        right: { type: "const", subtype: "int", value: 3 },
+      },
+    },
+  });
 });
 
 // @TODO: Add throwing tests

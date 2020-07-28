@@ -388,6 +388,10 @@ export function createExpressionParser(
       return conditionExpression;
     }
 
+    // Here we can validate that lvalue expression is actually an lvalue
+    // For example, filter out conditional expressions and so on
+    // But we will do this on next stage
+
     scanner.readNext();
 
     const rvalue = readAssignmentExpression();
@@ -404,7 +408,7 @@ export function createExpressionParser(
 
   function readExpression() {
     // @todo
-    return readConditionalExpression();
+    return readAssignmentExpression();
   }
 
   return {
