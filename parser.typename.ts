@@ -211,7 +211,7 @@ export function createTypeParser(
    *   we know it will be a pointer, but we do not know yet what will it point to,
    *   will it be just "char" or "char[]" or "char()"
    *
-   * Providing a callback we also defer some calculations.
+   * We have two operation: insert or append into that chain
    *
    */
   type TypeCoreless = (base: Typename) => Typename;
