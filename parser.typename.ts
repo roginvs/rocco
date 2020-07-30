@@ -5,21 +5,19 @@ import {
   TYPE_QUALIFIERS,
   TypeSignedUnsigned,
 } from "./scanner.func";
-import { Typename, ExpressionNode } from "./parser.definitions";
+import { Typename, ExpressionNode, NodeLocator } from "./parser.definitions";
+import { ParserError } from "./error";
 
 export interface TypeParserDependencies {
   readAssignmentExpression: () => ExpressionNode;
 }
 export function createTypeParser(
   scanner: Scanner,
+  locator: NodeLocator,
   expressionReader: TypeParserDependencies
 ) {
   function throwError(info: string): never {
-    throw new Error(
-      `${info} at line=${scanner.current().line} pos=${
-        scanner.current().pos
-      } (currentToken=${scanner.current().type})`
-    );
+    throw new ParserError(`${info}`, scanner.current());
   }
 
   function isCurrentTokenTypeQualifier() {
@@ -81,6 +79,8 @@ export function createTypeParser(
     let specifier: Typename | undefined = undefined;
 
     let signedUnsigned: TypeSignedUnsigned | undefined;
+
+    const tokenForLocator = scanner.current();
 
     while (true) {
       const qualifier = isCurrentTokenTypeQualifier();
@@ -150,6 +150,11 @@ export function createTypeParser(
     if (isQualifiersListHaveDuplicates(qualifiers)) {
       throwError("Got duplicated qualifiers");
     }
+
+    locator.set(specifier, {
+      ...tokenForLocator,
+      length: scanner.current().pos - tokenForLocator.pos,
+    });
 
     return specifier;
   }
@@ -234,6 +239,10 @@ export function createTypeParser(
         const: isConst,
         pointsTo: base,
       };
+      locator.set(me, {
+        ...token,
+        length: scanner.current().pos - token.pos,
+      });
       const nextPart = nextPartCoreless(me);
       return nextPart;
     };
@@ -309,15 +318,23 @@ export function createTypeParser(
         scanner.readNext();
 
         const savedLeft = left;
-        left = (node) =>
-          savedLeft({
+
+        left = (node) => {
+          const me: Typename = {
             type: "array",
             size: size,
             elementsTypename: node,
+          };
+          locator.set(me, {
+            ...token,
+            length: closing.pos - token.pos,
           });
+          return savedLeft(me);
+        };
       } else {
         return (node) => {
           const tree = left(node);
+          // TODO: Location?
           if (nestedAbstractDeclarator) {
             const nestedTree = nestedAbstractDeclarator(tree);
             return nestedTree;

@@ -51,6 +51,7 @@ describe("PisCurrentTokenLooksLikeTypeName", () => {
       const scanner = new Scanner(createScannerFunc(t.s));
       const parser = createTypeParser(
         scanner,
+        new Map(),
         createMockedExpressionParser(scanner)
       );
       expect(parser.isCurrentTokenLooksLikeTypeName()).toStrictEqual(t.yes);
@@ -63,6 +64,7 @@ function checkTypename(str: string, ast?: Typename) {
     const scanner = new Scanner(createScannerFunc(str));
     const parser = createTypeParser(
       scanner,
+      new Map(),
       createMockedExpressionParser(scanner)
     );
     const node = parser.readTypeName();
@@ -82,6 +84,7 @@ describe("Parsing typename", () => {
       const scanner = new Scanner(createScannerFunc(str));
       const parser = createTypeParser(
         scanner,
+        new Map(),
         createMockedExpressionParser(scanner)
       );
       expect(() => parser.readTypeName()).toThrow();
