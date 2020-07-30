@@ -1,3 +1,14 @@
+export interface TokenLocation {
+  readonly pos: number;
+  readonly line: number;
+  readonly length: number;
+}
+export class ScannerError extends Error {
+  constructor(str: string, public readonly location: TokenLocation) {
+    super(str);
+  }
+}
+
 export const BINARY_OPERATORS = [
   "*",
   "/",
@@ -150,7 +161,8 @@ export type Token = (
   | {
       type: "end";
     }
-) & { pos: number; line: number; length: number };
+) &
+  TokenLocation;
 
 export function createScannerFunc(str: string) {
   let pos = 0;
@@ -191,7 +203,7 @@ export function createScannerFunc(str: string) {
   function sliceFromSavedPoint() {
     return str.slice(savedPos, pos);
   }
-  function savedLocation() {
+  function savedLocation(): TokenLocation {
     return {
       pos: savedInlinePos,
       line: savedLineNumber,
@@ -204,7 +216,7 @@ export function createScannerFunc(str: string) {
   }
 
   function throwError(text: string): never {
-    throw new Error(`${text} at ${pos} (line ${lineNumber}, pos ${inlinePos})`);
+    throw new ScannerError(`${text}`, savedLocation());
   }
 
   function scanWhitespace() {
