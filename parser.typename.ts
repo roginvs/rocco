@@ -1,13 +1,9 @@
 import { Scanner } from "./scanner";
 import {
   ARITHMETIC_TYPE as ARITHMETIC_TYPES,
-  Punctuator,
-  BinaryOperator,
-  Token,
   TypeQualifier,
   TYPE_QUALIFIERS,
   TypeSignedUnsigned,
-  ArithmeticType,
 } from "./scanner.func";
 import { Typename, ExpressionNode } from "./parser.definitions";
 
@@ -28,23 +24,17 @@ export function createTypeParser(
 
   function isCurrentTokenTypeQualifier() {
     const token = scanner.current();
-    const qualifier = TYPE_QUALIFIERS.find(
-      (x) => token.type === "keyword" && token.keyword === x
-    );
+    const qualifier = TYPE_QUALIFIERS.find((x) => token.type === x);
     return qualifier;
   }
 
   function isCurrentTokenTypeVoid() {
     const token = scanner.current();
-    return token.type === "keyword" && token.keyword === "void"
-      ? token.keyword
-      : undefined;
+    return token.type === "void" ? token.type : undefined;
   }
   function isCurrentTokenTypeArithmeticSpecifier() {
     const token = scanner.current();
-    const arithmeticType = ARITHMETIC_TYPES.find(
-      (x) => token.type === "keyword" && x === token.keyword
-    );
+    const arithmeticType = ARITHMETIC_TYPES.find((x) => x === token.type);
     return arithmeticType;
   }
 
@@ -63,11 +53,11 @@ export function createTypeParser(
       isCurrentTokenTypeVoid() ||
       isCurrentTokenTypeArithmeticSpecifier() ||
       isCurrentTokenTypeQualifier() ||
-      (token.type === "keyword" && token.keyword === "signed") ||
-      (token.type === "keyword" && token.keyword === "unsigned") ||
-      (token.type === "keyword" && token.keyword === "struct") ||
-      (token.type === "keyword" && token.keyword === "union") ||
-      (token.type === "keyword" && token.keyword === "enum") ||
+      token.type === "signed" ||
+      token.type === "unsigned" ||
+      token.type === "struct" ||
+      token.type === "union" ||
+      token.type === "enum" ||
       isCurrentTokenTypedefName()
         ? true
         : false;
@@ -122,20 +112,17 @@ export function createTypeParser(
           const: false,
           signedUnsigned: null,
         };
-      } else if (
-        token.type === "keyword" &&
-        (token.keyword === "signed" || token.keyword === "unsigned")
-      ) {
+      } else if (token.type === "signed" || token.type === "unsigned") {
         if (signedUnsigned) {
           throwError("Already have signed/unsigned");
         }
         scanner.readNext();
-        signedUnsigned = token.keyword;
-      } else if (token.type === "keyword" && token.keyword === "struct") {
+        signedUnsigned = token.type;
+      } else if (token.type === "struct") {
         throwError("Not implemented yet");
-      } else if (token.type === "keyword" && token.keyword === "union") {
+      } else if (token.type === "union") {
         throwError("Not implemented yet");
-      } else if (token.type === "keyword" && token.keyword === "enum") {
+      } else if (token.type === "enum") {
         throwError("Not implemented yet");
       } else {
         break;

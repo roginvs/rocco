@@ -75,7 +75,7 @@ export function createExpressionParser(
         type: "identifier",
         value: token.text,
       };
-    } else if (token.type === "const") {
+    } else if (token.type === "const-expression") {
       scanner.readNext();
       return {
         type: "const",
@@ -213,7 +213,7 @@ export function createExpressionParser(
         type: token.type === "++" ? "prefix ++" : "prefix --",
         target: right,
       };
-    } else if (token.type === "keyword" && token.keyword === "sizeof") {
+    } else if (token.type === "sizeof") {
       scanner.readNext();
 
       if (scanner.current().type === "(") {

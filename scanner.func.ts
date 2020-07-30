@@ -139,15 +139,14 @@ export type Keyword = typeof KEYWORDS[number];
 
 export type Token = (
   | {
-      type: "keyword";
-      keyword: Keyword;
+      type: Keyword;
     }
   | {
       type: "identifier";
       text: string;
     }
   | {
-      type: "const";
+      type: "const-expression";
       subtype: "int" | "float" | "char";
       value: number;
     }
@@ -271,8 +270,7 @@ export function createScannerFunc(str: string) {
     const keyword = KEYWORDS.find((x) => x === value);
     if (keyword) {
       return {
-        type: "keyword",
-        keyword,
+        type: keyword,
         ...savedLocation(),
       };
     } else {
@@ -304,14 +302,14 @@ export function createScannerFunc(str: string) {
     const value = sliceFromSavedPoint();
     if (dotSeen) {
       return {
-        type: "const",
+        type: "const-expression",
         ...savedLocation(),
         subtype: "float",
         value: parseFloat(value),
       };
     } else {
       return {
-        type: "const",
+        type: "const-expression",
         ...savedLocation(),
         subtype: "int",
         value: parseInt(value),
@@ -332,7 +330,7 @@ export function createScannerFunc(str: string) {
     }
     incPos();
     return {
-      type: "const",
+      type: "const-expression",
       ...savedLocation(),
       subtype: "char",
       value: char.charCodeAt(0),

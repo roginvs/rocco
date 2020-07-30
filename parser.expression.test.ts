@@ -14,22 +14,17 @@ const createMockedTypeparser = (scanner: Scanner) => {
   const r: ExpressionRequirements = {
     isCurrentTokenLooksLikeTypeName() {
       const t = scanner.current();
-      return (
-        t.type === "keyword" && (t.keyword === "int" || t.keyword === "char")
-      );
+      return t.type === "int" || t.type === "char";
     },
     readTypeName() {
       const t = scanner.current();
 
-      if (
-        t.type === "keyword" &&
-        (t.keyword === "int" || t.keyword === "char")
-      ) {
+      if (t.type === "int" || t.type === "char") {
         scanner.readNext();
 
         return {
           type: "arithmetic",
-          arithmeticType: t.keyword === "int" ? "int" : "char",
+          arithmeticType: t.type === "int" ? "int" : "char",
           signedUnsigned: null,
           const: false,
         };

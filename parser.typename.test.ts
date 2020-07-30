@@ -8,7 +8,7 @@ const createMockedExpressionParser = (scanner: Scanner) => {
     readAssignmentExpression() {
       const nextToken = scanner.current();
       let node: ExpressionNode;
-      if (nextToken.type === "const") {
+      if (nextToken.type === "const-expression") {
         node = {
           type: "const",
           subtype: "int",

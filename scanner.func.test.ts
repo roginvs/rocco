@@ -39,7 +39,7 @@ describe("Scanner", () => {
 
       if (token.type === "end") {
         break;
-      } else if (token.type === "keyword" && token.keyword === "return") {
+      } else if (token.type === "return") {
         expect(token.length).toStrictEqual(6);
         expect(token.line).toStrictEqual(27);
         expect(token.pos).toStrictEqual(3);
@@ -49,7 +49,7 @@ describe("Scanner", () => {
   it(`Scans simple 123`, () => {
     const scanner = createScannerFunc("123");
     expect(scanner()).toMatchObject({
-      type: "const",
+      type: "const-expression",
       subtype: "int",
       value: 123,
     });
