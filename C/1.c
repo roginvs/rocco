@@ -128,6 +128,17 @@ void test8()
   if (x = 2, 4)
   {
   };
+
+  typedef char TTT[20];
+
+  TTT y;
+
+  struct TTT *unknown_struct;
+
+  struct TTT1
+  {
+    /* data */
+  };
 };
 
 int main(int argc, char **argv)
