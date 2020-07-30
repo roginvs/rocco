@@ -12,7 +12,9 @@ import {
   AssignmentExpressionNode,
   UNARY_OPERATORS,
   Typename,
+  NodeLocator,
 } from "./parser.definitions";
+import { ParserError } from "./error";
 
 const MAX_BINARY_OP_INDEX = 10;
 
@@ -57,37 +59,41 @@ export interface ExpressionRequirements {
 
 export function createExpressionParser(
   scanner: Scanner,
+  locator: NodeLocator,
   typeParser: ExpressionRequirements
 ) {
   function throwError(info: string): never {
-    throw new Error(
-      `${info} at line=${scanner.current().line} pos=${
-        scanner.current().pos
-      } tokenType=${scanner.current().type}`
-    );
+    throw new ParserError(`${info}`, scanner.current());
   }
 
   function readPrimaryExpression(): ExpressionNode {
     const token = scanner.current();
     if (token.type === "identifier") {
       scanner.readNext();
-      return {
+
+      const node: ExpressionNode = {
         type: "identifier",
         value: token.text,
       };
+      locator.set(node, token);
+      return node;
     } else if (token.type === "const-expression") {
       scanner.readNext();
-      return {
+      const node: ExpressionNode = {
         type: "const",
         subtype: token.subtype,
         value: token.value,
       };
+      locator.set(node, token);
+      return node;
     } else if (token.type === "string-literal") {
       scanner.readNext();
-      return {
+      const node: ExpressionNode = {
         type: "string-literal",
         value: token.value,
       };
+      locator.set(node, token);
+      return node;
     } else if (token.type === "(") {
       scanner.readNext();
       const expression = readExpression();
@@ -96,6 +102,10 @@ export function createExpressionParser(
         throwError("Expecting closing brace");
       }
       scanner.readNext();
+      locator.set(expression, {
+        ...token,
+        length: closing.pos - token.pos + closing.length,
+      });
       return expression;
     } else {
       throwError("Expecting primary-expression");
@@ -121,6 +131,10 @@ export function createExpressionParser(
           target: left,
           index: expression,
         };
+        locator.set(newLeft, {
+          ...token,
+          length: closing.pos - token.pos + closing.length,
+        });
         left = newLeft;
       } else if (token.type === "(") {
         scanner.readNext();
@@ -138,6 +152,10 @@ export function createExpressionParser(
           target: left,
           args,
         };
+        locator.set(newLeft, {
+          ...token,
+          length: closing.pos - token.pos + closing.length,
+        });
         left = newLeft;
       } else if (token.type === "." || token.type === "->") {
         scanner.readNext();
@@ -154,6 +172,9 @@ export function createExpressionParser(
           },
           target: left,
         };
+        locator.set(newLeft, {
+          ...token,
+        });
         left = newLeft;
       } else if (token.type === "++") {
         scanner.readNext();
@@ -161,6 +182,9 @@ export function createExpressionParser(
           type: "postfix ++",
           target: left,
         };
+        locator.set(newLeft, {
+          ...token,
+        });
         left = newLeft;
       } else if (token.type === "--") {
         scanner.readNext();
@@ -168,6 +192,9 @@ export function createExpressionParser(
           type: "postfix --",
           target: left,
         };
+        locator.set(newLeft, {
+          ...token,
+        });
         left = newLeft;
       } else {
         break;
@@ -200,21 +227,30 @@ export function createExpressionParser(
       scanner.readNext();
       const right = readUnaryExpression();
 
-      return {
+      const node: ExpressionNode = {
         type: "unary-operator",
         operator: unaryOperator,
         target: right,
       };
+      locator.set(node, {
+        ...token,
+      });
+      return node;
     } else if (token.type === "++" || token.type === "--") {
       scanner.readNext();
       const right = readUnaryExpression();
 
-      return {
+      const node: ExpressionNode = {
         type: token.type === "++" ? "prefix ++" : "prefix --",
         target: right,
       };
+      locator.set(node, {
+        ...token,
+      });
+      return node;
     } else if (token.type === "sizeof") {
       scanner.readNext();
+      let node: ExpressionNode;
 
       if (scanner.current().type === "(") {
         scanner.readNext();
@@ -225,7 +261,7 @@ export function createExpressionParser(
             throwError("Expected )");
           }
           scanner.readNext();
-          return {
+          node = {
             type: "sizeof typename",
             typename: typename,
           };
@@ -238,7 +274,7 @@ export function createExpressionParser(
           }
           scanner.readNext();
 
-          return {
+          node = {
             type: "sizeof expression",
             expression: expressionNode,
           };
@@ -246,11 +282,16 @@ export function createExpressionParser(
       } else {
         const unaryExpressionNode = readUnaryExpression();
 
-        return {
+        node = {
           type: "sizeof expression",
           expression: unaryExpressionNode,
         };
       }
+      locator.set(node, {
+        ...token,
+        length: scanner.current().pos - token.pos,
+      });
+      return node;
     } else {
       const postfixExpression = readPostfixExpression();
       return postfixExpression;
@@ -279,11 +320,16 @@ export function createExpressionParser(
 
       const castTarget = readCastExpression();
 
-      return {
+      const node: ExpressionNode = {
         type: "cast",
         typename: typename,
         target: castTarget,
       };
+      locator.set(node, {
+        ...token,
+        length: scanner.current().pos - token.pos,
+      });
+      return node;
     } else {
       // This means that "(" is not a part of cast-expression, it is a unary-expression
       scanner.rollbackControlPoint();
@@ -321,6 +367,7 @@ export function createExpressionParser(
           left,
           right,
         };
+        locator.set(newLeft, token);
         left = newLeft;
       }
     }
@@ -329,6 +376,8 @@ export function createExpressionParser(
   }
 
   function readConditionalExpression(): ExpressionNode {
+    const startTokenForLocator = scanner.current();
+
     const condition = readLogicalOrExpression();
 
     const questionToken = scanner.current();
@@ -343,12 +392,17 @@ export function createExpressionParser(
       scanner.readNext();
       const iffalse = readConditionalExpression();
 
-      return {
+      const node: ExpressionNode = {
         type: "conditional expression",
         condition,
         iftrue,
         iffalse,
       };
+      locator.set(node, {
+        ...startTokenForLocator,
+        length: scanner.current().pos - startTokenForLocator.pos,
+      });
+      return node;
     } else {
       return condition;
     }
@@ -373,24 +427,32 @@ export function createExpressionParser(
 
     const rvalue = readAssignmentExpression();
 
-    return {
+    const node: ExpressionNode = {
       type: "assignment",
       operator: assignmentOperator,
       lvalue: conditionExpression,
       rvalue: rvalue,
     };
+    locator.set(node, possibleAssignmentOperatorToken);
+    return node;
   }
 
   function readExpression(): ExpressionNode {
+    const tokenForLocator = scanner.current();
     const left = readAssignmentExpression();
     if (scanner.current().type === ",") {
       scanner.readNext();
       const effectiveValue = readExpression();
-      return {
+      const node: ExpressionNode = {
         type: "expression with sideeffect",
         sizeeffect: left,
         effectiveValue: effectiveValue,
       };
+      locator.set(node, {
+        ...tokenForLocator,
+        length: scanner.current().pos - tokenForLocator.pos,
+      });
+      return node;
     } else {
       return left;
     }

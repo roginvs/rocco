@@ -4,6 +4,7 @@ import {
   TypeSignedUnsigned,
   AssignmentOperator,
 } from "./scanner.func";
+import { TokenLocation } from "./error";
 
 //
 // ============= Expressions =============
@@ -164,3 +165,5 @@ export type Typename =
       elementsTypename: Typename;
       size: ExpressionNode | "*" | null;
     };
+
+export type NodeLocator = Map<ExpressionNode | Typename, TokenLocation>;

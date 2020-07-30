@@ -41,6 +41,7 @@ function checkExpression(str: string, ast?: ExpressionNode) {
 
     const parser = createExpressionParser(
       scanner,
+      new Map(),
       createMockedTypeparser(scanner)
     );
     const node = parser.readExpression();
