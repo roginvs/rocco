@@ -334,7 +334,7 @@ export function createTypeParser(
       } else {
         return (node) => {
           const tree = left(node);
-          // TODO: Location?
+
           if (nestedAbstractDeclarator) {
             const nestedTree = nestedAbstractDeclarator(tree);
             return nestedTree;
