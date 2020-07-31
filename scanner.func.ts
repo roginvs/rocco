@@ -61,6 +61,7 @@ export const PUNCTUATORS = [
   "{",
   "}",
   ";",
+  "...",
 ] as const;
 
 export type Punctuator = typeof PUNCTUATORS[number];
