@@ -94,6 +94,8 @@ export function createTypeParser(
 
       const arithmeticSpecifier = isCurrentTokenTypeArithmeticSpecifier();
 
+      const specifierFromSymbolTable = isCurrentTokenTypedefName();
+
       if (qualifier) {
         scanner.readNext();
         qualifiers.push(qualifier);
@@ -129,6 +131,11 @@ export function createTypeParser(
         throwError("Not implemented yet");
       } else if (token.type === "enum") {
         throwError("Not implemented yet");
+      } else if (specifierFromSymbolTable) {
+        if (specifier) {
+          throwError("Already have specifier");
+        }
+        specifier = specifierFromSymbolTable;
       } else {
         break;
       }

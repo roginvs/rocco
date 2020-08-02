@@ -143,8 +143,9 @@ void test8()
 
 void test9()
 {
-  typedef char Arr[20];
-  const Arr a;
+  long typedef long c[20];
+
+  //ccccc = test9;
 }
 
 int main(int argc, char **argv)
