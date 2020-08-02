@@ -4,6 +4,7 @@ import {
   TypeQualifier,
   TYPE_QUALIFIERS,
   TypeSignedUnsigned,
+  StorageClass,
 } from "./scanner.func";
 import {
   Typename,
@@ -76,7 +77,7 @@ export function createTypeParser(
     );
   }
 
-  function readSpecifierQualifierList() {
+  function readSpecifierQualifierListAndDeclarationSpecifiers() {
     // @TODO: Refactor me to be able to read "long long int"
 
     const qualifiers: TypeQualifier[] = [];
@@ -84,6 +85,9 @@ export function createTypeParser(
     let specifier: Typename | undefined = undefined;
 
     let signedUnsigned: TypeSignedUnsigned | undefined;
+
+    let storageClassSpecifier: StorageClass | null = null;
+    let functionSpecifier: "inline" | null = null;
 
     const tokenForLocator = scanner.current();
 
@@ -364,7 +368,7 @@ export function createTypeParser(
   }
 
   function readTypeName() {
-    const base = readSpecifierQualifierList();
+    const base = readSpecifierQualifierListAndDeclarationSpecifiers();
 
     const maybeAbstractDeclaratorCoreless = readMaybeAbstractDeclaratorCoreless();
 

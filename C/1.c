@@ -150,6 +150,15 @@ void test9()
   //ccccc = test9;
 }
 
+void test10(t, t2) int t;
+int t2;
+{
+  // K&R C
+}
+
+// This is an error "a parameter list without types is only allowed in a function definition"
+// void test11(t, t2);
+
 int main(int argc, char **argv)
 {
   int x = 1 + argc;
