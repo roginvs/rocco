@@ -266,7 +266,15 @@ export function createTypeParser(
    *
    */
   type TypeCoreless = (base: Typename) => Typename;
-  type TypeOrDeclaratorCoreless = (base: Typename) => Typename | DeclaratorNode;
+  type TypeOrDeclaratorCoreless =
+    | {
+        abstract: true;
+        chain: (base: Typename) => Typename;
+      }
+    | {
+        abstract: false;
+        chain: (base: Typename) => DeclaratorNode;
+      };
 
   function readPointersCoreless(): TypeCoreless {
     const token = scanner.current();
@@ -315,14 +323,24 @@ export function createTypeParser(
 
     const directAbstractDeclaratorOrAbstractDeclaratorCoreless = readDirectAbstractDeclaratorOrDirectDeclaratorCoreless();
 
-    return (node) => {
-      const afterPointers = afterPointersCoreless(node);
-      const directAbstractDeclaratorOrDirectDeclarator = directAbstractDeclaratorOrAbstractDeclaratorCoreless(
-        afterPointers
-      );
-
-      return directAbstractDeclaratorOrDirectDeclarator;
-    };
+    // Chain is the same
+    if (directAbstractDeclaratorOrAbstractDeclaratorCoreless.abstract) {
+      return {
+        abstract: true,
+        chain: (node) =>
+          directAbstractDeclaratorOrAbstractDeclaratorCoreless.chain(
+            afterPointersCoreless(node)
+          ),
+      };
+    } else {
+      return {
+        abstract: false,
+        chain: (node) =>
+          directAbstractDeclaratorOrAbstractDeclaratorCoreless.chain(
+            afterPointersCoreless(node)
+          ),
+      };
+    }
   }
 
   function readDirectAbstractDeclaratorOrDirectDeclaratorCoreless(): TypeOrDeclaratorCoreless {
@@ -409,18 +427,25 @@ export function createTypeParser(
       } else {
         // @TODO: Check other productions for direct-declarator
 
-        return (node) => {
-          const tree = left(node);
-
-          if (nestedAbstractDeclaratorOrDeclaratorOrIdentifier) {
-            const nestedTree = nestedAbstractDeclaratorOrDeclaratorOrIdentifier(
-              tree
-            );
-            return nestedTree;
+        if (!nestedAbstractDeclaratorOrDeclaratorOrIdentifier) {
+          return {
+            abstract: true,
+            chain: (node) => left(node),
+          };
+        } else {
+          const saved = nestedAbstractDeclaratorOrDeclaratorOrIdentifier;
+          if (saved.abstract) {
+            return {
+              abstract: true,
+              chain: (node) => saved.chain(left(node)),
+            };
           } else {
-            return tree;
+            return {
+              abstract: false,
+              chain: (node) => saved.chain(left(node)),
+            };
           }
-        };
+        }
       }
     }
   }
@@ -439,9 +464,15 @@ export function createTypeParser(
       throwError("function-specifier is not allowed in typeName");
     }
 
-    const maybeAbstractDeclaratorCoreless = readAbstractDeclaratorOrDeclaratorCoreless();
+    const abstractDeclaratorOrDeclaratorCoreless = readAbstractDeclaratorOrDeclaratorCoreless();
 
-    const typename = maybeAbstractDeclaratorCoreless(baseSpecifier);
+    if (!abstractDeclaratorOrDeclaratorCoreless.abstract) {
+      throwError("Non abstract declarator is not expected here");
+    }
+
+    const typename = abstractDeclaratorOrDeclaratorCoreless.chain(
+      baseSpecifier
+    );
 
     return typename;
   }
