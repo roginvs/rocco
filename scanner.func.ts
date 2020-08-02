@@ -133,6 +133,8 @@ export const KEYWORDS = [
 
   "void",
   "while",
+
+  "inline",
 ] as const;
 export type Keyword = typeof KEYWORDS[number];
 

@@ -5,6 +5,7 @@ import {
   TYPE_QUALIFIERS,
   TypeSignedUnsigned,
   StorageClass,
+  STORAGE_CLASSES,
 } from "./scanner.func";
 import {
   Typename,
@@ -40,6 +41,16 @@ export function createTypeParser(
     const token = scanner.current();
     const arithmeticType = ARITHMETIC_TYPES.find((x) => x === token.type);
     return arithmeticType;
+  }
+
+  function isCurrentTokenAStorageClassSpecifier() {
+    const token = scanner.current();
+    const storageClassSpecifier = STORAGE_CLASSES.find((x) => x === token.type);
+    return storageClassSpecifier;
+  }
+  function isCurrentTokenAFunctionSpecifier() {
+    const token = scanner.current();
+    return token.type === "inline" ? token.type : undefined;
   }
 
   function isCurrentTokenTypedefName(): Typename | undefined {
@@ -96,9 +107,13 @@ export function createTypeParser(
 
       const token = scanner.current();
 
-      const arithmeticSpecifier = isCurrentTokenTypeArithmeticSpecifier();
+      const maybeArithmeticSpecifier = isCurrentTokenTypeArithmeticSpecifier();
 
-      const specifierFromSymbolTable = isCurrentTokenTypedefName();
+      const maybeSpecifierFromSymbolTable = isCurrentTokenTypedefName();
+
+      const maybeStorageClassSpecifier = isCurrentTokenAStorageClassSpecifier();
+
+      const maybeFunctionSpecifier = isCurrentTokenAFunctionSpecifier();
 
       if (qualifier) {
         scanner.readNext();
@@ -112,7 +127,7 @@ export function createTypeParser(
           type: "void",
           const: false,
         };
-      } else if (arithmeticSpecifier) {
+      } else if (maybeArithmeticSpecifier) {
         // @TODO Here we should update type if we see "long long"
         if (specifier) {
           throwError("Already have type specifier");
@@ -120,7 +135,7 @@ export function createTypeParser(
         scanner.readNext();
         specifier = {
           type: "arithmetic",
-          arithmeticType: arithmeticSpecifier,
+          arithmeticType: maybeArithmeticSpecifier,
           const: false,
           signedUnsigned: null,
         };
@@ -136,11 +151,23 @@ export function createTypeParser(
         throwError("Not implemented yet");
       } else if (token.type === "enum") {
         throwError("Not implemented yet");
-      } else if (specifierFromSymbolTable) {
+      } else if (maybeSpecifierFromSymbolTable) {
         if (specifier) {
           throwError("Already have specifier");
         }
-        specifier = specifierFromSymbolTable;
+        specifier = maybeSpecifierFromSymbolTable;
+      } else if (maybeStorageClassSpecifier) {
+        if (storageClassSpecifier) {
+          throwError(
+            `Already have storage class specifier ${storageClassSpecifier}`
+          );
+        }
+        storageClassSpecifier = maybeStorageClassSpecifier;
+      } else if (maybeFunctionSpecifier) {
+        if (functionSpecifier) {
+          throwError(`Already have function specifier`);
+        }
+        functionSpecifier = maybeFunctionSpecifier;
       } else {
         break;
       }
@@ -173,7 +200,7 @@ export function createTypeParser(
       length: scanner.current().pos - tokenForLocator.pos,
     });
 
-    return specifier;
+    return { specifier, storageClassSpecifier, functionSpecifier };
   }
 
   /*
@@ -368,11 +395,15 @@ export function createTypeParser(
   }
 
   function readTypeName() {
-    const base = readSpecifierQualifierListAndDeclarationSpecifiers();
+    const {
+      specifier: baseSpecifier,
+      storageClassSpecifier,
+      functionSpecifier,
+    } = readSpecifierQualifierListAndDeclarationSpecifiers();
 
     const maybeAbstractDeclaratorCoreless = readMaybeAbstractDeclaratorCoreless();
 
-    const typename = maybeAbstractDeclaratorCoreless(base);
+    const typename = maybeAbstractDeclaratorCoreless(baseSpecifier);
 
     return typename;
   }
