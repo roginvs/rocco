@@ -61,7 +61,7 @@ export function createTypeParser(
   /**
    * Use this function in parsing cast-expression and sizeof
    */
-  function isCurrentTokenLooksLikeTypeName() {
+  function isCurrentTokenLooksLikeSpecifierQualifierList() {
     const token = scanner.current();
 
     const isIt =
@@ -78,6 +78,18 @@ export function createTypeParser(
         : false;
 
     return isIt;
+  }
+
+  function isCurrentTokenLooksLikeTypeName() {
+    return isCurrentTokenLooksLikeSpecifierQualifierList();
+  }
+
+  function isCurrentTokenLooksLikeDeclarationSpecifier() {
+    return isCurrentTokenLooksLikeSpecifierQualifierList() ||
+      isCurrentTokenAStorageClassSpecifier() ||
+      isCurrentTokenAFunctionSpecifier()
+      ? true
+      : false;
   }
 
   function isQualifiersListHaveDuplicates(qualifiers: TypeQualifier[]) {
@@ -316,7 +328,7 @@ export function createTypeParser(
   function readDirectAbstractDeclaratorOrDirectDeclaratorCoreless(): TypeOrDeclaratorCoreless {
     let left: TypeCoreless = (node) => node;
 
-    let nestedAbstractDeclarator: TypeOrDeclaratorCoreless | null = null;
+    let nestedAbstractDeclaratorOrDeclaratorOrIdentifier: TypeOrDeclaratorCoreless | null = null;
 
     while (true) {
       const token = scanner.current();
@@ -325,16 +337,19 @@ export function createTypeParser(
         scanner.readNext();
 
         const nextToken = scanner.current();
-        if (nextToken.type === ")" || isCurrentTokenLooksLikeTypeName()) {
+        if (
+          nextToken.type === ")" ||
+          isCurrentTokenLooksLikeDeclarationSpecifier()
+        ) {
           scanner.readNext();
           // we have a func call
           // @TODO
         } else {
-          if (nestedAbstractDeclarator) {
+          if (nestedAbstractDeclaratorOrDeclaratorOrIdentifier) {
             throwError("Already have nested abstract-declarator");
           }
           // Not a func call, but nested abstract-declarator
-          nestedAbstractDeclarator = readAbstractDeclaratorOrDeclaratorCoreless();
+          nestedAbstractDeclaratorOrDeclaratorOrIdentifier = readAbstractDeclaratorOrDeclaratorCoreless();
 
           if (scanner.current().type !== ")") {
             throwError("Expected )");
@@ -386,8 +401,10 @@ export function createTypeParser(
         return (node) => {
           const tree = left(node);
 
-          if (nestedAbstractDeclarator) {
-            const nestedTree = nestedAbstractDeclarator(tree);
+          if (nestedAbstractDeclaratorOrDeclaratorOrIdentifier) {
+            const nestedTree = nestedAbstractDeclaratorOrDeclaratorOrIdentifier(
+              tree
+            );
             return nestedTree;
           } else {
             return tree;
