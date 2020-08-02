@@ -141,6 +141,12 @@ void test8()
   };
 };
 
+void test9()
+{
+  typedef char Arr[20];
+  const Arr a;
+}
+
 int main(int argc, char **argv)
 {
   int x = 1 + argc;

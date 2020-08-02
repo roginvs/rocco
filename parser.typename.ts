@@ -5,7 +5,12 @@ import {
   TYPE_QUALIFIERS,
   TypeSignedUnsigned,
 } from "./scanner.func";
-import { Typename, ExpressionNode, NodeLocator } from "./parser.definitions";
+import {
+  Typename,
+  ExpressionNode,
+  NodeLocator,
+  DeclaratorNode,
+} from "./parser.definitions";
 import { ParserError } from "./error";
 
 export interface TypeParserDependencies {
@@ -205,8 +210,11 @@ export function createTypeParser(
    *
    * We have two operation: insert or append into that chain
    *
+   * We also can defer some checks, for example if we got abstract-declarator, but
+   *   with storage class
+   *
    */
-  type TypeOrDeclaratorCoreless = (base: Typename) => Typename | Declarator;
+  type TypeOrDeclaratorCoreless = (base: Typename) => Typename;
 
   function readPointersCoreless(): TypeOrDeclaratorCoreless {
     const token = scanner.current();

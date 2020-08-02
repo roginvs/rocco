@@ -93,11 +93,20 @@ export const TYPE_QUALIFIERS = ["restrict", "const", "volatile"] as const;
 
 export type TypeQualifier = typeof TYPE_QUALIFIERS[number];
 
+export const STORAGE_CLASSES = [
+  "typedef",
+  "extern",
+  "static",
+  "auto",
+  "register",
+] as const;
+export type StorageClass = typeof STORAGE_CLASSES[number];
+
 export const KEYWORDS = [
   ...ARITHMETIC_TYPE,
   ...TYPE_SIGNED_UNSIGNED,
   ...TYPE_QUALIFIERS,
-  "auto",
+  ...STORAGE_CLASSES,
 
   "break",
   "case",
@@ -108,20 +117,18 @@ export const KEYWORDS = [
 
   "else",
   "enum",
-  "extern",
+
   "for",
   "goto",
   "if",
 
-  "register",
   "return",
 
   "sizeof",
-  "static",
 
   "struct",
   "switch",
-  "typedef",
+
   "union",
 
   "void",

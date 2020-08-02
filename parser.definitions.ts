@@ -3,6 +3,7 @@ import {
   ArithmeticType,
   TypeSignedUnsigned,
   AssignmentOperator,
+  StorageClass,
 } from "./scanner.func";
 import { TokenLocation } from "./error";
 
@@ -165,5 +166,11 @@ export type Typename =
       elementsTypename: Typename;
       size: ExpressionNode | "*" | null;
     };
+
+export type DeclaratorNode = {
+  identifier: string;
+  storageSpecifier: StorageClass | null;
+  functionSpecifier: "inline" | null;
+};
 
 export type NodeLocator = Map<ExpressionNode | Typename, TokenLocation>;
