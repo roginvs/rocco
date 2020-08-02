@@ -106,6 +106,7 @@ export function createTypeParser(
         scanner.readNext();
         specifier = {
           type: "void",
+          const: false,
         };
       } else if (arithmeticSpecifier) {
         // @TODO Here we should update type if we see "long long"
@@ -337,6 +338,7 @@ export function createTypeParser(
         left = (node) => {
           const me: Typename = {
             type: "array",
+            const: true,
             size: size,
             elementsTypename: node,
           };

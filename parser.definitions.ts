@@ -139,7 +139,7 @@ export type ExpressionNode =
 //
 
 export type Typename =
-  | { type: "void" }
+  | { type: "void"; const: boolean }
   | {
       type: "arithmetic";
       arithmeticType: ArithmeticType;
@@ -165,6 +165,7 @@ export type Typename =
       type: "array";
       elementsTypename: Typename;
       size: ExpressionNode | "*" | null;
+      const: true;
     };
 
 export type DeclaratorNode = {

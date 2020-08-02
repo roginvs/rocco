@@ -143,7 +143,9 @@ void test8()
 
 void test9()
 {
-  long typedef long c[20];
+  const void *c;
+
+  //
 
   //ccccc = test9;
 }

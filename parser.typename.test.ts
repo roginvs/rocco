@@ -152,8 +152,10 @@ describe("Parsing typename", () => {
   checkTypename("char *[3][7]", {
     type: "array",
     size: { type: "const", subtype: "int", value: 3 },
+    const: true,
     elementsTypename: {
       type: "array",
+      const: true,
       size: { type: "const", subtype: "int", value: 7 },
       elementsTypename: {
         type: "pointer",
@@ -172,6 +174,7 @@ describe("Parsing typename", () => {
     type: "pointer",
     pointsTo: {
       type: "array",
+      const: true,
       size: { type: "const", subtype: "int", value: 33 },
       elementsTypename: {
         type: "arithmetic",
@@ -192,8 +195,10 @@ describe("Parsing typename", () => {
       pointsTo: {
         type: "array",
         size: { type: "const", subtype: "int", value: 5 },
+        const: true,
         elementsTypename: {
           type: "array",
+          const: true,
           size: { type: "const", subtype: "int", value: 10 },
           elementsTypename: {
             type: "pointer",
@@ -214,6 +219,7 @@ describe("Parsing typename", () => {
 
   checkTypename("char [*p]", {
     type: "array",
+    const: true,
     size: {
       type: "unary-operator",
       operator: "*",
