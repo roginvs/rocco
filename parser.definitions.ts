@@ -166,6 +166,18 @@ export type Typename =
       elementsTypename: Typename;
       size: ExpressionNode | "*" | null;
       const: true;
+    }
+  | {
+      type: "function";
+      parameters: (DeclaratorNode | Typename)[];
+      returnType: Typename;
+      const: true;
+    }
+  | {
+      type: "function";
+      parametersIdentifiers: IdentifierNode[];
+      returnType: Typename;
+      const: true;
     };
 
 export type DeclaratorNode = {

@@ -344,6 +344,7 @@ export function createTypeParser(
   }
 
   function readDirectAbstractDeclaratorOrDirectDeclaratorCoreless(): TypeOrDeclaratorCoreless {
+    // Here we have default, which allows this function to read empty declarator/abstract-declarator
     let left: TypeCoreless = (node) => node;
 
     let nestedAbstractDeclaratorOrDeclaratorOrIdentifier: TypeOrDeclaratorCoreless | null = null;
@@ -498,6 +499,34 @@ export function createTypeParser(
     );
 
     return typename;
+  }
+
+  function readParameterDeclaration() {
+    const {
+      specifier: baseSpecifier,
+      storageClassSpecifier,
+      functionSpecifier,
+    } = readDeclarationSpecifiers();
+
+    const declarator = readAbstractDeclaratorOrDeclaratorCoreless();
+
+    if (storageClassSpecifier && storageClassSpecifier !== "register") {
+      throwError(
+        "Only register is allowed in parameter storage-class-specifier"
+      );
+    }
+    if (functionSpecifier) {
+      throwError("Function specifier is not allowed in parameter declaration");
+    }
+
+    if (declarator.abstract) {
+      // unnamed prototyped parameters
+      const typename = declarator.chain(baseSpecifier);
+      return typename;
+    } else {
+      const namedParameterDeclaration = declarator.chain(baseSpecifier);
+      return namedParameterDeclaration;
+    }
   }
 
   return {
