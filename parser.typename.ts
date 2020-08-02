@@ -206,9 +206,9 @@ export function createTypeParser(
    * We have two operation: insert or append into that chain
    *
    */
-  type TypeCoreless = (base: Typename) => Typename;
+  type TypeOrDeclaratorCoreless = (base: Typename) => Typename | Declarator;
 
-  function readPointersCoreless(): TypeCoreless {
+  function readPointersCoreless(): TypeOrDeclaratorCoreless {
     const token = scanner.current();
     if (token.type !== "*") {
       return (base) => base;
@@ -233,7 +233,7 @@ export function createTypeParser(
 
     const nextPartCoreless = readPointersCoreless();
 
-    const myCoreless: TypeCoreless = (base) => {
+    const myCoreless: TypeOrDeclaratorCoreless = (base) => {
       const me: Typename = {
         type: "pointer",
         const: isConst,
@@ -250,7 +250,7 @@ export function createTypeParser(
     return myCoreless;
   }
 
-  function readAbstractDeclaratorCoreless(): TypeCoreless {
+  function readMaybeAbstractDeclaratorCoreless(): TypeOrDeclaratorCoreless {
     const afterPointersCoreless = readPointersCoreless();
 
     const directAbstractDeclaratorCoreless = readDirectAbstractDeclaratorCoreless();
@@ -263,10 +263,10 @@ export function createTypeParser(
     };
   }
 
-  function readDirectAbstractDeclaratorCoreless(): TypeCoreless {
-    let left: TypeCoreless = (node) => node;
+  function readDirectAbstractDeclaratorCoreless(): TypeOrDeclaratorCoreless {
+    let left: TypeOrDeclaratorCoreless = (node) => node;
 
-    let nestedAbstractDeclarator: TypeCoreless | null = null;
+    let nestedAbstractDeclarator: TypeOrDeclaratorCoreless | null = null;
 
     while (true) {
       const token = scanner.current();
@@ -284,7 +284,7 @@ export function createTypeParser(
             throwError("Already have nested abstract-declarator");
           }
           // Not a func call, but nested abstract-declarator
-          nestedAbstractDeclarator = readAbstractDeclaratorCoreless();
+          nestedAbstractDeclarator = readMaybeAbstractDeclaratorCoreless();
 
           if (scanner.current().type !== ")") {
             throwError("Expected )");
@@ -349,9 +349,9 @@ export function createTypeParser(
   function readTypeName() {
     const base = readSpecifierQualifierList();
 
-    const abstractDeclaratorCoreless = readAbstractDeclaratorCoreless();
+    const maybeAbstractDeclaratorCoreless = readMaybeAbstractDeclaratorCoreless();
 
-    const typename = abstractDeclaratorCoreless(base);
+    const typename = maybeAbstractDeclaratorCoreless(base);
 
     return typename;
   }
