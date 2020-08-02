@@ -336,19 +336,28 @@ export function createTypeParser(
       if (token.type === "(") {
         scanner.readNext();
 
-        const nextToken = scanner.current();
+        const firstTokenInsideBracket = scanner.current();
+
         if (
-          nextToken.type === ")" ||
+          // We already have "identifier" or "(declarator)" or "(abstract-declarator)"
+          nestedAbstractDeclaratorOrDeclaratorOrIdentifier ||
+          // Or, it is () which is a function call
+          firstTokenInsideBracket.type === ")" ||
+          // So, now it is possible to be:
+          //   - nested declarator in direct-declarator
+          //   - nested abstract-declarator in direct-abstract-declarator
+          //   - direct-abstract-declarator which declares function
+          //  "declarator" and "direct-declarator" can not start with declaration-specifier
           isCurrentTokenLooksLikeDeclarationSpecifier()
         ) {
-          scanner.readNext();
-          // we have a func call
-          // @TODO
-        } else {
-          if (nestedAbstractDeclaratorOrDeclaratorOrIdentifier) {
-            throwError("Already have nested abstract-declarator");
+          // @TODO: A function call
+
+          if (firstTokenInsideBracket.type !== ")") {
+            throwError("Not supported yet");
           }
-          // Not a func call, but nested abstract-declarator
+          scanner.readNext();
+        } else {
+          // Not a func call, but nested abstract-declarator or declarator
           nestedAbstractDeclaratorOrDeclaratorOrIdentifier = readAbstractDeclaratorOrDeclaratorCoreless();
 
           if (scanner.current().type !== ")") {
@@ -398,6 +407,8 @@ export function createTypeParser(
           return savedLeft(me);
         };
       } else {
+        // @TODO: Check other productions for direct-declarator
+
         return (node) => {
           const tree = left(node);
 
