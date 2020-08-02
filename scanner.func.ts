@@ -355,9 +355,19 @@ export function createScannerFunc(str: string) {
 
   function scanOperatorOrPunc(): Token | null {
     saveLocation();
-    // Oh-la-la! Complicated and tricky!
+
+    if (current() === "." && lookAhead(1) === "." && lookAhead(2) === ".") {
+      // Ellipsis is a special case,
+      incPos(3);
+      return {
+        type: "...",
+        ...savedLocation(),
+      };
+    }
+
+    // Oh-la-la! Complicated and tricky! Refactor me!
     let currentOpOrPuncPos = 0;
-    let opOrPuncCandidates = [...PUNCTUATORS];
+    let opOrPuncCandidates = [...PUNCTUATORS].filter((x) => x !== "...");
     while (true) {
       const lastRoundCandidates = [...opOrPuncCandidates];
       opOrPuncCandidates = opOrPuncCandidates.filter(

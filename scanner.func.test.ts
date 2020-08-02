@@ -54,4 +54,18 @@ describe("Scanner", () => {
       value: 123,
     });
   });
+
+  it(`Scans with ellipsis`, () => {
+    const scanner = createScannerFunc("int printf( const char* format, ... );");
+    while (true) {
+      const token = scanner();
+      if (token.type === "end") {
+        break;
+      } else if (token.type === "return") {
+        expect(token.length).toStrictEqual(6);
+        expect(token.line).toStrictEqual(27);
+        expect(token.pos).toStrictEqual(3);
+      }
+    }
+  });
 });
