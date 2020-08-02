@@ -232,4 +232,32 @@ describe("Parsing typename", () => {
       signedUnsigned: null,
     },
   });
+
+  checkTypename("char (int x)", {
+    type: "function",
+    const: true,
+    haveEndingEllipsis: false,
+    parameters: [
+      {
+        type: "declarator",
+        functionSpecifier: null,
+        storageSpecifier: null,
+        identifier: "x",
+        typename: {
+          type: "arithmetic",
+          arithmeticType: "int",
+          const: false,
+          signedUnsigned: null,
+        },
+      },
+    ],
+    returnType: {
+      type: "arithmetic",
+      arithmeticType: "char",
+      const: false,
+      signedUnsigned: null,
+    },
+  });
+
+  checkTypename("char (*(*)[])(int * param1, int param2(),...)");
 });

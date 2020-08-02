@@ -369,7 +369,7 @@ export function createScannerFunc(str: string) {
         if (currentOpOrPuncPos > 0) {
           // we must have lastRoundCandidates
           if (lastRoundCandidates.length === 0) {
-            throwError("Internal error");
+            throwError("Internal error 1");
           } else {
             const lastRoundExactLengthCandidates = lastRoundCandidates.filter(
               (op) => op.length === currentOpOrPuncPos
@@ -377,7 +377,7 @@ export function createScannerFunc(str: string) {
             if (lastRoundExactLengthCandidates.length === 1) {
               incPos(currentOpOrPuncPos);
               if (sliceFromSavedPoint() !== lastRoundExactLengthCandidates[0]) {
-                throwError("Internal error");
+                throwError("Internal error 2");
               }
               return {
                 type: lastRoundExactLengthCandidates[0],
@@ -392,7 +392,8 @@ export function createScannerFunc(str: string) {
       if (opOrPuncCandidates.length === 1) {
         incPos(currentOpOrPuncPos + 1);
         if (sliceFromSavedPoint() !== opOrPuncCandidates[0]) {
-          throwError("Internal error");
+          console.warn(sliceFromSavedPoint(), opOrPuncCandidates);
+          throwError("Internal error 3");
         }
         return {
           type: opOrPuncCandidates[0],

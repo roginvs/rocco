@@ -159,8 +159,11 @@ int t2;
 // This is an error "a parameter list without types is only allowed in a function definition"
 // void test11(t, t2);
 
-int test12(register char c()){
-    //
+int test12(register char c())
+{
+  //
+
+  char (*(*p)[])(int *param1, int param2(), ...);
 };
 
 // unnamed prototyped parameters not allowed when body is present
