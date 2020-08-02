@@ -14,6 +14,7 @@ import {
   DeclaratorNode,
 } from "./parser.definitions";
 import { ParserError } from "./error";
+import { type } from "os";
 
 export interface TypeParserDependencies {
   readAssignmentExpression: () => ExpressionNode;
@@ -376,8 +377,39 @@ export function createTypeParser(
           // @TODO: A function call
 
           // Read "parameter-type-list" or "identifier-list" using isAbstractDeclarator
+          if (
+            isAbstractDeclarator ||
+            isCurrentTokenLooksLikeDeclarationSpecifier() ||
+            // Assume no parameters is parameter-type-list
+            scanner.current().type === ")"
+          ) {
+            const [parameters, ellipsis] =
+              scanner.current().type === ")"
+                ? [[], false]
+                : readParameterTypeList();
 
-          if (firstTokenInsideBracket.type !== ")") {
+            const savedLeft = left;
+
+            left = (node) => {
+              const me: Typename = {
+                type: "function",
+                const: true,
+                haveEndingEllipsis: ellipsis,
+                parameters: parameters,
+                returnType: node,
+              };
+              locator.set(me, {
+                ...token,
+                length: closing.pos - token.pos,
+              });
+              return savedLeft(me);
+            };
+          } else {
+            throw new Error("TODO Read identifier list");
+          }
+
+          const closing = scanner.current();
+          if (closing.type !== ")") {
             throwError("Not supported yet");
           }
           scanner.readNext();
@@ -527,6 +559,27 @@ export function createTypeParser(
       const namedParameterDeclaration = declarator.chain(baseSpecifier);
       return namedParameterDeclaration;
     }
+  }
+
+  function readParameterTypeList() {
+    const parameters: (DeclaratorNode | Typename)[] = [];
+    let ellipsis = false;
+    while (true) {
+      const parameter = readParameterDeclaration();
+      parameters.push(parameter);
+
+      const token = scanner.current();
+      if (token.type === ",") {
+        scanner.readNext();
+      } else if (token.type === "...") {
+        ellipsis = true;
+        scanner.readNext();
+        break;
+      } else {
+        break;
+      }
+    }
+    return [parameters, ellipsis] as const;
   }
 
   return {

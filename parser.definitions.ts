@@ -170,6 +170,7 @@ export type Typename =
   | {
       type: "function";
       parameters: (DeclaratorNode | Typename)[];
+      haveEndingEllipsis: boolean;
       returnType: Typename;
       const: true;
     }
