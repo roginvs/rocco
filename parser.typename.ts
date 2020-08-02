@@ -351,6 +351,10 @@ export function createTypeParser(
     while (true) {
       const token = scanner.current();
 
+      const isAbstractDeclarator =
+        !nestedAbstractDeclaratorOrDeclaratorOrIdentifier ||
+        nestedAbstractDeclaratorOrDeclaratorOrIdentifier.abstract;
+
       if (token.type === "(") {
         scanner.readNext();
 
@@ -370,6 +374,8 @@ export function createTypeParser(
         ) {
           // @TODO: A function call
 
+          // Read "parameter-type-list" or "identifier-list" using isAbstractDeclarator
+
           if (firstTokenInsideBracket.type !== ")") {
             throwError("Not supported yet");
           }
@@ -385,6 +391,9 @@ export function createTypeParser(
         }
       } else if (token.type === "[") {
         scanner.readNext();
+
+        // @TODO: Check other productions for direct-declarator,
+        // like with "static" keyword or with "type-qualifier-list"
 
         let size: ExpressionNode | "*" | null = null;
         if (scanner.current().type === "*") {
@@ -424,9 +433,23 @@ export function createTypeParser(
           });
           return savedLeft(me);
         };
+      } else if (token.type === "identifier") {
+        // Aha, direct-declarator with identifier
+        // Must be null because we checked in above
+        nestedAbstractDeclaratorOrDeclaratorOrIdentifier = {
+          abstract: false,
+          chain: (typeNode) => ({
+            type: "declarator",
+            // Unknown yet
+            functionSpecifier: null,
+            // Unknown yet
+            storageSpecifier: null,
+            identifier: token.text,
+            typename: typeNode,
+          }),
+        };
+        scanner.readNext();
       } else {
-        // @TODO: Check other productions for direct-declarator
-
         if (!nestedAbstractDeclaratorOrDeclaratorOrIdentifier) {
           return {
             abstract: true,

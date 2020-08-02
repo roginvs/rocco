@@ -169,7 +169,9 @@ export type Typename =
     };
 
 export type DeclaratorNode = {
+  type: "declarator";
   identifier: string;
+  typename: Typename;
   storageSpecifier: StorageClass | null;
   functionSpecifier: "inline" | null;
 };
