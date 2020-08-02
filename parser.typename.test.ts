@@ -259,5 +259,91 @@ describe("Parsing typename", () => {
     },
   });
 
-  checkTypename("char (*(*)[])(int * param1, int param2(),...)");
+  checkTypename("char (*(*)[])(int * param1, int (),...)", {
+    type: "pointer",
+    const: false,
+    pointsTo: {
+      type: "array",
+      const: true,
+      size: null,
+      elementsTypename: {
+        type: "pointer",
+        const: false,
+        pointsTo: {
+          type: "function",
+          const: true,
+          haveEndingEllipsis: true,
+          parameters: [
+            {
+              type: "declarator",
+              functionSpecifier: null,
+              storageSpecifier: null,
+              identifier: "param1",
+              typename: {
+                type: "pointer",
+                const: false,
+                pointsTo: {
+                  type: "arithmetic",
+                  arithmeticType: "int",
+                  const: false,
+                  signedUnsigned: null,
+                },
+              },
+            },
+            {
+              type: "function",
+              const: true,
+              haveEndingEllipsis: false,
+              parameters: [],
+              returnType: {
+                type: "arithmetic",
+                arithmeticType: "int",
+                const: false,
+                signedUnsigned: null,
+              },
+            },
+          ],
+          returnType: {
+            type: "arithmetic",
+            arithmeticType: "char",
+            const: false,
+            signedUnsigned: null,
+          },
+        },
+      },
+    },
+  });
+
+  // https://www.geeksforgeeks.org/complicated-declarations-in-c/
+  checkTypename("char (*(*())[]) ()", {
+    type: "function",
+    const: true,
+    haveEndingEllipsis: false,
+    parameters: [],
+    returnType: {
+      type: "pointer",
+      const: false,
+      pointsTo: {
+        type: "array",
+        const: true,
+        size: null,
+        elementsTypename: {
+          type: "pointer",
+          const: false,
+          pointsTo: {
+            type: "function",
+            const: true,
+            haveEndingEllipsis: false,
+            parameters: [],
+            returnType: {
+              type: "arithmetic",
+              arithmeticType: "char",
+              const: false,
+              signedUnsigned: null,
+            },
+          },
+        },
+      },
+    },
+  });
 });

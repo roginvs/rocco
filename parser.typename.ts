@@ -25,6 +25,7 @@ export function createTypeParser(
   expressionReader: TypeParserDependencies
 ) {
   function throwError(info: string): never {
+    // console.info(info, scanner.current());
     throw new ParserError(`${info}`, scanner.current());
   }
 
@@ -565,16 +566,17 @@ export function createTypeParser(
     const parameters: (DeclaratorNode | Typename)[] = [];
     let ellipsis = false;
     while (true) {
-      const parameter = readParameterDeclaration();
-      parameters.push(parameter);
-
-      const token = scanner.current();
-      if (token.type === ",") {
-        scanner.readNext();
-      } else if (token.type === "...") {
+      if (scanner.current().type === "...") {
         ellipsis = true;
         scanner.readNext();
         break;
+      }
+
+      const parameter = readParameterDeclaration();
+      parameters.push(parameter);
+
+      if (scanner.current().type === ",") {
+        scanner.readNext();
       } else {
         break;
       }
