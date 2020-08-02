@@ -389,8 +389,13 @@ export function createTypeParser(
                 ? [[], false]
                 : readParameterTypeList();
 
-            const savedLeft = left;
+            const closing = scanner.current();
+            if (closing.type !== ")") {
+              throwError("Expected )");
+            }
+            scanner.readNext();
 
+            const savedLeft = left;
             left = (node) => {
               const me: Typename = {
                 type: "function",
@@ -408,12 +413,6 @@ export function createTypeParser(
           } else {
             throw new Error("TODO Read identifier list");
           }
-
-          const closing = scanner.current();
-          if (closing.type !== ")") {
-            throwError("Not supported yet");
-          }
-          scanner.readNext();
         } else {
           // Not a func call, but nested abstract-declarator or declarator
           nestedAbstractDeclaratorOrDeclaratorOrIdentifier = readAbstractDeclaratorOrDeclaratorCoreless();
@@ -468,21 +467,29 @@ export function createTypeParser(
           return savedLeft(me);
         };
       } else if (token.type === "identifier") {
+        scanner.readNext();
+        const afterIdentifierTokenForLocator = scanner.current();
         // Aha, direct-declarator with identifier
         // Must be null because we checked in above
         nestedAbstractDeclaratorOrDeclaratorOrIdentifier = {
           abstract: false,
-          chain: (typeNode) => ({
-            type: "declarator",
-            // Unknown yet
-            functionSpecifier: null,
-            // Unknown yet
-            storageSpecifier: null,
-            identifier: token.text,
-            typename: typeNode,
-          }),
+          chain: (typeNode) => {
+            const declaratorNode: DeclaratorNode = {
+              type: "declarator",
+              // Unknown yet
+              functionSpecifier: null,
+              // Unknown yet
+              storageSpecifier: null,
+              identifier: token.text,
+              typename: typeNode,
+            };
+            locator.set(declaratorNode, {
+              ...token,
+              length: afterIdentifierTokenForLocator.pos - token.pos,
+            });
+            return declaratorNode;
+          },
         };
-        scanner.readNext();
       } else {
         if (!nestedAbstractDeclaratorOrDeclaratorOrIdentifier) {
           return {

@@ -189,4 +189,7 @@ export type DeclaratorNode = {
   functionSpecifier: "inline" | null;
 };
 
-export type NodeLocator = Map<ExpressionNode | Typename, TokenLocation>;
+export type NodeLocator = Map<
+  ExpressionNode | Typename | DeclaratorNode,
+  TokenLocation
+>;
