@@ -88,7 +88,7 @@ export function createTypeParser(
     );
   }
 
-  function readSpecifierQualifierListAndDeclarationSpecifiers() {
+  function readDeclarationSpecifiers() {
     // @TODO: Refactor me to be able to read "long long int"
 
     const qualifiers: TypeQualifier[] = [];
@@ -253,9 +253,10 @@ export function createTypeParser(
    *   with storage class
    *
    */
-  type TypeOrDeclaratorCoreless = (base: Typename) => Typename;
+  type TypeCoreless = (base: Typename) => Typename;
+  type TypeOrDeclaratorCoreless = (base: Typename) => Typename | DeclaratorNode;
 
-  function readPointersCoreless(): TypeOrDeclaratorCoreless {
+  function readPointersCoreless(): TypeCoreless {
     const token = scanner.current();
     if (token.type !== "*") {
       return (base) => base;
@@ -280,7 +281,7 @@ export function createTypeParser(
 
     const nextPartCoreless = readPointersCoreless();
 
-    const myCoreless: TypeOrDeclaratorCoreless = (base) => {
+    const myCoreless: TypeCoreless = (base) => {
       const me: Typename = {
         type: "pointer",
         const: isConst,
@@ -297,21 +298,23 @@ export function createTypeParser(
     return myCoreless;
   }
 
-  function readMaybeAbstractDeclaratorCoreless(): TypeOrDeclaratorCoreless {
+  function readAbstractDeclaratorOrDeclaratorCoreless(): TypeOrDeclaratorCoreless {
     const afterPointersCoreless = readPointersCoreless();
 
-    const directAbstractDeclaratorCoreless = readDirectAbstractDeclaratorCoreless();
+    const directAbstractDeclaratorOrAbstractDeclaratorCoreless = readDirectAbstractDeclaratorOrDirectDeclaratorCoreless();
 
     return (node) => {
       const afterPointers = afterPointersCoreless(node);
-      const directAbstract = directAbstractDeclaratorCoreless(afterPointers);
+      const directAbstractDeclaratorOrDirectDeclarator = directAbstractDeclaratorOrAbstractDeclaratorCoreless(
+        afterPointers
+      );
 
-      return directAbstract;
+      return directAbstractDeclaratorOrDirectDeclarator;
     };
   }
 
-  function readDirectAbstractDeclaratorCoreless(): TypeOrDeclaratorCoreless {
-    let left: TypeOrDeclaratorCoreless = (node) => node;
+  function readDirectAbstractDeclaratorOrDirectDeclaratorCoreless(): TypeOrDeclaratorCoreless {
+    let left: TypeCoreless = (node) => node;
 
     let nestedAbstractDeclarator: TypeOrDeclaratorCoreless | null = null;
 
@@ -331,7 +334,7 @@ export function createTypeParser(
             throwError("Already have nested abstract-declarator");
           }
           // Not a func call, but nested abstract-declarator
-          nestedAbstractDeclarator = readMaybeAbstractDeclaratorCoreless();
+          nestedAbstractDeclarator = readAbstractDeclaratorOrDeclaratorCoreless();
 
           if (scanner.current().type !== ")") {
             throwError("Expected )");
@@ -399,7 +402,7 @@ export function createTypeParser(
       specifier: baseSpecifier,
       storageClassSpecifier,
       functionSpecifier,
-    } = readSpecifierQualifierListAndDeclarationSpecifiers();
+    } = readDeclarationSpecifiers();
 
     if (storageClassSpecifier) {
       throwError("storage-class-specifier is not allowed in typeName");
@@ -408,7 +411,7 @@ export function createTypeParser(
       throwError("function-specifier is not allowed in typeName");
     }
 
-    const maybeAbstractDeclaratorCoreless = readMaybeAbstractDeclaratorCoreless();
+    const maybeAbstractDeclaratorCoreless = readAbstractDeclaratorOrDeclaratorCoreless();
 
     const typename = maybeAbstractDeclaratorCoreless(baseSpecifier);
 
