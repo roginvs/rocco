@@ -401,6 +401,13 @@ export function createTypeParser(
       functionSpecifier,
     } = readSpecifierQualifierListAndDeclarationSpecifiers();
 
+    if (storageClassSpecifier) {
+      throwError("storage-class-specifier is not allowed in typeName");
+    }
+    if (functionSpecifier) {
+      throwError("function-specifier is not allowed in typeName");
+    }
+
     const maybeAbstractDeclaratorCoreless = readMaybeAbstractDeclaratorCoreless();
 
     const typename = maybeAbstractDeclaratorCoreless(baseSpecifier);
