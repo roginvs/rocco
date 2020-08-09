@@ -14,10 +14,21 @@ export class SymbolTable {
     // nothing here
   }
 
+  private readonly externAndStaticDeclarations: DeclaratorNode[] = [];
+  private readonly autoInFunctionDeclarations: DeclaratorNode[] = [];
+
   private readonly declarations: DeclaratorNode[][] = [];
 
   enterScope() {
     this.declarations.push([]);
+  }
+
+  enterFunctionScope() {
+    this.enterScope();
+    this.autoInFunctionDeclarations.splice(
+      0,
+      this.autoInFunctionDeclarations.length
+    );
   }
 
   addEntry(declaration: DeclaratorNode) {
@@ -40,6 +51,13 @@ export class SymbolTable {
       );
     }
     currentScope.push(declaration);
+
+    if (
+      declaration.storageSpecifier === "extern" ||
+      declaration.storageSpecifier === "static"
+    ) {
+      this.externAndStaticDeclarations.push(declaration);
+    }
   }
 
   leaveScope(): DeclaratorNode[] {
@@ -48,6 +66,10 @@ export class SymbolTable {
       throw new Error("Unable to leave scope, no scope at all");
     }
     return currentScope;
+  }
+
+  getFunctionAutoDeclaration() {
+    return this.autoInFunctionDeclarations;
   }
 
   lookupInScopes(identifier: string): DeclaratorNode | undefined {
