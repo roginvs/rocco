@@ -1,7 +1,8 @@
 import { createTypeParser, TypeParserDependencies } from "./parser.typename";
 import { Scanner } from "./scanner";
 import { createScannerFunc } from "./scanner.func";
-import { Typename, ExpressionNode } from "./parser.definitions";
+import { Typename, ExpressionNode, NodeLocator } from "./parser.definitions";
+import { SymbolTable } from "./parser.symboltable";
 
 const createMockedExpressionParser = (scanner: Scanner) => {
   const mock: TypeParserDependencies = {
@@ -39,8 +40,16 @@ const createMockedExpressionParser = (scanner: Scanner) => {
   return mock;
 };
 
-describe("PisCurrentTokenLooksLikeTypeName", () => {
-  const YES = ["int", "void", "struct", "const", "signed", "unsigned"];
+describe("isCurrentTokenLooksLikeTypeName", () => {
+  const YES = [
+    "int",
+    "void",
+    "struct",
+    "const",
+    "signed",
+    "unsigned",
+    "kekeke",
+  ];
   const NO = ["2" /* todo: add symbol table */, "kek", "2+4", "/", "++4"];
 
   for (const t of [
@@ -49,10 +58,28 @@ describe("PisCurrentTokenLooksLikeTypeName", () => {
   ]) {
     it(`Expects ${t.s} = ${t.yes}`, () => {
       const scanner = new Scanner(createScannerFunc(t.s));
+      const locator: NodeLocator = new Map();
+
+      const symbolTable = new SymbolTable(locator);
+      symbolTable.enterScope();
+      symbolTable.addEntry({
+        type: "declarator",
+        identifier: "kekeke",
+        storageSpecifier: "typedef",
+
+        typename: {
+          type: "arithmetic",
+          arithmeticType: "int",
+          const: false,
+          signedUnsigned: null,
+        },
+        functionSpecifier: null,
+      });
       const parser = createTypeParser(
         scanner,
-        new Map(),
-        createMockedExpressionParser(scanner)
+        locator,
+        createMockedExpressionParser(scanner),
+        symbolTable
       );
       expect(parser.isCurrentTokenLooksLikeTypeName()).toStrictEqual(t.yes);
     });
@@ -62,10 +89,13 @@ describe("PisCurrentTokenLooksLikeTypeName", () => {
 function checkTypename(str: string, ast?: Typename) {
   it(`Reads '${str}'`, () => {
     const scanner = new Scanner(createScannerFunc(str));
+    const locator: NodeLocator = new Map();
+
     const parser = createTypeParser(
       scanner,
-      new Map(),
-      createMockedExpressionParser(scanner)
+      locator,
+      createMockedExpressionParser(scanner),
+      new SymbolTable(locator)
     );
     const node = parser.readTypeName();
     if (ast) {
@@ -82,10 +112,13 @@ describe("Parsing typename", () => {
   function checkFailingType(str: string) {
     it(`Throws on '${str}'`, () => {
       const scanner = new Scanner(createScannerFunc(str));
+      const locator: NodeLocator = new Map();
+
       const parser = createTypeParser(
         scanner,
-        new Map(),
-        createMockedExpressionParser(scanner)
+        locator,
+        createMockedExpressionParser(scanner),
+        new SymbolTable(locator)
       );
       expect(() => parser.readTypeName()).toThrow();
     });

@@ -1,28 +1,63 @@
-import { IdentifierNode, Typename } from "./parser.definitions";
+import {
+  IdentifierNode,
+  Typename,
+  DeclaratorNode,
+  NodeLocator,
+} from "./parser.definitions";
 import { StorageClass } from "./scanner.func";
+import { SymbolTableError } from "./error";
 
-export interface SymbolTableEntry {
-  identifier: string;
-  storage: StorageClass;
-  typename: Typename;
-}
+export type IdentifierToTypename = Map<IdentifierNode, DeclaratorNode>;
 
 export class SymbolTable {
+  constructor(private readonly locator: NodeLocator) {
+    // nothing here
+  }
+
+  private readonly declarations: DeclaratorNode[][] = [];
+
   enterScope() {
-    // TODO
+    this.declarations.push([]);
   }
 
-  addEntry(identifier: string, storage: StorageClass, typename: Typename) {
-    // TODO
+  addEntry(declaration: DeclaratorNode) {
+    const currentScope = this.declarations[this.declarations.length - 1];
+    if (
+      currentScope.find(
+        (declarationInCurrentScope) =>
+          declarationInCurrentScope.identifier === declaration.identifier
+      )
+    ) {
+      const declaratorLocation = this.locator.get(declaration);
+      if (!declaratorLocation) {
+        throw new Error(
+          `Duplicate declaration ${declaration.identifier} and not able to find location`
+        );
+      }
+      throw new SymbolTableError(
+        `Duplicate declaration ${declaration.identifier}`,
+        declaratorLocation
+      );
+    }
+    currentScope.push(declaration);
   }
 
-  /** Returns collected entries for current scope */
-  leaveScope(): SymbolTableEntry[] {
-    return [];
-    // TODO: Return collected
+  leaveScope(): DeclaratorNode[] {
+    const currentScope = this.declarations.pop();
+    if (!currentScope) {
+      throw new Error("Unable to leave scope, no scope at all");
+    }
+    return currentScope;
   }
 
-  whatTypeIsIt(identifier: string): SymbolTableEntry | undefined {
+  lookupInScopes(identifier: string): DeclaratorNode | undefined {
+    for (const scope of this.declarations.slice().reverse()) {
+      for (const declaration of scope) {
+        if (declaration.identifier === identifier) {
+          return declaration;
+        }
+      }
+    }
     return undefined;
   }
 }

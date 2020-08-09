@@ -14,3 +14,9 @@ export class ParserError extends Error {
     super(str);
   }
 }
+
+export class SymbolTableError extends Error {
+  constructor(str: string, public readonly location: TokenLocation) {
+    super(str);
+  }
+}

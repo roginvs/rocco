@@ -174,7 +174,7 @@ int test13(int n2, int arr[static n2])
 
     arr[n2] = 2;
 };
-void test14(int i, int i)
+void test14(int i, int i2)
 {
     char c = 3;
     int arr[2];
@@ -184,6 +184,27 @@ void test14(int i, int i)
 extern void test14();
 extern char test14char[20];
 
+void test15() {
+
+    // struct Kek kek;
+
+    struct Kek
+    {
+        int a;
+        int b;
+    };
+
+    struct Kek kek;
+}
+void test16(char kek[]) {
+    //asd
+    int* addr = &kek;
+
+    extern char kekekek[];
+}
+
+
+
 // unnamed prototyped parameters not allowed when body is present
 /*
 void test13(char)
@@ -191,6 +212,7 @@ void test13(char)
   // kek
 }
 */
+
 
 int main(int argc, char **argv)
 {

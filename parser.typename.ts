@@ -12,9 +12,11 @@ import {
   ExpressionNode,
   NodeLocator,
   DeclaratorNode,
+  IdentifierNode,
 } from "./parser.definitions";
 import { ParserError } from "./error";
 import { type } from "os";
+import { SymbolTable } from "./parser.symboltable";
 
 export interface TypeParserDependencies {
   readAssignmentExpression: () => ExpressionNode;
@@ -22,7 +24,8 @@ export interface TypeParserDependencies {
 export function createTypeParser(
   scanner: Scanner,
   locator: NodeLocator,
-  expressionReader: TypeParserDependencies
+  expressionReader: TypeParserDependencies,
+  symbolTable: SymbolTable
 ) {
   function throwError(info: string): never {
     // console.info(info, scanner.current());
@@ -56,8 +59,22 @@ export function createTypeParser(
   }
 
   function isCurrentTokenTypedefName(): Typename | undefined {
-    // @TODO Here we need symbol table
-    return undefined;
+    const token = scanner.current();
+    if (token.type !== "identifier") {
+      return undefined;
+    }
+
+    // This call adds this node into cache, but it is useless thing
+    // We add this type definition directly into type node
+    // Maybe this is wrong
+    const symbolTableEntry = symbolTable.lookupInScopes(token.text);
+    if (!symbolTableEntry) {
+      return undefined;
+    }
+    if (symbolTableEntry.storageSpecifier !== "typedef") {
+      return undefined;
+    }
+    return symbolTableEntry.typename;
   }
 
   /**
