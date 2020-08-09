@@ -213,6 +213,14 @@ void test13(char)
 }
 */
 
+void test17() {
+    id1:;
+
+    int id1 = 22;
+
+    goto id1;
+}
+
 
 int main(int argc, char **argv)
 {
