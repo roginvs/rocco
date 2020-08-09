@@ -92,4 +92,22 @@ export class SymbolTable {
 
   // @TODO struct/enum/union scopes
   // @TODO label scopes
+
+  // ====== this is not related to this class and should be separated
+  private readonly identifiersMap = new Map<IdentifierNode, DeclaratorNode>();
+  setWhereThisIdentifierWasDeclared(
+    node: IdentifierNode,
+    declaration: DeclaratorNode
+  ) {
+    this.identifiersMap.set(node, declaration);
+  }
+  getDeclaration(node: IdentifierNode) {
+    const declaration = this.identifiersMap.get(node);
+    if (!declaration) {
+      throw new Error(
+        `Internal error: no declaration for this node ${node.value}`
+      );
+    }
+    return declaration;
+  }
 }

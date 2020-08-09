@@ -42,6 +42,54 @@ function checkExpression(str: string, ast?: ExpressionNode) {
 
     const locator: NodeLocator = new Map();
     const symbolTable = new SymbolTable(locator);
+    symbolTable.enterScope();
+    symbolTable.addEntry({
+      type: "declarator",
+      identifier: "f",
+      functionSpecifier: null,
+      storageSpecifier: null,
+      typename: {
+        type: "function",
+        const: true,
+        haveEndingEllipsis: false,
+        parameters: [],
+        returnType: {
+          type: "void",
+          const: false,
+        },
+      },
+    });
+    for (const v of ["a", "b", "c", "kek"]) {
+      symbolTable.addEntry({
+        type: "declarator",
+        identifier: v,
+        functionSpecifier: null,
+        storageSpecifier: null,
+        typename: {
+          type: "arithmetic",
+          const: true,
+          arithmeticType: "char",
+          signedUnsigned: null,
+        },
+      });
+    }
+    symbolTable.addEntry({
+      type: "declarator",
+      identifier: "arr",
+      functionSpecifier: null,
+      storageSpecifier: null,
+      typename: {
+        type: "array",
+        const: true,
+        size: null,
+        elementsTypename: {
+          type: "arithmetic",
+          arithmeticType: "char",
+          const: true,
+          signedUnsigned: null,
+        },
+      },
+    });
     const parser = createExpressionParser(
       scanner,
       locator,
@@ -84,96 +132,75 @@ describe("Parser test", () => {
     value: "a".charCodeAt(0),
   });
 
-  checkExpression("asdf", {
+  checkExpression("arr", {
     type: "identifier",
-    value: "asdf",
-    getDeclaredIn() {
-      throw new Error("test mode");
-    },
+    value: "arr",
   });
 
-  checkExpression("asd[2]", {
+  checkExpression("arr[2]", {
     type: "subscript operator",
     target: {
       type: "identifier",
-      value: "asd",
-      getDeclaredIn() {
-        throw new Error("test mode");
-      },
+      value: "arr",
     },
     index: { type: "const", subtype: "int", value: 2 },
   });
 
-  checkExpression("zxc[2][4]", {
+  checkExpression("arr[2][4]", {
     type: "subscript operator",
     target: {
       type: "subscript operator",
       target: {
         type: "identifier",
-        value: "zxc",
-        getDeclaredIn() {
-          throw new Error("test mode");
-        },
+        value: "arr",
       },
       index: { type: "const", subtype: "int", value: 2 },
     },
     index: { type: "const", subtype: "int", value: 4 },
   });
 
-  checkExpression("qwe()", {
+  checkExpression("f()", {
     type: "function call",
     target: {
       type: "identifier",
-      value: "qwe",
-      getDeclaredIn() {
-        throw new Error("test mode");
-      },
+      value: "f",
     },
     args: [],
   });
 
-  checkExpression("qwe().fghh", {
+  checkExpression("f().fghh", {
     type: "struct access",
     identifier: "fghh",
     target: {
       type: "function call",
       target: {
         type: "identifier",
-        value: "qwe",
-        getDeclaredIn() {
-          throw new Error("test mode");
-        },
+        value: "f",
       },
       args: [],
     },
   });
 
-  checkExpression("qwe()->fghh", {
+  checkExpression("f()->fghh", {
     type: "struct pointer access",
     identifier: "fghh",
     target: {
       type: "function call",
       target: {
         type: "identifier",
-        value: "qwe",
-        getDeclaredIn() {
-          throw new Error("test mode");
-        },
+        value: "f",
       },
       args: [],
     },
   });
 
-  checkExpression("qwe()[arr[n++]++]", {
+  checkExpression("f()[arr[a++]++]", {
     type: "subscript operator",
     target: {
       type: "function call",
       target: {
         type: "identifier",
-        value: "qwe",
-        getDeclaredIn() {
-          throw new Error("test mode");
-        },
+        value: "f",
       },
       args: [],
     },
@@ -184,18 +211,12 @@ describe("Parser test", () => {
         target: {
           type: "identifier",
           value: "arr",
-          getDeclaredIn() {
-            throw new Error("test mode");
-          },
         },
         index: {
           type: "postfix ++",
           target: {
             type: "identifier",
-            value: "n",
-            getDeclaredIn() {
-              throw new Error("test mode");
-            },
+            value: "a",
           },
         },
       },
@@ -222,9 +243,6 @@ describe("Parser test", () => {
       target: {
         type: "identifier",
         value: "kek",
-        getDeclaredIn() {
-          throw new Error("test mode");
-        },
       },
     },
   });
@@ -234,9 +252,6 @@ describe("Parser test", () => {
     expression: {
       type: "identifier",
       value: "kek",
-      getDeclaredIn() {
-        throw new Error("test mode");
-      },
     },
   });
 
@@ -245,9 +260,6 @@ describe("Parser test", () => {
     expression: {
       type: "identifier",
       value: "kek",
-      getDeclaredIn() {
-        throw new Error("test mode");
-      },
     },
   });
 
@@ -283,9 +295,6 @@ describe("Parser test", () => {
     target: {
       type: "identifier",
       value: "kek",
-      getDeclaredIn() {
-        throw new Error("test mode");
-      },
     },
   });
 
@@ -309,9 +318,6 @@ describe("Parser test", () => {
         target: {
           type: "identifier",
           value: "kek",
-          getDeclaredIn() {
-            throw new Error("test mode");
-          },
         },
       },
     });
@@ -388,9 +394,6 @@ describe("Parser test", () => {
     lvalue: {
       type: "identifier",
       value: "a",
-      getDeclaredIn() {
-        throw new Error("test mode");
-      },
     },
     rvalue: {
       type: "assignment",
@@ -398,9 +401,6 @@ describe("Parser test", () => {
       lvalue: {
         type: "identifier",
         value: "b",
-        getDeclaredIn() {
-          throw new Error("test mode");
-        },
       },
       rvalue: { type: "const", subtype: "int", value: 4 },
     },
@@ -414,9 +414,6 @@ describe("Parser test", () => {
       target: {
         type: "identifier",
         value: "a",
-        getDeclaredIn() {
-          throw new Error("test mode");
-        },
       },
     },
     rvalue: { type: "const", subtype: "int", value: 2 },
@@ -428,9 +425,6 @@ describe("Parser test", () => {
     lvalue: {
       type: "identifier",
       value: "a",
-      getDeclaredIn() {
-        throw new Error("test mode");
-      },
     },
     rvalue: {
       type: "assignment",
@@ -438,9 +432,6 @@ describe("Parser test", () => {
       lvalue: {
         type: "identifier",
         value: "b",
-        getDeclaredIn() {
-          throw new Error("test mode");
-        },
       },
       rvalue: {
         type: "binary operator",
@@ -459,9 +450,6 @@ describe("Parser test", () => {
       lvalue: {
         type: "identifier",
         value: "a",
-        getDeclaredIn() {
-          throw new Error("test mode");
-        },
       },
       rvalue: { type: "const", subtype: "int", value: 2 },
     },
@@ -473,9 +461,6 @@ describe("Parser test", () => {
         lvalue: {
           type: "identifier",
           value: "b",
-          getDeclaredIn() {
-            throw new Error("test mode");
-          },
         },
         rvalue: { type: "const", subtype: "int", value: 3 },
       },
@@ -485,9 +470,6 @@ describe("Parser test", () => {
         lvalue: {
           type: "identifier",
           value: "c",
-          getDeclaredIn() {
-            throw new Error("test mode");
-          },
         },
         rvalue: { type: "const", subtype: "int", value: 4 },
       },
@@ -499,9 +481,6 @@ describe("Parser test", () => {
     target: {
       type: "identifier",
       value: "f",
-      getDeclaredIn() {
-        throw new Error("test mode");
-      },
     },
     args: [{ type: "const", subtype: "int", value: 2 }],
   });
@@ -510,9 +489,6 @@ describe("Parser test", () => {
     target: {
       type: "identifier",
       value: "f",
-      getDeclaredIn() {
-        throw new Error("test mode");
-      },
     },
     args: [],
   });
@@ -521,9 +497,6 @@ describe("Parser test", () => {
     target: {
       type: "identifier",
       value: "f",
-      getDeclaredIn() {
-        throw new Error("test mode");
-      },
     },
     args: [
       {
@@ -532,9 +505,6 @@ describe("Parser test", () => {
         lvalue: {
           type: "identifier",
           value: "a",
-          getDeclaredIn() {
-            throw new Error("test mode");
-          },
         },
         rvalue: { type: "const", subtype: "int", value: 3 },
       },
@@ -544,9 +514,6 @@ describe("Parser test", () => {
         lvalue: {
           type: "identifier",
           value: "b",
-          getDeclaredIn() {
-            throw new Error("test mode");
-          },
         },
         rvalue: { type: "const", subtype: "int", value: 5 },
       },
@@ -555,9 +522,6 @@ describe("Parser test", () => {
         target: {
           type: "identifier",
           value: "c",
-          getDeclaredIn() {
-            throw new Error("test mode");
-          },
         },
       },
     ],

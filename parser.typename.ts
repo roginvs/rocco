@@ -505,6 +505,7 @@ export function createTypeParser(
               ...token,
               length: afterIdentifierTokenForLocator.pos - token.pos,
             });
+            // It is not yet a complete declaration yet
             return declaratorNode;
           },
         };
