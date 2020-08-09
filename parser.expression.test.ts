@@ -4,7 +4,8 @@ import {
 } from "./parser.expression";
 import { Scanner } from "./scanner";
 import { createScannerFunc } from "./scanner.func";
-import { ExpressionNode } from "./parser.definitions";
+import { ExpressionNode, NodeLocator } from "./parser.definitions";
+import { SymbolTable } from "./parser.symboltable";
 
 function checkExpressionSkip(str: string, ast?: ExpressionNode) {
   it.skip(`Reads '${str}'`, () => {});
@@ -39,10 +40,13 @@ function checkExpression(str: string, ast?: ExpressionNode) {
   it(`Reads '${str}'`, () => {
     const scanner = new Scanner(createScannerFunc(str));
 
+    const locator: NodeLocator = new Map();
+    const symbolTable = new SymbolTable(locator);
     const parser = createExpressionParser(
       scanner,
-      new Map(),
-      createMockedTypeparser(scanner)
+      locator,
+      createMockedTypeparser(scanner),
+      symbolTable
     );
     const node = parser.readExpression();
 
@@ -83,6 +87,9 @@ describe("Parser test", () => {
   checkExpression("asdf", {
     type: "identifier",
     value: "asdf",
+    getDeclaredIn() {
+      throw new Error("test mode");
+    },
   });
 
   checkExpression("asd[2]", {
@@ -90,6 +97,9 @@ describe("Parser test", () => {
     target: {
       type: "identifier",
       value: "asd",
+      getDeclaredIn() {
+        throw new Error("test mode");
+      },
     },
     index: { type: "const", subtype: "int", value: 2 },
   });
@@ -98,7 +108,13 @@ describe("Parser test", () => {
     type: "subscript operator",
     target: {
       type: "subscript operator",
-      target: { type: "identifier", value: "zxc" },
+      target: {
+        type: "identifier",
+        value: "zxc",
+        getDeclaredIn() {
+          throw new Error("test mode");
+        },
+      },
       index: { type: "const", subtype: "int", value: 2 },
     },
     index: { type: "const", subtype: "int", value: 4 },
@@ -106,26 +122,44 @@ describe("Parser test", () => {
 
   checkExpression("qwe()", {
     type: "function call",
-    target: { type: "identifier", value: "qwe" },
+    target: {
+      type: "identifier",
+      value: "qwe",
+      getDeclaredIn() {
+        throw new Error("test mode");
+      },
+    },
     args: [],
   });
 
   checkExpression("qwe().fghh", {
     type: "struct access",
-    field: { type: "identifier", value: "fghh" },
+    identifier: "fghh",
     target: {
       type: "function call",
-      target: { type: "identifier", value: "qwe" },
+      target: {
+        type: "identifier",
+        value: "qwe",
+        getDeclaredIn() {
+          throw new Error("test mode");
+        },
+      },
       args: [],
     },
   });
 
   checkExpression("qwe()->fghh", {
     type: "struct pointer access",
-    field: { type: "identifier", value: "fghh" },
+    identifier: "fghh",
     target: {
       type: "function call",
-      target: { type: "identifier", value: "qwe" },
+      target: {
+        type: "identifier",
+        value: "qwe",
+        getDeclaredIn() {
+          throw new Error("test mode");
+        },
+      },
       args: [],
     },
   });
@@ -134,17 +168,35 @@ describe("Parser test", () => {
     type: "subscript operator",
     target: {
       type: "function call",
-      target: { type: "identifier", value: "qwe" },
+      target: {
+        type: "identifier",
+        value: "qwe",
+        getDeclaredIn() {
+          throw new Error("test mode");
+        },
+      },
       args: [],
     },
     index: {
       type: "postfix ++",
       target: {
         type: "subscript operator",
-        target: { type: "identifier", value: "arr" },
+        target: {
+          type: "identifier",
+          value: "arr",
+          getDeclaredIn() {
+            throw new Error("test mode");
+          },
+        },
         index: {
           type: "postfix ++",
-          target: { type: "identifier", value: "n" },
+          target: {
+            type: "identifier",
+            value: "n",
+            getDeclaredIn() {
+              throw new Error("test mode");
+            },
+          },
         },
       },
     },
@@ -167,7 +219,13 @@ describe("Parser test", () => {
     target: {
       type: "unary-operator",
       operator: "+",
-      target: { type: "identifier", value: "kek" },
+      target: {
+        type: "identifier",
+        value: "kek",
+        getDeclaredIn() {
+          throw new Error("test mode");
+        },
+      },
     },
   });
 
@@ -176,6 +234,9 @@ describe("Parser test", () => {
     expression: {
       type: "identifier",
       value: "kek",
+      getDeclaredIn() {
+        throw new Error("test mode");
+      },
     },
   });
 
@@ -184,6 +245,9 @@ describe("Parser test", () => {
     expression: {
       type: "identifier",
       value: "kek",
+      getDeclaredIn() {
+        throw new Error("test mode");
+      },
     },
   });
 
@@ -219,6 +283,9 @@ describe("Parser test", () => {
     target: {
       type: "identifier",
       value: "kek",
+      getDeclaredIn() {
+        throw new Error("test mode");
+      },
     },
   });
 
@@ -242,6 +309,9 @@ describe("Parser test", () => {
         target: {
           type: "identifier",
           value: "kek",
+          getDeclaredIn() {
+            throw new Error("test mode");
+          },
         },
       },
     });
@@ -315,11 +385,23 @@ describe("Parser test", () => {
   checkExpression("a = b = 4", {
     type: "assignment",
     operator: "=",
-    lvalue: { type: "identifier", value: "a" },
+    lvalue: {
+      type: "identifier",
+      value: "a",
+      getDeclaredIn() {
+        throw new Error("test mode");
+      },
+    },
     rvalue: {
       type: "assignment",
       operator: "=",
-      lvalue: { type: "identifier", value: "b" },
+      lvalue: {
+        type: "identifier",
+        value: "b",
+        getDeclaredIn() {
+          throw new Error("test mode");
+        },
+      },
       rvalue: { type: "const", subtype: "int", value: 4 },
     },
   });
@@ -327,18 +409,39 @@ describe("Parser test", () => {
   checkExpression("a++ += 2", {
     type: "assignment",
     operator: "+=",
-    lvalue: { type: "postfix ++", target: { type: "identifier", value: "a" } },
+    lvalue: {
+      type: "postfix ++",
+      target: {
+        type: "identifier",
+        value: "a",
+        getDeclaredIn() {
+          throw new Error("test mode");
+        },
+      },
+    },
     rvalue: { type: "const", subtype: "int", value: 2 },
   });
 
   checkExpression("a *= b >>= 2 + 3", {
     type: "assignment",
     operator: "*=",
-    lvalue: { type: "identifier", value: "a" },
+    lvalue: {
+      type: "identifier",
+      value: "a",
+      getDeclaredIn() {
+        throw new Error("test mode");
+      },
+    },
     rvalue: {
       type: "assignment",
       operator: ">>=",
-      lvalue: { type: "identifier", value: "b" },
+      lvalue: {
+        type: "identifier",
+        value: "b",
+        getDeclaredIn() {
+          throw new Error("test mode");
+        },
+      },
       rvalue: {
         type: "binary operator",
         operator: "+",
@@ -353,7 +456,13 @@ describe("Parser test", () => {
     sizeeffect: {
       type: "assignment",
       operator: "=",
-      lvalue: { type: "identifier", value: "a" },
+      lvalue: {
+        type: "identifier",
+        value: "a",
+        getDeclaredIn() {
+          throw new Error("test mode");
+        },
+      },
       rvalue: { type: "const", subtype: "int", value: 2 },
     },
     effectiveValue: {
@@ -361,13 +470,25 @@ describe("Parser test", () => {
       sizeeffect: {
         type: "assignment",
         operator: "=",
-        lvalue: { type: "identifier", value: "b" },
+        lvalue: {
+          type: "identifier",
+          value: "b",
+          getDeclaredIn() {
+            throw new Error("test mode");
+          },
+        },
         rvalue: { type: "const", subtype: "int", value: 3 },
       },
       effectiveValue: {
         type: "assignment",
         operator: "=",
-        lvalue: { type: "identifier", value: "c" },
+        lvalue: {
+          type: "identifier",
+          value: "c",
+          getDeclaredIn() {
+            throw new Error("test mode");
+          },
+        },
         rvalue: { type: "const", subtype: "int", value: 4 },
       },
     },
@@ -375,31 +496,70 @@ describe("Parser test", () => {
 
   checkExpression("f(2)", {
     type: "function call",
-    target: { type: "identifier", value: "f" },
+    target: {
+      type: "identifier",
+      value: "f",
+      getDeclaredIn() {
+        throw new Error("test mode");
+      },
+    },
     args: [{ type: "const", subtype: "int", value: 2 }],
   });
   checkExpression("f()", {
     type: "function call",
-    target: { type: "identifier", value: "f" },
+    target: {
+      type: "identifier",
+      value: "f",
+      getDeclaredIn() {
+        throw new Error("test mode");
+      },
+    },
     args: [],
   });
   checkExpression("f(a=3, b=5, c++)", {
     type: "function call",
-    target: { type: "identifier", value: "f" },
+    target: {
+      type: "identifier",
+      value: "f",
+      getDeclaredIn() {
+        throw new Error("test mode");
+      },
+    },
     args: [
       {
         type: "assignment",
         operator: "=",
-        lvalue: { type: "identifier", value: "a" },
+        lvalue: {
+          type: "identifier",
+          value: "a",
+          getDeclaredIn() {
+            throw new Error("test mode");
+          },
+        },
         rvalue: { type: "const", subtype: "int", value: 3 },
       },
       {
         type: "assignment",
         operator: "=",
-        lvalue: { type: "identifier", value: "b" },
+        lvalue: {
+          type: "identifier",
+          value: "b",
+          getDeclaredIn() {
+            throw new Error("test mode");
+          },
+        },
         rvalue: { type: "const", subtype: "int", value: 5 },
       },
-      { type: "postfix ++", target: { type: "identifier", value: "c" } },
+      {
+        type: "postfix ++",
+        target: {
+          type: "identifier",
+          value: "c",
+          getDeclaredIn() {
+            throw new Error("test mode");
+          },
+        },
+      },
     ],
   });
 });

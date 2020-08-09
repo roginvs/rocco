@@ -14,6 +14,7 @@ import { TokenLocation } from "./error";
 export type IdentifierNode = {
   type: "identifier";
   value: string;
+  getDeclaredIn(): DeclaratorNode;
 };
 
 export type PrimaryExpressionNode =
@@ -43,12 +44,12 @@ export type PostfixExpressionNode =
   | {
       type: "struct access";
       target: ExpressionNode;
-      field: IdentifierNode;
+      identifier: string;
     }
   | {
       type: "struct pointer access";
       target: ExpressionNode;
-      field: IdentifierNode;
+      identifier: string;
     }
   | {
       type: "postfix ++";

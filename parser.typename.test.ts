@@ -27,6 +27,9 @@ const createMockedExpressionParser = (scanner: Scanner) => {
           target: {
             type: "identifier",
             value: "p",
+            getDeclaredIn() {
+              throw new Error("test mode");
+            },
           },
         };
       } else {
@@ -256,7 +259,13 @@ describe("Parsing typename", () => {
     size: {
       type: "unary-operator",
       operator: "*",
-      target: { type: "identifier", value: "p" },
+      target: {
+        type: "identifier",
+        value: "p",
+        getDeclaredIn() {
+          throw new Error("test mode");
+        },
+      },
     },
     elementsTypename: {
       type: "arithmetic",

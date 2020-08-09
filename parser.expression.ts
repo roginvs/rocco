@@ -13,8 +13,10 @@ import {
   UNARY_OPERATORS,
   Typename,
   NodeLocator,
+  IdentifierNode,
 } from "./parser.definitions";
 import { ParserError } from "./error";
+import { SymbolTable } from "./parser.symboltable";
 
 const MAX_BINARY_OP_INDEX = 10;
 
@@ -60,7 +62,8 @@ export interface ExpressionRequirements {
 export function createExpressionParser(
   scanner: Scanner,
   locator: NodeLocator,
-  typeParser: ExpressionRequirements
+  typeParser: ExpressionRequirements,
+  symbolTable: SymbolTable
 ) {
   function throwError(info: string): never {
     throw new ParserError(`${info}`, scanner.current());
@@ -71,11 +74,20 @@ export function createExpressionParser(
     if (token.type === "identifier") {
       scanner.readNext();
 
-      const node: ExpressionNode = {
+      const identifierDeclaration = symbolTable.lookupInScopes(token.text);
+      if (!identifierDeclaration) {
+        throwError(`Unable to find declaration for '${token.text}'`);
+      }
+
+      const node: IdentifierNode = {
         type: "identifier",
         value: token.text,
+        getDeclaredIn() {
+          return identifierDeclaration;
+        },
       };
       locator.set(node, token);
+
       return node;
     } else if (token.type === "const-expression") {
       scanner.readNext();
@@ -166,15 +178,13 @@ export function createExpressionParser(
         scanner.readNext();
         const newLeft: PostfixExpressionNode = {
           type: token.type === "." ? "struct access" : "struct pointer access",
-          field: {
-            type: "identifier",
-            value: identifierToken.text,
-          },
+          identifier: identifierToken.text,
           target: left,
         };
         locator.set(newLeft, {
           ...token,
         });
+
         left = newLeft;
       } else if (token.type === "++") {
         scanner.readNext();
