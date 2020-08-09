@@ -178,10 +178,13 @@ export function createTypeParser(
         signedUnsigned = token.type;
       } else if (token.type === "struct") {
         throwError("Not implemented yet");
+        // @TODO: Add into symbol table or lookup
       } else if (token.type === "union") {
         throwError("Not implemented yet");
+        // @TODO: Add into symbol table or lookup
       } else if (token.type === "enum") {
         throwError("Not implemented yet");
+        // @TODO: Add into symbol table or lookup
       } else if (maybeSpecifierFromSymbolTable) {
         if (specifier) {
           throwError("Already have specifier");
@@ -392,8 +395,6 @@ export function createTypeParser(
           //  "declarator" and "direct-declarator" can not start with declaration-specifier
           isCurrentTokenLooksLikeDeclarationSpecifier()
         ) {
-          // @TODO: A function call
-
           // Read "parameter-type-list" or "identifier-list" using isAbstractDeclarator
           if (
             isAbstractDeclarator ||
