@@ -60,10 +60,17 @@ export class SymbolTable {
     }
   }
 
-  leaveScope(): DeclaratorNode[] {
+  leaveScope(): void {
     const currentScope = this.declarations.pop();
     if (!currentScope) {
       throw new Error("Unable to leave scope, no scope at all");
+    }
+  }
+
+  getCurrentScopeDeclarations() {
+    const currentScope = this.declarations[this.declarations.length - 1];
+    if (!currentScope) {
+      throw new Error("No current scope");
     }
     return currentScope;
   }
@@ -82,4 +89,7 @@ export class SymbolTable {
     }
     return undefined;
   }
+
+  // @TODO struct/enum/union scopes
+  // @TODO label scopes
 }
