@@ -3,6 +3,7 @@ import { Scanner } from "./scanner";
 import { createScannerFunc } from "./scanner.func";
 import { Typename, ExpressionNode, NodeLocator } from "./parser.definitions";
 import { SymbolTable } from "./parser.symboltable";
+import { DeepPartial } from "./utils";
 
 const createMockedExpressionParser = (scanner: Scanner) => {
   const mock: TypeParserDependencies = {
@@ -27,6 +28,9 @@ const createMockedExpressionParser = (scanner: Scanner) => {
           target: {
             type: "identifier",
             value: "p",
+            declaratorNode: () => {
+              throw new Error("Not implemented in tests");
+            },
           },
         };
       } else {
@@ -86,7 +90,8 @@ describe("isCurrentTokenLooksLikeTypeName", () => {
   }
 });
 
-function checkTypename(str: string, ast?: Typename) {
+// TODO: Remove DeepPartial
+function checkTypename(str: string, ast?: DeepPartial<Typename>) {
   it(`Reads '${str}'`, () => {
     const scanner = new Scanner(createScannerFunc(str));
     const locator: NodeLocator = new Map();

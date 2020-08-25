@@ -74,15 +74,15 @@ export function createExpressionParser(
     if (token.type === "identifier") {
       scanner.readNext();
 
+      const identifierDeclaration = symbolTable.lookupInScopes(token.text);
+      if (!identifierDeclaration) {
+        throwError(`Unable to find declaration for '${token.text}'`);
+      }
       const node: IdentifierNode = {
         type: "identifier",
         value: token.text,
+        declaratorNode: () => identifierDeclaration,
       };
-
-      const identifierDeclaration = symbolTable.lookupInScopes(node.value);
-      if (!identifierDeclaration) {
-        throwError(`Unable to find declaration for '${node.value}'`);
-      }
 
       symbolTable.setWhereThisIdentifierWasDeclared(
         node,

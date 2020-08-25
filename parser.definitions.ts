@@ -14,6 +14,7 @@ import { TokenLocation } from "./error";
 export type IdentifierNode = {
   type: "identifier";
   value: string;
+  declaratorNode: () => DeclaratorNode;
 };
 
 export type PrimaryExpressionNode =
