@@ -221,6 +221,28 @@ void test17() {
     goto id1;
 }
 
+void test18() {
+    struct Arr1
+    {
+        char arr[5];
+    };
+    struct Arr2
+    {
+        char arr[5];
+    };
+
+    char arr1[5];
+    char arr2[5];
+
+    // Error here
+    //arr1 = arr2;
+
+    struct Arr1 s1;
+    struct Arr1 s2;
+    s1 = s2;
+
+}
+
 
 int main(int argc, char **argv)
 {
