@@ -188,6 +188,10 @@ export type DeclaratorNode = {
   typename: Typename;
   storageSpecifier: StorageClass | null;
   functionSpecifier: "inline" | null;
+  /**
+   * Not in use for "register" and "typedef" storage
+   */
+  memoryOffset?: number;
 };
 
 export type NodeLocator = Map<
