@@ -84,11 +84,6 @@ export function createExpressionParser(
         declaratorNode: () => identifierDeclaration,
       };
 
-      symbolTable.setWhereThisIdentifierWasDeclared(
-        node,
-        identifierDeclaration
-      );
-
       locator.set(node, token);
 
       return node;
