@@ -14,8 +14,10 @@ export class SymbolTable {
     // nothing here
   }
 
+  /** List of declarations for whole compilaion unit */
   private readonly externAndStaticDeclarations: DeclaratorNode[] = [];
-  private readonly autoInFunctionDeclarations: DeclaratorNode[] = [];
+  /** List of declarations inside current function scope */
+  private autoInFunctionDeclarations: DeclaratorNode[] = [];
 
   private readonly declarations: DeclaratorNode[][] = [];
 
@@ -25,10 +27,8 @@ export class SymbolTable {
 
   enterFunctionScope() {
     this.enterScope();
-    this.autoInFunctionDeclarations.splice(
-      0,
-      this.autoInFunctionDeclarations.length
-    );
+    // Clear array
+    this.autoInFunctionDeclarations = [];
   }
 
   addEntry(declaration: DeclaratorNode) {
