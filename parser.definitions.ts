@@ -139,11 +139,20 @@ export type ExpressionNode =
 // ============= Types =============
 //
 
+export type ArithmeticType =
+  | "char"
+  | "short"
+  | "int"
+  | "long"
+  | "long long"
+  | "float"
+  | "double";
+
 export type Typename =
   | { type: "void"; const: boolean }
   | {
       type: "arithmetic";
-      arithmeticType: TypeSpecifierArithmetic;
+      arithmeticType: ArithmeticType;
       signedUnsigned: TypeSignedUnsigned | null;
       const: boolean;
     }

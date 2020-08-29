@@ -6,6 +6,7 @@ import {
   TypeSignedUnsigned,
   StorageClass,
   STORAGE_CLASSES,
+  TYPE_SPECIFIERS_UNDERSCORE,
 } from "./scanner.func";
 import {
   Typename,
@@ -49,6 +50,13 @@ export function createTypeParser(
     );
     return arithmeticType;
   }
+  function isCurrentTokenTypeUnderscoreSpecifier() {
+    const token = scanner.current();
+    const arithmeticType = TYPE_SPECIFIERS_UNDERSCORE.find(
+      (x) => x === token.type
+    );
+    return arithmeticType;
+  }
 
   function isCurrentTokenAStorageClassSpecifier() {
     const token = scanner.current();
@@ -88,6 +96,7 @@ export function createTypeParser(
     const isIt =
       isCurrentTokenTypeVoid() ||
       isCurrentTokenTypeArithmeticSpecifier() ||
+      isCurrentTokenTypeUnderscoreSpecifier() ||
       isCurrentTokenTypeQualifier() ||
       token.type === "signed" ||
       token.type === "unsigned" ||
@@ -141,6 +150,8 @@ export function createTypeParser(
       const token = scanner.current();
 
       const maybeArithmeticSpecifier = isCurrentTokenTypeArithmeticSpecifier();
+
+      const maybeUnderscoreSpecifier = isCurrentTokenTypeUnderscoreSpecifier();
 
       const maybeSpecifierFromSymbolTable = isCurrentTokenTypedefName();
 
