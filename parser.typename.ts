@@ -14,6 +14,8 @@ import {
   NodeLocator,
   DeclaratorNode,
   IdentifierNode,
+  FunctionDefinition,
+  DeclaratorNodeFunction,
 } from "./parser.definitions";
 import { ParserError } from "./error";
 import { type } from "os";
@@ -469,7 +471,7 @@ export function createTypeParser(
               return savedLeft(me);
             };
           } else {
-            throw new Error("TODO Read identifier list");
+            throw new Error("TODO Read identifier list for K&R notation");
           }
         } else {
           // Not a func call, but nested abstract-declarator or declarator
@@ -627,6 +629,11 @@ export function createTypeParser(
   }
 
   function readParameterTypeList() {
+    if (scanner.current().type === "void") {
+      scanner.readNext();
+      return [[] as DeclaratorNode[], false] as const;
+    }
+
     const parameters: (DeclaratorNode | Typename)[] = [];
     let ellipsis = false;
     while (true) {
@@ -671,9 +678,73 @@ export function createTypeParser(
       throwError("Abstract declarator is not expected here");
     }
 
-    const typename = abstractDeclaratorOrDeclaratorCoreless.chain(
+    if (
+      scanner.current().type === ";" ||
+      scanner.current().type === "," ||
+      scanner.current().type === "="
+    ) {
+      // Aha, it is declaration
+      // TODO read declaration
+      // Pass all consts above to that function
+
+      throwError("TODO TODO");
+    }
+
+    // So, it is a function definition
+
+    const declaration = abstractDeclaratorOrDeclaratorCoreless.chain(
       baseSpecifier
     );
+
+    if (isCurrentTokenLooksLikeDeclarationSpecifiers()) {
+      throwError(
+        "K&R notation, @TODO read declaration-list and then update function type"
+      );
+    }
+
+    if (declaration.typename.type !== "function") {
+      throwError("Expecting function type (6.9.1 2)");
+    }
+
+    if (declaration.typename.returnType.type === "array") {
+      throwError("Functions can not return array type (6.9.1 3)");
+    }
+
+    if (scanner.current().type !== "{") {
+      throwError("Expected compount-statement");
+    }
+    scanner.readNext();
+
+    symbolTable.enterFunctionScope();
+    for (const param of declaration.typename.parameters) {
+      if (param.type !== "declarator") {
+        throwError("Parameter name omitted");
+      }
+      symbolTable.addEntry(param);
+    }
+
+    // @TODO: Read compound-statement
+
+    if (scanner.current().type !== "}") {
+      throwError("Expecting }");
+    }
+    const declaredVariables = symbolTable.leaveFunctionScope();
+
+    // Workaround for typescript
+    const functionDeclaration: DeclaratorNodeFunction = {
+      ...declaration,
+      typename: declaration.typename,
+    };
+
+    const func: FunctionDefinition = {
+      type: "function-declaration",
+      declaration: functionDeclaration,
+      // TODO
+      body: [],
+      declaredVariables,
+    };
+
+    return func;
   }
 
   return {

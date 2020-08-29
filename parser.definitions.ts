@@ -147,6 +147,14 @@ export type ArithmeticType =
   | "float"
   | "double";
 
+type FunctionTypename = {
+  type: "function";
+  parameters: (DeclaratorNode | Typename)[];
+  haveEndingEllipsis: boolean;
+  returnType: Typename;
+  const: true;
+};
+
 export type Typename =
   | { type: "void"; const: boolean }
   | {
@@ -176,24 +184,18 @@ export type Typename =
       size: ExpressionNode | "*" | null;
       const: true;
     }
+  | FunctionTypename
   | {
-      type: "function";
-      parameters: (DeclaratorNode | Typename)[];
-      haveEndingEllipsis: boolean;
-      returnType: Typename;
-      const: true;
-    }
-  | {
-      type: "function";
+      type: "function-knr";
       parametersIdentifiers: IdentifierNode[];
       returnType: Typename;
       const: true;
     };
 
-export type DeclaratorNode = {
+type DeclaratorNodeGeneric<T extends Typename> = {
   type: "declarator";
   identifier: string;
-  typename: Typename;
+  typename: T;
   storageSpecifier: StorageClass | null;
   functionSpecifier: "inline" | null;
   /**
@@ -202,7 +204,25 @@ export type DeclaratorNode = {
   memoryOffset?: number;
 };
 
+export type DeclaratorNode = DeclaratorNodeGeneric<Typename>;
+export type DeclaratorNodeFunction = DeclaratorNodeGeneric<FunctionTypename>;
+
 export type NodeLocator = Map<
   ExpressionNode | Typename | DeclaratorNode,
   TokenLocation
 >;
+
+// TODO
+type CompoundStatement = [];
+
+// TODO
+type Declaration = unknown;
+
+export type FunctionDefinition = {
+  type: "function-declaration";
+  declaration: DeclaratorNodeFunction;
+  body: CompoundStatement;
+  declaredVariables: DeclaratorNode[];
+};
+
+export type ExternalDeclaration = FunctionDefinition | Declaration;

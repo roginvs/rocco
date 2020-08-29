@@ -257,6 +257,30 @@ void;
 int const;
 asdasd;
 
+int test20(x, y) int x;
+float y;
+{
+  return x + y - 2;
+}
+
+extern int test22(int x);
+//static int test22(int x);
+int test22(int x)
+{
+  return x + 1;
+}
+
+static int zzz;
+static int zzz;
+int zzzy;
+int zzzy = 3;
+
+void test23()
+{
+  int x;
+  // int x;
+}
+
 int main(int argc, char **argv)
 {
   int x = 1 + argc;

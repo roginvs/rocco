@@ -27,8 +27,10 @@ export class SymbolTable {
 
   enterFunctionScope() {
     this.enterScope();
-    // Clear array
-    this.autoInFunctionDeclarations = [];
+
+    if (this.autoInFunctionDeclarations.length > 0) {
+      throw new Error("Internal error: probably entered function scope twice");
+    }
   }
 
   addEntry(declaration: DeclaratorNode) {
@@ -67,16 +69,25 @@ export class SymbolTable {
     }
   }
 
+  leaveFunctionScope() {
+    const currentScope = this.declarations.pop();
+    if (!currentScope) {
+      throw new Error("Unable to leave scope, no scope at all");
+    }
+    const declaredInFunction = this.autoInFunctionDeclarations;
+    this.autoInFunctionDeclarations = [];
+    return declaredInFunction;
+  }
+
+  /**
+   * ???? Remove this
+   */
   getCurrentScopeDeclarations() {
     const currentScope = this.declarations[this.declarations.length - 1];
     if (!currentScope) {
       throw new Error("No current scope");
     }
     return currentScope;
-  }
-
-  getFunctionAutoDeclaration() {
-    return this.autoInFunctionDeclarations;
   }
 
   lookupInScopes(identifier: string): DeclaratorNode | undefined {
@@ -88,5 +99,18 @@ export class SymbolTable {
       }
     }
     return undefined;
+  }
+
+  isIdentifierAlreadyDefinedInCurrentScope(identifier: string) {
+    const currentScope = this.declarations.slice().pop();
+    if (!currentScope) {
+      throw new Error("No current scope!");
+    }
+    for (const declaration of currentScope) {
+      if (declaration.identifier === identifier) {
+        return true;
+      }
+    }
+    return false;
   }
 }
