@@ -114,7 +114,7 @@ export function createTypeParser(
     return isCurrentTokenLooksLikeSpecifierQualifierList();
   }
 
-  function isCurrentTokenLooksLikeDeclarationSpecifier() {
+  function isCurrentTokenLooksLikeDeclarationSpecifiers() {
     return isCurrentTokenLooksLikeSpecifierQualifierList() ||
       isCurrentTokenAStorageClassSpecifier() ||
       isCurrentTokenAFunctionSpecifier()
@@ -428,12 +428,12 @@ export function createTypeParser(
           //   - nested abstract-declarator in direct-abstract-declarator
           //   - direct-abstract-declarator which declares function
           //  "declarator" and "direct-declarator" can not start with declaration-specifier
-          isCurrentTokenLooksLikeDeclarationSpecifier()
+          isCurrentTokenLooksLikeDeclarationSpecifiers()
         ) {
           // Read "parameter-type-list" or "identifier-list" using isAbstractDeclarator
           if (
             isAbstractDeclarator ||
-            isCurrentTokenLooksLikeDeclarationSpecifier() ||
+            isCurrentTokenLooksLikeDeclarationSpecifiers() ||
             // Assume no parameters is parameter-type-list
             scanner.current().type === ")"
           ) {
@@ -645,8 +645,13 @@ export function createTypeParser(
     return [parameters, ellipsis] as const;
   }
 
+  function readDeclaration() {
+    // @TODO: use readExternalDeclaration and then
+  }
+
   return {
     readTypeName,
     isCurrentTokenLooksLikeTypeName,
+    isCurrentTokenLooksLikeDeclarationSpecifier: isCurrentTokenLooksLikeDeclarationSpecifiers,
   };
 }
