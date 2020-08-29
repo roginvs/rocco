@@ -1,6 +1,6 @@
 import { Scanner } from "./scanner";
 import {
-  ARITHMETIC_TYPE as ARITHMETIC_TYPES,
+  TYPE_SPECIFIERS_ARITHMETIC,
   TypeQualifier,
   TYPE_QUALIFIERS,
   TypeSignedUnsigned,
@@ -44,7 +44,9 @@ export function createTypeParser(
   }
   function isCurrentTokenTypeArithmeticSpecifier() {
     const token = scanner.current();
-    const arithmeticType = ARITHMETIC_TYPES.find((x) => x === token.type);
+    const arithmeticType = TYPE_SPECIFIERS_ARITHMETIC.find(
+      (x) => x === token.type
+    );
     return arithmeticType;
   }
 

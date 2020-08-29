@@ -1,6 +1,6 @@
 import { Scanner } from "./scanner";
 import {
-  ARITHMETIC_TYPE,
+  TYPE_SPECIFIERS_ARITHMETIC,
   Punctuator,
   BinaryOperator,
   Token,

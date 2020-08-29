@@ -74,17 +74,22 @@ if (
   throw new Error("Duplicates found");
 }
 
-export const ARITHMETIC_TYPE = [
+export const TYPE_SPECIFIERS_ARITHMETIC = [
   "char",
   "short",
   "int",
   "long",
   "float",
   "double",
+] as const;
+export type TypeSpecifierArithmetic = typeof TYPE_SPECIFIERS_ARITHMETIC[number];
+
+export const TYPE_SPECIFIERS_UNDERSCORE = [
   "_Bool",
   "_Complex",
+  "_Imaginary",
 ] as const;
-export type ArithmeticType = typeof ARITHMETIC_TYPE[number];
+export type TypeSpecifierUnderscore = typeof TYPE_SPECIFIERS_UNDERSCORE[number];
 
 export const TYPE_SIGNED_UNSIGNED = ["signed", "unsigned"] as const;
 export type TypeSignedUnsigned = typeof TYPE_SIGNED_UNSIGNED[number];
@@ -103,7 +108,8 @@ export const STORAGE_CLASSES = [
 export type StorageClass = typeof STORAGE_CLASSES[number];
 
 export const KEYWORDS = [
-  ...ARITHMETIC_TYPE,
+  ...TYPE_SPECIFIERS_ARITHMETIC,
+  ...TYPE_SPECIFIERS_UNDERSCORE,
   ...TYPE_SIGNED_UNSIGNED,
   ...TYPE_QUALIFIERS,
   ...STORAGE_CLASSES,
@@ -136,6 +142,7 @@ export const KEYWORDS = [
 
   "inline",
 ] as const;
+
 export type Keyword = typeof KEYWORDS[number];
 
 export type Token = (

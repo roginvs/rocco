@@ -1,6 +1,6 @@
 import {
   BinaryOperator,
-  ArithmeticType,
+  TypeSpecifierArithmetic,
   TypeSignedUnsigned,
   AssignmentOperator,
   StorageClass,
@@ -143,7 +143,7 @@ export type Typename =
   | { type: "void"; const: boolean }
   | {
       type: "arithmetic";
-      arithmeticType: ArithmeticType;
+      arithmeticType: TypeSpecifierArithmetic;
       signedUnsigned: TypeSignedUnsigned | null;
       const: boolean;
     }
