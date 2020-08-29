@@ -660,7 +660,7 @@ export function createTypeParser(
   }
 
   function readExternalDeclaration() {
-    // @TODO
+    // @TODO Write tests for all this
 
     if (!isCurrentTokenLooksLikeDeclarationSpecifiers()) {
       throwError("Expecting declaration-specifiers");
