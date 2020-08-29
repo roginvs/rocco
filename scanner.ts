@@ -10,16 +10,19 @@ export class Scanner {
     return this.currentToken;
   }
 
-  private pushedBackTokens: Token[] = [];
+  private readonly pushedBackTokens: Token[] = [];
 
   readNext() {
     const pushedBackToken = this.pushedBackTokens.shift();
 
     const currentToken = pushedBackToken ? pushedBackToken : this.scanner();
 
+    /*
     this.controlPoints.forEach((controlPoint) =>
       controlPoint.push(currentToken)
     );
+    */
+
     this.currentToken = currentToken;
   }
 
@@ -36,7 +39,8 @@ export class Scanner {
     return next;
   }
 
-  private controlPoints: Token[][] = [];
+  /*
+  private readonly controlPoints: Token[][] = [];
 
   public makeControlPoint() {
     this.controlPoints.push([this.currentToken]);
@@ -64,6 +68,7 @@ export class Scanner {
       .forEach((token) => this.pushedBackTokens.unshift(token));
     this.readNext();
   }
+  */
 }
 
 /*

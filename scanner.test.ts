@@ -92,6 +92,7 @@ describe("Scanner", () => {
     expect(scanner.current().pos).toBe(3);
   });
 
+  /*
   it(`Scans with one control point`, () => {
     const scanner = new Scanner(createDemoReader());
     expect(scanner.current().pos).toBe(1);
@@ -272,4 +273,5 @@ describe("Scanner", () => {
     scanner.readNext();
     expect(scanner.current().pos).toBe(7);
   });
+  */
 });
