@@ -23,6 +23,19 @@ export class Scanner {
     this.currentToken = currentToken;
   }
 
+  pushBack(token: Token) {
+    this.pushedBackTokens.unshift(this.current());
+    this.currentToken = token;
+  }
+
+  nextToken() {
+    const token = this.current();
+    this.readNext();
+    const next = this.current();
+    this.pushBack(token);
+    return next;
+  }
+
   private controlPoints: Token[][] = [];
 
   public makeControlPoint() {

@@ -275,6 +275,7 @@ export function createExpressionParser(
           };
         } else {
           // We could rollback and use "readUnaryExpression", but it does not matter
+          // Doing the same as
           const expressionNode = readExpression();
 
           if (scanner.current().type !== ")") {

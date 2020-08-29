@@ -41,6 +41,57 @@ describe("Scanner", () => {
     });
     expect(scanner.current().type).toBe("end");
   });
+
+  it(`Push back token`, () => {
+    const scanner = new Scanner(createDemoReader());
+    expect(scanner.current().pos).toBe(1);
+
+    scanner.readNext();
+    expect(scanner.current().pos).toBe(2);
+
+    const tokenToPush = scanner.current();
+
+    scanner.readNext();
+    expect(scanner.current().pos).toBe(3);
+
+    scanner.pushBack(tokenToPush);
+
+    expect(scanner.current().pos).toBe(2);
+    scanner.readNext();
+    expect(scanner.current().pos).toBe(3);
+    scanner.readNext();
+    expect(scanner.current().pos).toBe(4);
+  });
+  it(`Push back token, first`, () => {
+    const scanner = new Scanner(createDemoReader());
+    expect(scanner.current().pos).toBe(1);
+
+    const tokenToPush = scanner.current();
+
+    scanner.readNext();
+    expect(scanner.current().pos).toBe(2);
+
+    scanner.pushBack(tokenToPush);
+
+    expect(scanner.current().pos).toBe(1);
+    scanner.readNext();
+    expect(scanner.current().pos).toBe(2);
+    scanner.readNext();
+    expect(scanner.current().pos).toBe(3);
+  });
+  it(`Look ahead token`, () => {
+    const scanner = new Scanner(createDemoReader());
+    expect(scanner.current().pos).toBe(1);
+
+    expect(scanner.nextToken().pos).toBe(2);
+
+    expect(scanner.current().pos).toBe(1);
+    scanner.readNext();
+    expect(scanner.current().pos).toBe(2);
+    scanner.readNext();
+    expect(scanner.current().pos).toBe(3);
+  });
+
   it(`Scans with one control point`, () => {
     const scanner = new Scanner(createDemoReader());
     expect(scanner.current().pos).toBe(1);
