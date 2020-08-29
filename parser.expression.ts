@@ -274,8 +274,9 @@ export function createExpressionParser(
             typename: typename,
           };
         } else {
-          // We could rollback and use "readUnaryExpression", but it does not matter
-          // Doing the same as
+          // Doing the same as in readUnaryExpression
+          // We can pushBack this token and call readUnaryExpression, but
+          //  this does not matter
           const expressionNode = readExpression();
 
           if (scanner.current().type !== ")") {
@@ -315,12 +316,9 @@ export function createExpressionParser(
       return unaryExpression;
     }
 
-    scanner.makeControlPoint();
-
     scanner.readNext();
 
     if (typeParser.isCurrentTokenLooksLikeTypeName()) {
-      scanner.clearControlPoint();
       const typename = typeParser.readTypeName();
       if (scanner.current().type !== ")") {
         throwError("Expected )");
@@ -341,7 +339,7 @@ export function createExpressionParser(
       return node;
     } else {
       // This means that "(" is not a part of cast-expression, it is a unary-expression
-      scanner.rollbackControlPoint();
+      scanner.pushBack(token);
       const unaryExpression = readUnaryExpression();
       return unaryExpression;
     }

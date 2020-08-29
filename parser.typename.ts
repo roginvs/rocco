@@ -483,10 +483,8 @@ export function createTypeParser(
 
         let size: ExpressionNode | "*" | null = null;
         if (scanner.current().type === "*") {
-          scanner.makeControlPoint();
-          scanner.readNext();
-          const nextSymbolIsClosingSquareBrace = scanner.current().type === "]";
-          scanner.rollbackControlPoint();
+          const nextSymbolIsClosingSquareBrace =
+            scanner.nextToken().type === "]";
 
           if (nextSymbolIsClosingSquareBrace) {
             size = "*";
