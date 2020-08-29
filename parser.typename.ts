@@ -644,12 +644,16 @@ export function createTypeParser(
   }
 
   function readDeclaration() {
-    // @TODO: use readExternalDeclaration and then
+    // @TODO: use readExternalDeclaration and then throw if it is a function definition
+  }
+
+  function readExternalDeclaration() {
+    // @TODO
   }
 
   return {
     readTypeName,
     isCurrentTokenLooksLikeTypeName,
-    isCurrentTokenLooksLikeDeclarationSpecifier: isCurrentTokenLooksLikeDeclarationSpecifiers,
+    isCurrentTokenLooksLikeDeclarationSpecifiers,
   };
 }
