@@ -258,6 +258,8 @@ export function createTypeParser(
       specifier.const = true;
     }
 
+    // @TODO: "volatile" and "restrict" qualifiers
+
     if (isQualifiersListHaveDuplicates(qualifiers)) {
       throwError("Got duplicated qualifiers");
     }
