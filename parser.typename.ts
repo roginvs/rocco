@@ -241,6 +241,11 @@ export function createTypeParser(
     }
 
     if (!specifier) {
+      // 6.7.2 Type specifiers
+      //  At least one type specifier shall be given
+      // C90 supports implicit-int, but not C99
+      // And it is quite hard to implement
+      // gcc gives a warning -Wimplicit-int
       throwError("Expect specifier");
     }
 
@@ -649,6 +654,26 @@ export function createTypeParser(
 
   function readExternalDeclaration() {
     // @TODO
+
+    if (!isCurrentTokenLooksLikeDeclarationSpecifiers()) {
+      throwError("Expecting declaration-specifiers");
+    }
+
+    const {
+      specifier: baseSpecifier,
+      storageClassSpecifier,
+      functionSpecifier,
+    } = readDeclarationSpecifiers();
+
+    const abstractDeclaratorOrDeclaratorCoreless = readAbstractDeclaratorOrDeclaratorCoreless();
+
+    if (abstractDeclaratorOrDeclaratorCoreless.abstract) {
+      throwError("Abstract declarator is not expected here");
+    }
+
+    const typename = abstractDeclaratorOrDeclaratorCoreless.chain(
+      baseSpecifier
+    );
   }
 
   return {

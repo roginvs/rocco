@@ -249,8 +249,13 @@ void test19()
   char arr[] = {1, 2, 3};
   //char arr2[];
 
+  const z = 2;
   // Hmm
 }
+
+void;
+int const;
+asdasd;
 
 int main(int argc, char **argv)
 {
