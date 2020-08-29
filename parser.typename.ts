@@ -131,8 +131,6 @@ export function createTypeParser(
   }
 
   function readDeclarationSpecifiers() {
-    // @TODO: Refactor me to be able to read "long long int"
-
     const qualifiers: TypeQualifier[] = [];
 
     let specifier: Typename | undefined = undefined;
@@ -220,7 +218,10 @@ export function createTypeParser(
         if (specifier) {
           throwError("Already have specifier");
         }
-        specifier = maybeSpecifierFromSymbolTable;
+        specifier = {
+          // Important to clone here - we might modify it
+          ...maybeSpecifierFromSymbolTable,
+        };
         allowArithmeticTypeModification = false;
       } else if (maybeStorageClassSpecifier) {
         if (storageClassSpecifier) {

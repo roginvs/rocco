@@ -389,5 +389,5 @@ describe("Parsing typename", () => {
   });
 
   // TODO
-  describe.skip("SKipped", () => checkTypename("struct tag (*[5])(float)"));
+  describe.skip("Skipped", () => checkTypename("struct tag (*[5])(float)"));
 });
