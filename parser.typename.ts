@@ -136,6 +136,7 @@ export function createTypeParser(
     const qualifiers: TypeQualifier[] = [];
 
     let specifier: Typename | undefined = undefined;
+    let allowArithmeticTypeModification = true;
 
     let signedUnsigned: TypeSignedUnsigned | undefined;
 
@@ -145,9 +146,9 @@ export function createTypeParser(
     const tokenForLocator = scanner.current();
 
     while (true) {
-      const qualifier = isCurrentTokenTypeQualifier();
-
       const token = scanner.current();
+
+      const qualifier = isCurrentTokenTypeQualifier();
 
       const maybeArithmeticSpecifier = isCurrentTokenTypeArithmeticSpecifier();
 
@@ -171,18 +172,35 @@ export function createTypeParser(
           type: "void",
           const: false,
         };
+        allowArithmeticTypeModification = false;
       } else if (maybeArithmeticSpecifier) {
-        // @TODO Here we should update type if we see "long long"
+        scanner.readNext();
+
+        if (specifier) {
+          if (specifier.type !== "arithmetic") {
+            throwError("Already have non arithmetic type specifier");
+          }
+          if (!allowArithmeticTypeModification) {
+            throwError("Not allowed to add specifiers to this type");
+          }
+
+          throwError("TODO: Add 'long long' and others, modify specifier");
+        } else {
+          specifier = {
+            type: "arithmetic",
+            arithmeticType:
+              maybeArithmeticSpecifier === "long"
+                ? "int"
+                : maybeArithmeticSpecifier,
+            const: false,
+            signedUnsigned: null,
+          };
+        }
+      } else if (maybeUnderscoreSpecifier) {
         if (specifier) {
           throwError("Already have type specifier");
         }
-        scanner.readNext();
-        specifier = {
-          type: "arithmetic",
-          arithmeticType: maybeArithmeticSpecifier,
-          const: false,
-          signedUnsigned: null,
-        };
+        throwError("Not implemented yet");
       } else if (token.type === "signed" || token.type === "unsigned") {
         if (signedUnsigned) {
           throwError("Already have signed/unsigned");
@@ -203,6 +221,7 @@ export function createTypeParser(
           throwError("Already have specifier");
         }
         specifier = maybeSpecifierFromSymbolTable;
+        allowArithmeticTypeModification = false;
       } else if (maybeStorageClassSpecifier) {
         if (storageClassSpecifier) {
           throwError(

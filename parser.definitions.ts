@@ -143,7 +143,6 @@ export type ArithmeticType =
   | "char"
   | "short"
   | "int"
-  | "long"
   | "long long"
   | "float"
   | "double";
