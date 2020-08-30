@@ -208,7 +208,7 @@ export type DeclaratorNode = DeclaratorNodeGeneric<Typename>;
 export type DeclaratorNodeFunction = DeclaratorNodeGeneric<FunctionTypename>;
 
 export type NodeLocator = Map<
-  ExpressionNode | Typename | DeclaratorNode,
+  ExpressionNode | Typename | DeclaratorNode | ExternalDeclaration,
   TokenLocation
 >;
 

@@ -662,6 +662,8 @@ export function createTypeParser(
   function readExternalDeclaration() {
     // @TODO Write tests for all this
 
+    const tokenForLocator = scanner.current();
+
     if (!isCurrentTokenLooksLikeDeclarationSpecifiers()) {
       throwError("Expecting declaration-specifiers");
     }
@@ -728,6 +730,7 @@ export function createTypeParser(
     if (scanner.current().type !== "}") {
       throwError("Expecting }");
     }
+    scanner.readNext();
     const declaredVariables = symbolTable.leaveFunctionScope();
 
     // Workaround for typescript
@@ -744,6 +747,11 @@ export function createTypeParser(
       declaredVariables,
     };
 
+    locator.set(func, {
+      ...tokenForLocator,
+      length: scanner.current().pos - tokenForLocator.pos,
+    });
+
     return func;
   }
 
@@ -751,5 +759,6 @@ export function createTypeParser(
     readTypeName,
     isCurrentTokenLooksLikeTypeName,
     isCurrentTokenLooksLikeDeclarationSpecifiers,
+    readExternalDeclaration,
   };
 }
