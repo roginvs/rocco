@@ -670,6 +670,12 @@ export function createParser(
   }
 
   function readDeclaration() {
+    const nodes = readExternalDeclaration();
+    for (const node of nodes) {
+      if (node.type === "function-declaration") {
+        throwError;
+      }
+    }
     // @TODO: use readExternalDeclaration and then throw if it is a function definition
   }
 
@@ -699,7 +705,14 @@ export function createParser(
       scanner.current().type === "," ||
       scanner.current().type === "="
     ) {
-      const initDeclarationList = [abstractDeclaratorOrDeclaratorCoreless];
+      const firstDeclaration = abstractDeclaratorOrDeclaratorCoreless.chain(
+        baseSpecifier
+      );
+      locator.set(firstDeclaration, {
+        ...tokenForLocator,
+        length: scanner.current().pos - tokenForLocator.pos,
+      });
+      const declarationNodes = [firstDeclaration];
 
       while (scanner.current().type !== ";") {
         if (scanner.current().type === "=") {
@@ -713,17 +726,20 @@ export function createParser(
             console.info(declarator);
             throwError("Abstract declarator is not expected here");
           }
-          initDeclarationList.push(declarator);
+
+          const declarationNode = declarator.chain(baseSpecifier);
+          locator.set(declarationNode, {
+            ...tokenForLocator,
+            length: scanner.current().pos - tokenForLocator.pos,
+          });
+          declarationNodes.push(declarationNode);
+
           if (scanner.current().type === "=") {
             throwError("Initializers are not supported yet");
           }
         }
       }
       scanner.readNext();
-
-      const declarationNodes = initDeclarationList.map((declarator) =>
-        declarator.chain(baseSpecifier)
-      );
 
       declarationNodes.forEach((node) => {
         node.functionSpecifier = functionSpecifier;
