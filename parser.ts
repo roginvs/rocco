@@ -671,12 +671,17 @@ export function createParser(
 
   function readDeclaration() {
     const nodes = readExternalDeclaration();
+
+    const resultNodes: DeclaratorNode[] = [];
+
     for (const node of nodes) {
       if (node.type === "function-declaration") {
-        throwError;
+        throwError("Unexpected function declaration");
+      } else {
+        resultNodes.push(node);
       }
     }
-    // @TODO: use readExternalDeclaration and then throw if it is a function definition
+    return resultNodes;
   }
 
   function readExternalDeclaration() {
