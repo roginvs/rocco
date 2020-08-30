@@ -117,4 +117,50 @@ describe("External declaration functions", () => {
       declaredVariables: [],
     },
   ]);
+
+  checkExternalDeclaration("int x;", [
+    {
+      type: "declarator",
+      functionSpecifier: null,
+      storageSpecifier: null,
+      identifier: "x",
+      typename: {
+        type: "arithmetic",
+        arithmeticType: "int",
+        const: false,
+        signedUnsigned: null,
+      },
+    },
+  ]);
+
+  checkExternalDeclaration("int x, *p;", [
+    {
+      type: "declarator",
+      functionSpecifier: null,
+      storageSpecifier: null,
+      identifier: "x",
+      typename: {
+        type: "arithmetic",
+        arithmeticType: "int",
+        const: false,
+        signedUnsigned: null,
+      },
+    },
+    {
+      type: "declarator",
+      functionSpecifier: null,
+      storageSpecifier: null,
+      identifier: "p",
+      typename: {
+        type: "pointer",
+        const: false,
+        pointsTo: {
+          type: "arithmetic",
+          arithmeticType: "int",
+          const: false,
+          signedUnsigned: null,
+        },
+      },
+    },
+  ]);
 });

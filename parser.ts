@@ -699,11 +699,42 @@ export function createParser(
       scanner.current().type === "," ||
       scanner.current().type === "="
     ) {
-      // Aha, it is declaration
-      // TODO read declaration
-      // Pass all consts above to that function
+      const initDeclarationList = [abstractDeclaratorOrDeclaratorCoreless];
 
-      throwError("TODO TODO");
+      while (scanner.current().type !== ";") {
+        if (scanner.current().type === "=") {
+          // An initializer
+          throwError("Initializers are not supported yet");
+        } else if ((scanner.current().type = ",")) {
+          scanner.readNext();
+          const declarator = readAbstractDeclaratorOrDeclaratorCoreless();
+
+          if (declarator.abstract) {
+            console.info(declarator);
+            throwError("Abstract declarator is not expected here");
+          }
+          initDeclarationList.push(declarator);
+          if (scanner.current().type === "=") {
+            throwError("Initializers are not supported yet");
+          }
+        }
+      }
+      scanner.readNext();
+
+      const declarationNodes = initDeclarationList.map((declarator) =>
+        declarator.chain(baseSpecifier)
+      );
+
+      declarationNodes.forEach((node) => {
+        node.functionSpecifier = functionSpecifier;
+        node.storageSpecifier = storageClassSpecifier;
+      });
+
+      declarationNodes.forEach((node) => {
+        symbolTable.addEntry(node);
+      });
+
+      return declarationNodes;
     }
 
     // So, it is a function definition
