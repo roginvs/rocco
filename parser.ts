@@ -741,7 +741,7 @@ export function createParser(
       symbolTable.addEntry(param);
     }
 
-    // @TODO: Read compound-statement
+    const body = readCompoundStatementBody();
 
     if (scanner.current().type !== "}") {
       throwError("Expecting }");
@@ -758,8 +758,7 @@ export function createParser(
     const func: FunctionDefinition = {
       type: "function-declaration",
       declaration: functionDeclaration,
-      // TODO
-      body: [],
+      body: body,
       declaredVariables,
     };
 
@@ -769,6 +768,19 @@ export function createParser(
     });
 
     return func;
+  }
+
+  /**
+   * Automatically enters/leaves scope, so
+   * do not use it for function definition compount-statement
+   */
+  function readCompoundStatement() {
+    // TODO
+  }
+
+  function readCompoundStatementBody() {
+    // @TODO
+    return [] as [];
   }
 
   return {
