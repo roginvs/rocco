@@ -225,6 +225,12 @@ export interface WhileStatement {
   condition: ExpressionNode;
   body: CompoundStatement;
 }
+
+export interface DoWhileStatement {
+  type: "dowhile";
+  condition: ExpressionNode;
+  body: CompoundStatement;
+}
 export interface ContinueStatement {
   type: "continue";
 }
@@ -240,9 +246,11 @@ export type CompoundStatementBody =
   | AssignmentExpression
   | IfStatement
   | WhileStatement
+  | DoWhileStatement
   | ContinueStatement
   | BreakStatement
   | ReturnStatement;
+
 export type CompoundStatement = {
   type: "compound-statement";
   body: CompoundStatementBody[];

@@ -16,6 +16,7 @@ import {
   IdentifierNode,
   FunctionDefinition,
   DeclaratorNodeFunction,
+  CompoundStatementBody,
 } from "./parser.definitions";
 import { ParserError } from "./error";
 import { type } from "os";
@@ -839,8 +840,9 @@ export function createParser(
   }
 
   function readCompoundStatementBody() {
-    // @TODO
-    return [] as [];
+    const body: CompoundStatementBody[] = [];
+
+    return body;
   }
 
   return {
