@@ -293,6 +293,32 @@ void test24()
   //FUNC ffff = test23;
 }
 
+void test25()
+{
+  int n;
+
+  switch (n)
+  case 2:
+    2 + 2;
+
+  switch (n)
+  {
+    if (2 + 2 > 5)
+    {
+    case 5:
+      2 + 2;
+    }
+  }
+  return;
+}
+
+void test26()
+{
+  for (2 + 2)
+  {
+  }
+}
+
 int main(int argc, char **argv)
 {
   int x = 1 + argc;

@@ -213,13 +213,45 @@ export type NodeLocator = Map<
   TokenLocation
 >;
 
-// TODO
-type CompoundStatement = [];
+export interface IfStatement {
+  type: "if";
+  condition: ExpressionNode;
+  iftrue: CompoundStatement;
+  iffalse?: CompoundStatement;
+}
+
+export interface WhileStatement {
+  type: "while";
+  condition: ExpressionNode;
+  body: CompoundStatement;
+}
+export interface ContinueStatement {
+  type: "continue";
+}
+export interface BreakStatement {
+  type: "break";
+}
+export interface ReturnStatement {
+  type: "return";
+}
+
+export type CompoundStatementBody =
+  | DeclaratorNode
+  | AssignmentExpression
+  | IfStatement
+  | WhileStatement
+  | ContinueStatement
+  | BreakStatement
+  | ReturnStatement;
+export type CompoundStatement = {
+  type: "compound-statement";
+  body: CompoundStatementBody[];
+};
 
 export type FunctionDefinition = {
   type: "function-declaration";
   declaration: DeclaratorNodeFunction;
-  body: CompoundStatement;
+  body: CompoundStatementBody[];
   declaredVariables: DeclaratorNode[];
 };
 
