@@ -224,6 +224,7 @@ export function createTypeParser(
           // Important to clone here - we might modify it
           ...maybeSpecifierFromSymbolTable,
         };
+        scanner.readNext();
         allowArithmeticTypeModification = false;
       } else if (maybeStorageClassSpecifier) {
         if (storageClassSpecifier) {
@@ -231,11 +232,13 @@ export function createTypeParser(
             `Already have storage class specifier ${storageClassSpecifier}`
           );
         }
+        scanner.readNext();
         storageClassSpecifier = maybeStorageClassSpecifier;
       } else if (maybeFunctionSpecifier) {
         if (functionSpecifier) {
           throwError(`Already have function specifier`);
         }
+        scanner.readNext();
         functionSpecifier = maybeFunctionSpecifier;
       } else {
         break;
@@ -697,6 +700,8 @@ export function createTypeParser(
     const declaration = abstractDeclaratorOrDeclaratorCoreless.chain(
       baseSpecifier
     );
+    declaration.functionSpecifier = functionSpecifier;
+    declaration.storageSpecifier = storageClassSpecifier;
 
     if (isCurrentTokenLooksLikeDeclarationSpecifiers()) {
       throwError(

@@ -275,10 +275,21 @@ static int zzz;
 int zzzy;
 int zzzy = 3;
 
-void test23()
+int test23(int y)
 {
   int x;
+  return y + 2;
   // int x;
+}
+
+typedef int FUNC(int y);
+FUNC myFunc1;
+FUNC myFunc2;
+
+void test24()
+{
+  //myFunc1 = myFunc2;
+  //FUNC ffff = test23;
 }
 
 int main(int argc, char **argv)

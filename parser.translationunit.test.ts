@@ -48,6 +48,79 @@ function checkFailingExternalDeclaration(str: string) {
 }
 
 describe("External declaration functions", () => {
-  checkExternalDeclaration("int f() {}");
-  checkExternalDeclaration("int* f(char a, char b) {}");
+  checkExternalDeclaration("inline int f() {}", {
+    type: "function-declaration",
+    declaration: {
+      type: "declarator",
+      functionSpecifier: "inline",
+      storageSpecifier: null,
+      identifier: "f",
+      typename: {
+        type: "function",
+        const: true,
+        haveEndingEllipsis: false,
+        parameters: [],
+        returnType: {
+          type: "arithmetic",
+          arithmeticType: "int",
+          const: false,
+          signedUnsigned: null,
+        },
+      },
+    },
+    body: [],
+    declaredVariables: [],
+  });
+  checkExternalDeclaration("int* f(char a, char b) {}", {
+    type: "function-declaration",
+    declaration: {
+      type: "declarator",
+      functionSpecifier: null,
+      storageSpecifier: null,
+      identifier: "f",
+      typename: {
+        type: "function",
+        const: true,
+        haveEndingEllipsis: false,
+        parameters: [
+          {
+            type: "declarator",
+            functionSpecifier: null,
+            storageSpecifier: null,
+            identifier: "a",
+            typename: {
+              type: "arithmetic",
+              arithmeticType: "char",
+              const: false,
+              signedUnsigned: null,
+            },
+          },
+          {
+            type: "declarator",
+            functionSpecifier: null,
+            storageSpecifier: null,
+            identifier: "b",
+            typename: {
+              type: "arithmetic",
+              arithmeticType: "char",
+              const: false,
+              signedUnsigned: null,
+            },
+          },
+        ],
+        returnType: {
+          type: "pointer",
+          const: false,
+          pointsTo: {
+            type: "arithmetic",
+            arithmeticType: "int",
+            const: false,
+            signedUnsigned: null,
+          },
+        },
+      },
+    },
+    body: [],
+    declaredVariables: [],
+  });
 });
