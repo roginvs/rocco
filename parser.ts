@@ -7,6 +7,7 @@ import {
   StorageClass,
   STORAGE_CLASSES,
   TYPE_SPECIFIERS_UNDERSCORE,
+  Token,
 } from "./scanner.func";
 import {
   Typename,
@@ -20,9 +21,9 @@ import {
   CompoundStatement,
   IfStatement,
   Statement,
+  WhileStatement,
 } from "./parser.definitions";
 import { ParserError } from "./error";
-import { type } from "os";
 import { SymbolTable } from "./parser.symboltable";
 import { createExpressionParser } from "./parser.expression";
 
@@ -37,6 +38,13 @@ export function createParser(
   function throwError(info: string): never {
     // console.info(info, scanner.current());
     throw new ParserError(`${info}`, scanner.current());
+  }
+
+  function assertTokenAndReadNext(type: Token["type"]) {
+    if (scanner.current().type !== type) {
+      throwError(`Expected ${type}`);
+    }
+    scanner.readNext();
   }
 
   const expressionReader = createExpressionParser(
@@ -909,6 +917,27 @@ export function createParser(
       });
 
       return node;
+    } else if (token.type === "while") {
+      scanner.readNext();
+
+      assertTokenAndReadNext("(");
+
+      const condition = expressionReader.readExpression();
+
+      assertTokenAndReadNext(")");
+
+      const body = readStatement();
+
+      const node: WhileStatement = {
+        type: "while",
+        condition: condition,
+        body: body,
+      };
+      locator.set(node, {
+        ...token,
+        length: scanner.current().pos - token.pos,
+      });
+      return node;
     } else if (token.type === ";") {
       scanner.readNext();
       // Lol, workaround
@@ -917,6 +946,10 @@ export function createParser(
         subtype: "char",
         value: 0,
       };
+      locator.set(emptyStatement, {
+        ...token,
+        length: scanner.current().pos - token.pos,
+      });
       return emptyStatement;
     } else {
       const expression = expressionReader.readExpression();

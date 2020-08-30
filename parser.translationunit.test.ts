@@ -133,73 +133,155 @@ describe("External declaration functions", () => {
     },
   ]);
 
-  checkExternalDeclaration("int x, *p;", [
-    {
-      type: "declarator",
-      functionSpecifier: null,
-      storageSpecifier: null,
-      identifier: "x",
-      typename: {
-        type: "arithmetic",
-        arithmeticType: "int",
-        const: false,
-        signedUnsigned: null,
-      },
-    },
-    {
-      type: "declarator",
-      functionSpecifier: null,
-      storageSpecifier: null,
-      identifier: "p",
-      typename: {
-        type: "pointer",
-        const: false,
-        pointsTo: {
-          type: "arithmetic",
-          arithmeticType: "int",
-          const: false,
-          signedUnsigned: null,
-        },
-      },
-    },
-  ]);
+  checkExternalDeclaration("int x, *p;");
 
-  checkExternalDeclaration("void kek() { if(2+3) { 3; } else {4; } }", [
-    {
-      type: "function-declaration",
-      declaration: {
-        type: "declarator",
-        functionSpecifier: null,
-        storageSpecifier: null,
-        identifier: "kek",
-        typename: {
-          type: "function",
-          const: true,
-          haveEndingEllipsis: false,
-          parameters: [],
-          returnType: { type: "void", const: false },
+  checkExternalDeclaration(
+    `
+   void kek(int x) { 
+      int y;
+      if (x > 0) { 
+         y = 3;
+       } else {
+         y = 5;
+       };
+
+       while (x > 0){
+         x--;
+         y = y+1;
+       }
+     }`,
+
+    [
+      {
+        type: "function-declaration",
+        declaration: {
+          type: "declarator",
+          functionSpecifier: null,
+          storageSpecifier: null,
+          identifier: "kek",
+          typename: {
+            type: "function",
+            const: true,
+            haveEndingEllipsis: false,
+            parameters: [
+              {
+                type: "declarator",
+                functionSpecifier: null,
+                storageSpecifier: null,
+                identifier: "x",
+                typename: {
+                  type: "arithmetic",
+                  arithmeticType: "int",
+                  const: false,
+                  signedUnsigned: null,
+                },
+              },
+            ],
+            returnType: { type: "void", const: false },
+          },
         },
+        body: [
+          {
+            type: "declarator",
+            functionSpecifier: null,
+            storageSpecifier: null,
+            identifier: "y",
+            typename: {
+              type: "arithmetic",
+              arithmeticType: "int",
+              const: false,
+              signedUnsigned: null,
+            },
+          },
+          {
+            type: "if",
+            condition: {
+              type: "binary operator",
+              operator: ">",
+              left: { type: "identifier", value: "x" },
+              right: { type: "const", subtype: "int", value: 0 },
+            },
+            iftrue: {
+              type: "compound-statement",
+              body: [
+                {
+                  type: "assignment",
+                  operator: "=",
+                  lvalue: { type: "identifier", value: "y" },
+                  rvalue: { type: "const", subtype: "int", value: 3 },
+                },
+              ],
+            },
+            iffalse: {
+              type: "compound-statement",
+              body: [
+                {
+                  type: "assignment",
+                  operator: "=",
+                  lvalue: { type: "identifier", value: "y" },
+                  rvalue: { type: "const", subtype: "int", value: 5 },
+                },
+              ],
+            },
+          },
+          { type: "const", subtype: "char", value: 0 },
+          {
+            type: "while",
+            condition: {
+              type: "binary operator",
+              operator: ">",
+              left: { type: "identifier", value: "x" },
+              right: { type: "const", subtype: "int", value: 0 },
+            },
+            body: {
+              type: "compound-statement",
+              body: [
+                {
+                  type: "postfix --",
+                  target: { type: "identifier", value: "x" },
+                },
+                {
+                  type: "assignment",
+                  operator: "=",
+                  lvalue: { type: "identifier", value: "y" },
+                  rvalue: {
+                    type: "binary operator",
+                    operator: "+",
+                    left: { type: "identifier", value: "y" },
+                    right: { type: "const", subtype: "int", value: 1 },
+                  },
+                },
+              ],
+            },
+          },
+        ],
+        declaredVariables: [
+          {
+            type: "declarator",
+            functionSpecifier: null,
+            storageSpecifier: null,
+            identifier: "x",
+            typename: {
+              type: "arithmetic",
+              arithmeticType: "int",
+              const: false,
+              signedUnsigned: null,
+            },
+          },
+          {
+            type: "declarator",
+            functionSpecifier: null,
+            storageSpecifier: null,
+            identifier: "y",
+            typename: {
+              type: "arithmetic",
+              arithmeticType: "int",
+              const: false,
+              signedUnsigned: null,
+            },
+          },
+        ],
       },
-      body: [
-        {
-          type: "if",
-          condition: {
-            type: "binary operator",
-            operator: "+",
-            left: { type: "const", subtype: "int", value: 2 },
-            right: { type: "const", subtype: "int", value: 3 },
-          },
-          iftrue: {
-            type: "compound-statement",
-            body: [{ type: "const", subtype: "int", value: 3 }],
-          },
-          iffalse: {
-            type: "compound-statement",
-            body: [{ type: "const", subtype: "int", value: 4 }],
-          },
-        },
-      ],
-      declaredVariables: [],
-    },
-  ]);
+    ]
+  );
 });

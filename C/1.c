@@ -314,9 +314,9 @@ void test25()
 
 void test26()
 {
-  for (2 + 2)
+  for (2 + 2;;)
   {
-  }
+  };
 }
 
 int main(int argc, char **argv)

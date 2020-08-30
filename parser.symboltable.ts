@@ -4,7 +4,7 @@ import {
   DeclaratorNode,
   NodeLocator,
 } from "./parser.definitions";
-import { StorageClass } from "./scanner.func";
+
 import { SymbolTableError } from "./error";
 
 export type IdentifierToTypename = Map<IdentifierNode, DeclaratorNode>;
@@ -17,7 +17,7 @@ export class SymbolTable {
   /** List of declarations for whole compilaion unit */
   private readonly externAndStaticDeclarations: DeclaratorNode[] = [];
   /** List of declarations inside current function scope */
-  private autoInFunctionDeclarations: DeclaratorNode[] = [];
+  private autoInFunctionDeclarations: DeclaratorNode[] | null = null;
 
   private readonly declarations: DeclaratorNode[][] = [];
 
@@ -28,9 +28,10 @@ export class SymbolTable {
   enterFunctionScope() {
     this.enterScope();
 
-    if (this.autoInFunctionDeclarations.length > 0) {
-      throw new Error("Internal error: probably entered function scope twice");
+    if (this.autoInFunctionDeclarations !== null) {
+      throw new Error("Internal error: already in function scope");
     }
+    this.autoInFunctionDeclarations = [];
   }
 
   addEntry(declaration: DeclaratorNode) {
@@ -59,6 +60,10 @@ export class SymbolTable {
       declaration.storageSpecifier === "static"
     ) {
       this.externAndStaticDeclarations.push(declaration);
+    } else {
+      if (this.autoInFunctionDeclarations) {
+        this.autoInFunctionDeclarations.push(declaration);
+      }
     }
   }
 
@@ -79,7 +84,12 @@ export class SymbolTable {
       throw new Error("Unable to leave scope, no scope at all");
     }
     const declaredInFunction = this.autoInFunctionDeclarations;
-    this.autoInFunctionDeclarations = [];
+    this.autoInFunctionDeclarations = null;
+    if (declaredInFunction === null) {
+      throw new Error(
+        "Internal error: unable to leave function scope because did no enter there"
+      );
+    }
     return declaredInFunction;
   }
 
