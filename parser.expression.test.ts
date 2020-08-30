@@ -1,41 +1,13 @@
-import {
-  createExpressionParser,
-  ExpressionRequirements,
-} from "./parser.expression";
 import { Scanner } from "./scanner";
 import { createScannerFunc } from "./scanner.func";
 import { ExpressionNode, NodeLocator } from "./parser.definitions";
 import { SymbolTable } from "./parser.symboltable";
 import { DeepPartial } from "./utils";
+import { createParser } from "./parser";
 
 function checkExpressionSkip(str: string, ast?: ExpressionNode) {
   it.skip(`Reads '${str}'`, () => {});
 }
-
-const createMockedTypeparser = (scanner: Scanner) => {
-  const r: ExpressionRequirements = {
-    isCurrentTokenLooksLikeTypeName() {
-      const t = scanner.current();
-      return t.type === "int" || t.type === "char";
-    },
-    readTypeName() {
-      const t = scanner.current();
-
-      if (t.type === "int" || t.type === "char") {
-        scanner.readNext();
-
-        return {
-          type: "arithmetic",
-          arithmeticType: t.type === "int" ? "int" : "char",
-          signedUnsigned: null,
-          const: false,
-        };
-      }
-      throw new Error("Not implemented in mocked version");
-    },
-  };
-  return r;
-};
 
 // TODO: Remove DeepPartial
 function checkExpression(str: string, ast?: DeepPartial<ExpressionNode>) {
@@ -92,12 +64,7 @@ function checkExpression(str: string, ast?: DeepPartial<ExpressionNode>) {
         },
       },
     });
-    const parser = createExpressionParser(
-      scanner,
-      locator,
-      createMockedTypeparser(scanner),
-      symbolTable
-    );
+    const parser = createParser(scanner, locator, symbolTable);
     const node = parser.readExpression();
 
     if (ast) {

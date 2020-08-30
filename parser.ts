@@ -20,20 +20,31 @@ import {
 import { ParserError } from "./error";
 import { type } from "os";
 import { SymbolTable } from "./parser.symboltable";
+import { createExpressionParser } from "./parser.expression";
 
 export interface TypeParserDependencies {
   readAssignmentExpression: () => ExpressionNode;
 }
-export function createTypeParser(
+export function createParser(
   scanner: Scanner,
   locator: NodeLocator,
-  expressionReader: TypeParserDependencies,
   symbolTable: SymbolTable
 ) {
   function throwError(info: string): never {
     // console.info(info, scanner.current());
     throw new ParserError(`${info}`, scanner.current());
   }
+
+  const expressionReader = createExpressionParser(
+    scanner,
+    locator,
+    {
+      // Functions already hoisted
+      isCurrentTokenLooksLikeTypeName: isCurrentTokenLooksLikeTypeName,
+      readTypeName: readTypeName,
+    },
+    symbolTable
+  );
 
   function isCurrentTokenTypeQualifier() {
     const token = scanner.current();
@@ -761,6 +772,7 @@ export function createTypeParser(
   }
 
   return {
+    ...expressionReader,
     readTypeName,
     isCurrentTokenLooksLikeTypeName,
     isCurrentTokenLooksLikeDeclarationSpecifiers,

@@ -1,10 +1,9 @@
-import { createTypeParser } from "./parser.typename";
+import { createParser } from "./parser";
 import { Scanner } from "./scanner";
 import { createScannerFunc } from "./scanner.func";
 import { Typename, NodeLocator } from "./parser.definitions";
 import { SymbolTable } from "./parser.symboltable";
 import { DeepPartial } from "./utils";
-import { createMockedExpressionParser } from "./parser.testutils";
 
 describe("isCurrentTokenLooksLikeTypeName", () => {
   const YES = [
@@ -41,12 +40,7 @@ describe("isCurrentTokenLooksLikeTypeName", () => {
         },
         functionSpecifier: null,
       });
-      const parser = createTypeParser(
-        scanner,
-        locator,
-        createMockedExpressionParser(scanner),
-        symbolTable
-      );
+      const parser = createParser(scanner, locator, symbolTable);
       expect(parser.isCurrentTokenLooksLikeTypeName()).toStrictEqual(t.yes);
     });
   }
@@ -58,12 +52,25 @@ function checkTypename(str: string, ast?: DeepPartial<Typename>) {
     const scanner = new Scanner(createScannerFunc(str));
     const locator: NodeLocator = new Map();
 
-    const parser = createTypeParser(
-      scanner,
-      locator,
-      createMockedExpressionParser(scanner),
-      new SymbolTable(locator)
-    );
+    const symbolTable = new SymbolTable(locator);
+    const parser = createParser(scanner, locator, symbolTable);
+    symbolTable.enterScope();
+    symbolTable.addEntry({
+      type: "declarator",
+      identifier: "p_int",
+      functionSpecifier: null,
+      storageSpecifier: null,
+      typename: {
+        type: "pointer",
+        const: false,
+        pointsTo: {
+          type: "arithmetic",
+          arithmeticType: "int",
+          const: false,
+          signedUnsigned: null,
+        },
+      },
+    });
     const node = parser.readTypeName();
     if (ast) {
       expect(node).toMatchObject(ast);
@@ -81,12 +88,7 @@ describe("Parsing typename", () => {
       const scanner = new Scanner(createScannerFunc(str));
       const locator: NodeLocator = new Map();
 
-      const parser = createTypeParser(
-        scanner,
-        locator,
-        createMockedExpressionParser(scanner),
-        new SymbolTable(locator)
-      );
+      const parser = createParser(scanner, locator, new SymbolTable(locator));
       expect(() => parser.readTypeName()).toThrow();
     });
   }
@@ -217,7 +219,7 @@ describe("Parsing typename", () => {
 
   checkFailingType("char (*)(*)[2][][*]");
 
-  checkTypename("char [*p]", {
+  checkTypename("char [*p_int]", {
     type: "array",
     const: true,
     size: {
@@ -225,7 +227,7 @@ describe("Parsing typename", () => {
       operator: "*",
       target: {
         type: "identifier",
-        value: "p",
+        value: "p_int",
       },
     },
     elementsTypename: {
