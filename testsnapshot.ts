@@ -6,7 +6,10 @@ export function testSnapshot(id: string, testname: string, node: object) {
     "/testsnapshots/" +
     id +
     " - " +
-    testname.replace(/\n/g, "").replace(/[\(\)\{\}\*\,/]/g, "") +
+    testname
+      .replace(/\n|\r/g, "")
+      .replace(/[\(\)\{\}\*\,\;\:\+\?/]/g, "")
+      .replace(/ +/g, " ") +
     ".json";
   if (fs.existsSync(fname)) {
     const data = JSON.parse(
@@ -23,7 +26,7 @@ export function testSnapshot(id: string, testname: string, node: object) {
           .map((x) => x.trim())
           .join(" ") +
         "\n" +
-        JSON.stringify(node, null, 4)
+        JSON.stringify(node, null, 2)
     );
   }
 }
