@@ -767,7 +767,7 @@ export function createParser(
       length: scanner.current().pos - tokenForLocator.pos,
     });
 
-    return func;
+    return [func];
   }
 
   /**

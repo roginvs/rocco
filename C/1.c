@@ -288,6 +288,7 @@ FUNC myFunc2;
 
 void test24()
 {
+  FUNC kek;
   //myFunc1 = myFunc2;
   //FUNC ffff = test23;
 }

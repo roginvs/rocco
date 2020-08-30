@@ -62,6 +62,10 @@ export class SymbolTable {
     }
   }
 
+  getExternAndStaticDeclarations() {
+    return this.externAndStaticDeclarations;
+  }
+
   leaveScope(): void {
     const currentScope = this.declarations.pop();
     if (!currentScope) {
