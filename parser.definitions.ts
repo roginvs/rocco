@@ -208,15 +208,15 @@ export type DeclaratorNode = DeclaratorNodeGeneric<Typename>;
 export type DeclaratorNodeFunction = DeclaratorNodeGeneric<FunctionTypename>;
 
 export type NodeLocator = Map<
-  ExpressionNode | Typename | DeclaratorNode | ExternalDeclaration,
+  ExpressionNode | Typename | DeclaratorNode | FunctionDefinition,
   TokenLocation
 >;
 
 // TODO
 type CompoundStatement = [];
 
-// TODO
-type Declaration = unknown;
+// TODO: Add initializers
+type Declaration = DeclaratorNode[];
 
 export type FunctionDefinition = {
   type: "function-declaration";
@@ -225,4 +225,4 @@ export type FunctionDefinition = {
   declaredVariables: DeclaratorNode[];
 };
 
-export type ExternalDeclaration = FunctionDefinition | Declaration;
+export type ExternalDeclarations = FunctionDefinition[] | Declaration;

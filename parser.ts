@@ -849,5 +849,6 @@ export function createParser(
     isCurrentTokenLooksLikeTypeName,
     isCurrentTokenLooksLikeDeclarationSpecifiers,
     readExternalDeclaration,
+    readDeclaration,
   };
 }
