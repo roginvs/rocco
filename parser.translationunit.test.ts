@@ -163,4 +163,43 @@ describe("External declaration functions", () => {
       },
     },
   ]);
+
+  checkExternalDeclaration("void kek() { if(2+3) { 3; } else {4; } }", [
+    {
+      type: "function-declaration",
+      declaration: {
+        type: "declarator",
+        functionSpecifier: null,
+        storageSpecifier: null,
+        identifier: "kek",
+        typename: {
+          type: "function",
+          const: true,
+          haveEndingEllipsis: false,
+          parameters: [],
+          returnType: { type: "void", const: false },
+        },
+      },
+      body: [
+        {
+          type: "if",
+          condition: {
+            type: "binary operator",
+            operator: "+",
+            left: { type: "const", subtype: "int", value: 2 },
+            right: { type: "const", subtype: "int", value: 3 },
+          },
+          iftrue: {
+            type: "compound-statement",
+            body: [{ type: "const", subtype: "int", value: 3 }],
+          },
+          iffalse: {
+            type: "compound-statement",
+            body: [{ type: "const", subtype: "int", value: 4 }],
+          },
+        },
+      ],
+      declaredVariables: [],
+    },
+  ]);
 });

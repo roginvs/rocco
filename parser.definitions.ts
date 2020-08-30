@@ -209,27 +209,32 @@ export type DeclaratorNode = DeclaratorNodeGeneric<Typename>;
 export type DeclaratorNodeFunction = DeclaratorNodeGeneric<FunctionTypename>;
 
 export type NodeLocator = Map<
-  ExpressionNode | Typename | DeclaratorNode | FunctionDefinition,
+  | ExpressionNode
+  | Typename
+  | DeclaratorNode
+  | FunctionDefinition
+  | CompoundStatement
+  | CompoundStatementBody,
   TokenLocation
 >;
 
 export interface IfStatement {
   type: "if";
   condition: ExpressionNode;
-  iftrue: CompoundStatement;
-  iffalse?: CompoundStatement;
+  iftrue: Statement;
+  iffalse?: Statement;
 }
 
 export interface WhileStatement {
   type: "while";
   condition: ExpressionNode;
-  body: CompoundStatement;
+  body: Statement;
 }
 
 export interface DoWhileStatement {
   type: "dowhile";
   condition: ExpressionNode;
-  body: CompoundStatement;
+  body: Statement;
 }
 export interface ContinueStatement {
   type: "continue";
@@ -239,17 +244,21 @@ export interface BreakStatement {
 }
 export interface ReturnStatement {
   type: "return";
+  expression?: ExpressionNode;
 }
 
-export type CompoundStatementBody =
-  | DeclaratorNode
+export type Statement =
   | AssignmentExpression
   | IfStatement
   | WhileStatement
   | DoWhileStatement
   | ContinueStatement
   | BreakStatement
-  | ReturnStatement;
+  | ReturnStatement
+  | CompoundStatement
+  | ExpressionNode;
+
+export type CompoundStatementBody = Statement | DeclaratorNode;
 
 export type CompoundStatement = {
   type: "compound-statement";

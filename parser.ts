@@ -17,6 +17,9 @@ import {
   FunctionDefinition,
   DeclaratorNodeFunction,
   CompoundStatementBody,
+  CompoundStatement,
+  IfStatement,
+  Statement,
 } from "./parser.definitions";
 import { ParserError } from "./error";
 import { type } from "os";
@@ -837,10 +840,107 @@ export function createParser(
    */
   function readCompoundStatement() {
     // TODO
+    // Or even no need to do because it is in readStatemen
+  }
+
+  function readStatement(): Statement {
+    const token = scanner.current();
+
+    if (token.type === "case" || token.type === "default") {
+      throwError("Case is not supported yet");
+    } else if (
+      token.type === "identifier" &&
+      scanner.nextToken().type === ":"
+    ) {
+      throwError("Labels are not supported yes");
+    } else if (token.type === "{") {
+      // A compound-statement
+      symbolTable.enterScope();
+      scanner.readNext();
+      const body = readCompoundStatementBody();
+
+      if (scanner.current().type !== "}") {
+        throwError("Expected }");
+      }
+      scanner.readNext();
+
+      const statement: CompoundStatement = {
+        type: "compound-statement",
+        body: body,
+      };
+      locator.set(statement, {
+        ...token,
+        length: scanner.current().pos - token.pos,
+      });
+      return statement;
+    } else if (token.type === "if") {
+      scanner.readNext();
+      if (scanner.current().type !== "(") {
+        throwError("Expected (");
+      }
+      scanner.readNext();
+      const expression = expressionReader.readExpression();
+      if (scanner.current().type !== ")") {
+        throwError("Expected )");
+      }
+      scanner.readNext();
+
+      const iftrue = readStatement();
+
+      const iffalse = (() => {
+        if (scanner.current().type !== "else") {
+          return undefined;
+        }
+        scanner.readNext();
+        const statement = readStatement();
+        return statement;
+      })();
+
+      const node: IfStatement = {
+        type: "if",
+        condition: expression,
+        iftrue: iftrue,
+        iffalse: iffalse,
+      };
+
+      locator.set(node, {
+        ...token,
+        length: scanner.current().pos - token.pos,
+      });
+
+      return node;
+    } else if (token.type === ";") {
+      scanner.readNext();
+      // Lol, workaround
+      const emptyStatement: ExpressionNode = {
+        type: "const",
+        subtype: "char",
+        value: 0,
+      };
+      return emptyStatement;
+    } else {
+      const expression = expressionReader.readExpression();
+      if (scanner.current().type !== ";") {
+        throwError("Expected ; after expression");
+      }
+      scanner.readNext();
+      return expression;
+    }
   }
 
   function readCompoundStatementBody() {
     const body: CompoundStatementBody[] = [];
+
+    while (scanner.current().type !== "end" && scanner.current().type !== "}") {
+      const token = scanner.current();
+      if (isCurrentTokenLooksLikeDeclarationSpecifiers()) {
+        const declarations = readDeclaration();
+        declarations.forEach((declaration) => body.push(declaration));
+      } else {
+        const statement = readStatement();
+        body.push(statement);
+      }
+    }
 
     return body;
   }
