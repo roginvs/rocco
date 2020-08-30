@@ -226,5 +226,5 @@ export type FunctionDefinition = {
 export type ExternalDeclarations = (
   | FunctionDefinition
   | DeclaratorNode
-  | AssignmentExpression
+  | /** This is for initializers */ AssignmentExpression
 )[];
