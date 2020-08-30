@@ -118,14 +118,15 @@ export type ConditionalExpressionNode =
 
 export type ArgumentExpressionList = ExpressionNode[];
 
+interface AssignmentExpression {
+  type: "assignment";
+  operator: AssignmentOperator;
+  lvalue: ExpressionNode;
+  rvalue: ExpressionNode;
+}
 export type AssignmentExpressionNode =
   | ConditionalExpressionNode
-  | {
-      type: "assignment";
-      operator: AssignmentOperator;
-      lvalue: ExpressionNode;
-      rvalue: ExpressionNode;
-    };
+  | AssignmentExpression;
 
 export type ExpressionNode =
   | AssignmentExpressionNode
@@ -215,9 +216,6 @@ export type NodeLocator = Map<
 // TODO
 type CompoundStatement = [];
 
-// TODO: Add initializers
-type Declaration = DeclaratorNode[];
-
 export type FunctionDefinition = {
   type: "function-declaration";
   declaration: DeclaratorNodeFunction;
@@ -225,4 +223,8 @@ export type FunctionDefinition = {
   declaredVariables: DeclaratorNode[];
 };
 
-export type ExternalDeclarations = FunctionDefinition[] | Declaration;
+export type ExternalDeclarations = (
+  | FunctionDefinition
+  | DeclaratorNode
+  | AssignmentExpression
+)[];
