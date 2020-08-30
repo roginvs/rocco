@@ -728,6 +728,14 @@ export function createParser(
       throwError("Functions can not return array type (6.9.1 3)");
     }
 
+    if (
+      symbolTable.isIdentifierAlreadyDefinedInCurrentScope(
+        declaration.identifier
+      )
+    ) {
+      throwError("Idenitifier is already declared (TODO: do linkage)");
+    }
+
     if (scanner.current().type !== "{") {
       throwError("Expected compount-statement");
     }

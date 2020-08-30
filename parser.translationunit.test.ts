@@ -13,8 +13,9 @@ function checkExternalDeclaration(
   it(`Reads '${str}'`, () => {
     const scanner = new Scanner(createScannerFunc(str));
     const locator: NodeLocator = new Map();
-
-    const parser = createParser(scanner, locator, new SymbolTable(locator));
+    const symbolTable = new SymbolTable(locator);
+    const parser = createParser(scanner, locator, symbolTable);
+    symbolTable.enterScope();
     const node = parser.readExternalDeclaration();
     if (ast) {
       expect(node).toMatchObject(ast);
