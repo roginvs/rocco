@@ -25,6 +25,9 @@ import {
   ExpressionStatement,
   EmpryExpressionStatement,
   DoWhileStatement,
+  ContinueStatement,
+  BreakStatement,
+  ReturnStatement,
 } from "./parser.definitions";
 import { ParserError } from "./error";
 import { SymbolTable } from "./parser.symboltable";
@@ -1082,6 +1085,48 @@ export function createParser(
         length: scanner.current().pos - token.pos,
       });
       return emptyExpressionStatement;
+    } else if (token.type === "continue") {
+      scanner.readNext();
+      assertTokenAndReadNext(";");
+
+      const node: ContinueStatement = {
+        type: "continue",
+      };
+      locator.set(node, {
+        ...token,
+        length: scanner.current().pos - token.pos,
+      });
+      return node;
+    } else if (token.type === "break") {
+      scanner.readNext();
+      assertTokenAndReadNext(";");
+
+      const node: BreakStatement = {
+        type: "break",
+      };
+      locator.set(node, {
+        ...token,
+        length: scanner.current().pos - token.pos,
+      });
+      return node;
+    } else if (token.type === "return") {
+      scanner.readNext();
+      const expression =
+        scanner.current().type === ";"
+          ? undefined
+          : expressionReader.readExpression();
+
+      assertTokenAndReadNext(";");
+
+      const node: ReturnStatement = {
+        type: "return",
+        expression: expression,
+      };
+      locator.set(node, {
+        ...token,
+        length: scanner.current().pos - token.pos,
+      });
+      return node;
     } else {
       const expression = expressionReader.readExpression();
       if (scanner.current().type !== ";") {
