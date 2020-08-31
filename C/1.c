@@ -317,6 +317,13 @@ void test26()
   for (int a = 2;;)
   {
   };
+
+  for (;;)
+  {
+  }
+  for (2 + 3; 4;)
+  {
+  }
 }
 
 int main(int argc, char **argv)
