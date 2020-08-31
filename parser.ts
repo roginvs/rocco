@@ -701,8 +701,6 @@ export function createParser(
   }
 
   function readExternalDeclaration() {
-    // @TODO Write tests for all this
-
     const tokenForLocator = scanner.current();
 
     if (!isCurrentTokenLooksLikeDeclarationSpecifiers()) {
