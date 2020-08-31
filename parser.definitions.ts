@@ -247,8 +247,16 @@ export interface ReturnStatement {
   expression?: ExpressionNode;
 }
 
+export interface ExpressionStatement {
+  type: "expression";
+  expression: ExpressionNode;
+}
+
+export interface EmpryExpressionStatement {
+  type: "noop";
+}
+
 export type Statement =
-  | AssignmentExpression
   | IfStatement
   | WhileStatement
   | DoWhileStatement
@@ -256,7 +264,8 @@ export type Statement =
   | BreakStatement
   | ReturnStatement
   | CompoundStatement
-  | ExpressionNode;
+  | ExpressionStatement
+  | EmpryExpressionStatement;
 
 export type CompoundStatementBody = Statement | DeclaratorNode;
 

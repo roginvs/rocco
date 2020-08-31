@@ -22,6 +22,8 @@ import {
   IfStatement,
   Statement,
   WhileStatement,
+  ExpressionStatement,
+  EmpryExpressionStatement,
 } from "./parser.definitions";
 import { ParserError } from "./error";
 import { SymbolTable } from "./parser.symboltable";
@@ -960,6 +962,18 @@ export function createParser(
             ? expressionReader.readExpression()
             : undefined;
 
+        const thirdExpressionStatement:
+          | ExpressionStatement
+          | undefined = thirdExpression
+          ? { type: "expression", expression: thirdExpression }
+          : undefined;
+        if (thirdExpressionStatement && thirdExpression) {
+          const thirdExpressionLocation = locator.get(thirdExpression);
+          if (thirdExpressionLocation) {
+            locator.set(thirdExpressionStatement, thirdExpressionLocation);
+          }
+        }
+
         assertTokenAndReadNext(")");
 
         const statement = readStatement();
@@ -976,10 +990,10 @@ export function createParser(
                 // 6.8.5.3  2
                 value: 1,
               },
-          body: thirdExpression
+          body: thirdExpressionStatement
             ? {
                 type: "compound-statement",
-                body: [statement, thirdExpression],
+                body: [statement, thirdExpressionStatement],
               }
             : statement,
         };
@@ -1003,24 +1017,30 @@ export function createParser(
       }
     } else if (token.type === ";") {
       scanner.readNext();
-      // Lol, workaround
-      const emptyStatement: ExpressionNode = {
-        type: "const",
-        subtype: "char",
-        value: 0,
+      const emptyExpressionStatement: EmpryExpressionStatement = {
+        type: "noop",
       };
-      locator.set(emptyStatement, {
+      locator.set(emptyExpressionStatement, {
         ...token,
         length: scanner.current().pos - token.pos,
       });
-      return emptyStatement;
+      return emptyExpressionStatement;
     } else {
       const expression = expressionReader.readExpression();
       if (scanner.current().type !== ";") {
         throwError("Expected ; after expression");
       }
       scanner.readNext();
-      return expression;
+
+      const node: ExpressionStatement = {
+        type: "expression",
+        expression: expression,
+      };
+      locator.set(node, {
+        ...token,
+        length: scanner.current().pos - token.pos,
+      });
+      return node;
     }
   }
 
