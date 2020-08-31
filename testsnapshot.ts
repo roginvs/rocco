@@ -25,7 +25,12 @@ export function testSnapshot(id: string, testname: string, node: object) {
   } else {
     fs.writeFileSync(
       fname,
-      "// " +
+      `// ${id.replace(/\n/g, "")}\n` +
+        testname
+          .split("\n")
+          .map((l) => `// ${l}\n`)
+          .join("") +
+        "//\n" +
         (new Error().stack as string)
           .split("\n")
           .slice(1)
