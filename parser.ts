@@ -946,65 +946,102 @@ export function createParser(
 
       assertTokenAndReadNext("(");
 
+      symbolTable.enterScope();
+
+      const firstStatement: CompoundStatementBody[] = [];
       if (isCurrentTokenLooksLikeDeclarationSpecifiers()) {
-        symbolTable.enterScope();
-
         const declarations = readDeclaration();
-
-        const secondExpression =
+        declarations.forEach((declaration) => firstStatement.push(declaration));
+      } else {
+        const firstExpression =
           scanner.current().type !== ";"
             ? expressionReader.readExpression()
             : undefined;
         scanner.readNext();
 
-        const thirdExpression =
-          scanner.current().type !== ")"
-            ? expressionReader.readExpression()
-            : undefined;
-
-        const thirdExpressionStatement:
+        const firstExpressionStatement:
           | ExpressionStatement
-          | undefined = thirdExpression
-          ? { type: "expression", expression: thirdExpression }
+          | undefined = firstExpression
+          ? { type: "expression", expression: firstExpression }
           : undefined;
-        if (thirdExpressionStatement && thirdExpression) {
-          const thirdExpressionLocation = locator.get(thirdExpression);
-          if (thirdExpressionLocation) {
-            locator.set(thirdExpressionStatement, thirdExpressionLocation);
+        if (firstExpression && firstExpressionStatement) {
+          const firstExpressionLocation = locator.get(firstExpression);
+          if (firstExpressionLocation) {
+            locator.set(firstExpressionStatement, firstExpressionLocation);
+          } else {
+            console.warn(
+              `No locator for first expression in "for"`,
+              firstExpression
+            );
           }
         }
+        if (firstExpressionStatement) {
+          firstStatement.push(firstExpressionStatement);
+        }
+      }
 
-        assertTokenAndReadNext(")");
+      const secondExpression =
+        scanner.current().type !== ";"
+          ? expressionReader.readExpression()
+          : undefined;
+      scanner.readNext();
 
-        const statement = readStatement();
+      const thirdExpression =
+        scanner.current().type !== ")"
+          ? expressionReader.readExpression()
+          : undefined;
 
-        symbolTable.leaveScope();
+      const thirdExpressionStatement:
+        | ExpressionStatement
+        | undefined = thirdExpression
+        ? { type: "expression", expression: thirdExpression }
+        : undefined;
+      if (thirdExpressionStatement && thirdExpression) {
+        const thirdExpressionLocation = locator.get(thirdExpression);
+        if (thirdExpressionLocation) {
+          locator.set(thirdExpressionStatement, thirdExpressionLocation);
+        } else {
+          console.warn(
+            `No locator for third expression in "for"`,
+            thirdExpressionStatement
+          );
+        }
+      }
 
-        const innerNode: WhileStatement = {
-          type: "while",
-          condition: secondExpression
-            ? secondExpression
-            : {
-                type: "const",
-                subtype: "char",
-                // 6.8.5.3  2
-                value: 1,
-              },
-          body: thirdExpressionStatement
-            ? {
-                type: "compound-statement",
-                body: [statement, thirdExpressionStatement],
-              }
-            : statement,
-        };
-        locator.set(innerNode, {
-          ...token,
-          length: scanner.current().pos - token.pos,
-        });
+      assertTokenAndReadNext(")");
 
+      const statement = readStatement();
+
+      symbolTable.leaveScope();
+
+      const innerNode: WhileStatement = {
+        type: "while",
+        condition: secondExpression
+          ? secondExpression
+          : {
+              type: "const",
+              subtype: "char",
+              // 6.8.5.3  2
+              value: 1,
+            },
+        body: thirdExpressionStatement
+          ? {
+              type: "compound-statement",
+              body: [statement, thirdExpressionStatement],
+            }
+          : statement,
+      };
+      locator.set(innerNode, {
+        ...token,
+        length: scanner.current().pos - token.pos,
+      });
+
+      if (firstStatement.length === 0) {
+        return innerNode;
+      } else {
         const node: CompoundStatement = {
           type: "compound-statement",
-          body: [...declarations, innerNode],
+          body: [...firstStatement, innerNode],
         };
         locator.set(node, {
           ...token,
@@ -1012,8 +1049,6 @@ export function createParser(
         });
 
         return node;
-      } else {
-        throwError("TODO: Not implemented yet");
       }
     } else if (token.type === ";") {
       scanner.readNext();
