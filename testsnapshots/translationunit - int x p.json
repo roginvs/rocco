@@ -1,4 +1,15 @@
-// at Object.testSnapshot (/Users/vasilii/demo_compiler/testsnapshot.ts:23:10) at Object.<anonymous> (/Users/vasilii/demo_compiler/parser.translationunit.test.ts:21:5) at Object.asyncJestTest (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:100:37) at resolve (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:47:12) at new Promise (<anonymous>) at mapper (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:30:19) at promise.then (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:77:41) at process._tickCallback (internal/process/next_tick.js:68:7)
+// translationunit
+// int x, *p;
+//
+//    at Object.testSnapshot (/Users/vasilii/demo_compiler/testsnapshot.ts:34:10)
+//    at Object.<anonymous> (/Users/vasilii/demo_compiler/parser.translationunit.test.ts:18:5)
+//    at Object.asyncJestTest (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:100:37)
+//    at resolve (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:47:12)
+//    at new Promise (<anonymous>)
+//    at mapper (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:30:19)
+//    at promise.then (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:77:41)
+//    at process._tickCallback (internal/process/next_tick.js:68:7)
+
 [
   {
     "type": "declarator",
