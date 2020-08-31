@@ -13,7 +13,13 @@ export function testSnapshot(id: string, testname: string, node: object) {
     ".json";
   if (fs.existsSync(fname)) {
     const data = JSON.parse(
-      fs.readFileSync(fname).toString().split("\n").slice(1).join("\n")
+      fs
+        .readFileSync(fname)
+        .toString()
+        .split("\n")
+        .filter((x) => x)
+        .filter((x) => !x.startsWith("//"))
+        .join("\n")
     );
     expect(node).toMatchObject(data);
   } else {
@@ -23,8 +29,8 @@ export function testSnapshot(id: string, testname: string, node: object) {
         (new Error().stack as string)
           .split("\n")
           .slice(1)
-          .map((x) => x.trim())
-          .join(" ") +
+          .map((x) => `//${x}\n`)
+          .join("") +
         "\n" +
         JSON.stringify(node, null, 2)
     );
