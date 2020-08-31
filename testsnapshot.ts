@@ -3,13 +3,13 @@ import * as fs from "fs";
 export function testSnapshot(id: string, testname: string, node: object) {
   const fname =
     __dirname +
-    "/testsnapshots/" +
+    "/snapshots/" +
     id +
-    " - " +
+    "_" +
     testname
       .replace(/\n|\r/g, "")
-      .replace(/[\(\)\{\}\*\,\;\:\+\?/]/g, "")
-      .replace(/ +/g, " ") +
+      .replace(/[\(\)\{\}\*\,\;\:\+\?\<\>/]/g, "")
+      .replace(/ +/g, "_") +
     ".json";
   if (fs.existsSync(fname)) {
     const data = JSON.parse(

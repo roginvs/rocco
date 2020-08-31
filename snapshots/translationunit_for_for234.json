@@ -1,5 +1,5 @@
 // translationunit
-// for (;;) {}; for(2+3;4;){}
+// for (;;) {} for(2+3;4;){}
 //
 //    at Object.testSnapshot (/Users/vasilii/demo_compiler/testsnapshot.ts:34:10)
 //    at Object.<anonymous> (/Users/vasilii/demo_compiler/parser.translationunit.test.ts:33:5)
