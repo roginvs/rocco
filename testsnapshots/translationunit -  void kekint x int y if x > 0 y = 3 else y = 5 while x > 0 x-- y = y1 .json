@@ -87,16 +87,19 @@
           "type": "compound-statement",
           "body": [
             {
-              "type": "assignment",
-              "operator": "=",
-              "lvalue": {
-                "type": "identifier",
-                "value": "y"
-              },
-              "rvalue": {
-                "type": "const",
-                "subtype": "int",
-                "value": 3
+              "type": "expression",
+              "expression": {
+                "type": "assignment",
+                "operator": "=",
+                "lvalue": {
+                  "type": "identifier",
+                  "value": "y"
+                },
+                "rvalue": {
+                  "type": "const",
+                  "subtype": "int",
+                  "value": 3
+                }
               }
             }
           ]
@@ -105,25 +108,26 @@
           "type": "compound-statement",
           "body": [
             {
-              "type": "assignment",
-              "operator": "=",
-              "lvalue": {
-                "type": "identifier",
-                "value": "y"
-              },
-              "rvalue": {
-                "type": "const",
-                "subtype": "int",
-                "value": 5
+              "type": "expression",
+              "expression": {
+                "type": "assignment",
+                "operator": "=",
+                "lvalue": {
+                  "type": "identifier",
+                  "value": "y"
+                },
+                "rvalue": {
+                  "type": "const",
+                  "subtype": "int",
+                  "value": 5
+                }
               }
             }
           ]
         }
       },
       {
-        "type": "const",
-        "subtype": "char",
-        "value": 0
+        "type": "noop"
       },
       {
         "type": "while",
@@ -144,30 +148,36 @@
           "type": "compound-statement",
           "body": [
             {
-              "type": "postfix --",
-              "target": {
-                "type": "identifier",
-                "value": "x"
+              "type": "expression",
+              "expression": {
+                "type": "postfix --",
+                "target": {
+                  "type": "identifier",
+                  "value": "x"
+                }
               }
             },
             {
-              "type": "assignment",
-              "operator": "=",
-              "lvalue": {
-                "type": "identifier",
-                "value": "y"
-              },
-              "rvalue": {
-                "type": "binary operator",
-                "operator": "+",
-                "left": {
+              "type": "expression",
+              "expression": {
+                "type": "assignment",
+                "operator": "=",
+                "lvalue": {
                   "type": "identifier",
                   "value": "y"
                 },
-                "right": {
-                  "type": "const",
-                  "subtype": "int",
-                  "value": 1
+                "rvalue": {
+                  "type": "binary operator",
+                  "operator": "+",
+                  "left": {
+                    "type": "identifier",
+                    "value": "y"
+                  },
+                  "right": {
+                    "type": "const",
+                    "subtype": "int",
+                    "value": 1
+                  }
                 }
               }
             }

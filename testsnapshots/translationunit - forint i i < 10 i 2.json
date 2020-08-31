@@ -45,15 +45,21 @@
           "type": "compound-statement",
           "body": [
             {
-              "type": "const",
-              "subtype": "int",
-              "value": 2
+              "type": "expression",
+              "expression": {
+                "type": "const",
+                "subtype": "int",
+                "value": 2
+              }
             },
             {
-              "type": "postfix ++",
-              "target": {
-                "type": "identifier",
-                "value": "i"
+              "type": "expression",
+              "expression": {
+                "type": "postfix ++",
+                "target": {
+                  "type": "identifier",
+                  "value": "i"
+                }
               }
             }
           ]
