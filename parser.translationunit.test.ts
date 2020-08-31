@@ -7,10 +7,7 @@ import { SymbolTable } from "./parser.symboltable";
 import { testSnapshot } from "./testsnapshot";
 
 // TODO: Remove DeepPartial
-function checkExternalDeclaration(
-  str: string,
-  ast?: DeepPartial<ExternalDeclarations>
-) {
+function checkExternalDeclaration(str: string) {
   it(`Reads '${str}'`, () => {
     const scanner = new Scanner(createScannerFunc(str));
     const locator: NodeLocator = new Map();
@@ -18,6 +15,21 @@ function checkExternalDeclaration(
     const parser = createParser(scanner, locator, symbolTable);
     symbolTable.enterScope();
     const node = parser.readExternalDeclaration();
+    testSnapshot("translationunit", str, node);
+
+    expect(scanner.current().type).toBe("end");
+  });
+}
+
+function checkCompoundStatementBody(str: string) {
+  it(`Reads '${str}'`, () => {
+    const scanner = new Scanner(createScannerFunc(str));
+    const locator: NodeLocator = new Map();
+    const symbolTable = new SymbolTable(locator);
+    const parser = createParser(scanner, locator, symbolTable);
+    symbolTable.enterScope();
+    symbolTable.enterFunctionScope();
+    const node = parser.readCompoundStatementBody();
     testSnapshot("translationunit", str, node);
 
     expect(scanner.current().type).toBe("end");
@@ -58,4 +70,6 @@ describe("External declaration functions", () => {
        }
      }`
   );
+
+  checkCompoundStatementBody("for(int i; i < 10; i++) 2;");
 });

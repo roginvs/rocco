@@ -314,7 +314,7 @@ void test25()
 
 void test26()
 {
-  for (2 + 2;;)
+  for (int a = 2;;)
   {
   };
 }

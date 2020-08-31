@@ -1,0 +1,53 @@
+// at Object.testSnapshot (/Users/vasilii/demo_compiler/testsnapshot.ts:23:10) at Object.<anonymous> (/Users/vasilii/demo_compiler/parser.translationunit.test.ts:33:5) at Object.asyncJestTest (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:100:37) at resolve (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:47:12) at new Promise (<anonymous>) at mapper (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:30:19) at promise.then (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:77:41) at process._tickCallback (internal/process/next_tick.js:68:7)
+[
+  {
+    "type": "compound-statement",
+    "body": [
+      {
+        "type": "declarator",
+        "functionSpecifier": null,
+        "storageSpecifier": null,
+        "identifier": "i",
+        "typename": {
+          "type": "arithmetic",
+          "arithmeticType": "int",
+          "const": false,
+          "signedUnsigned": null
+        }
+      },
+      {
+        "type": "while",
+        "condition": {
+          "type": "binary operator",
+          "operator": "<",
+          "left": {
+            "type": "identifier",
+            "value": "i"
+          },
+          "right": {
+            "type": "const",
+            "subtype": "int",
+            "value": 10
+          }
+        },
+        "body": {
+          "type": "compound-statement",
+          "body": [
+            {
+              "type": "const",
+              "subtype": "int",
+              "value": 2
+            },
+            {
+              "type": "postfix ++",
+              "target": {
+                "type": "identifier",
+                "value": "i"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

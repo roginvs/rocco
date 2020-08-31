@@ -681,6 +681,7 @@ export function createParser(
     return [parameters, ellipsis] as const;
   }
 
+  /** Also adds declarations into symbolTable */
   function readDeclaration() {
     const nodes = readExternalDeclaration();
 
@@ -938,6 +939,68 @@ export function createParser(
         length: scanner.current().pos - token.pos,
       });
       return node;
+    } else if (token.type === "for") {
+      scanner.readNext();
+
+      assertTokenAndReadNext("(");
+
+      if (isCurrentTokenLooksLikeDeclarationSpecifiers()) {
+        symbolTable.enterScope();
+
+        const declarations = readDeclaration();
+
+        const secondExpression =
+          scanner.current().type !== ";"
+            ? expressionReader.readExpression()
+            : undefined;
+        scanner.readNext();
+
+        const thirdExpression =
+          scanner.current().type !== ")"
+            ? expressionReader.readExpression()
+            : undefined;
+
+        assertTokenAndReadNext(")");
+
+        const statement = readStatement();
+
+        symbolTable.leaveScope();
+
+        const innerNode: WhileStatement = {
+          type: "while",
+          condition: secondExpression
+            ? secondExpression
+            : {
+                type: "const",
+                subtype: "char",
+                // 6.8.5.3  2
+                value: 1,
+              },
+          body: thirdExpression
+            ? {
+                type: "compound-statement",
+                body: [statement, thirdExpression],
+              }
+            : statement,
+        };
+        locator.set(innerNode, {
+          ...token,
+          length: scanner.current().pos - token.pos,
+        });
+
+        const node: CompoundStatement = {
+          type: "compound-statement",
+          body: [...declarations, innerNode],
+        };
+        locator.set(node, {
+          ...token,
+          length: scanner.current().pos - token.pos,
+        });
+
+        return node;
+      } else {
+        throwError("TODO: Not implemented yet");
+      }
     } else if (token.type === ";") {
       scanner.readNext();
       // Lol, workaround
@@ -985,5 +1048,6 @@ export function createParser(
     isCurrentTokenLooksLikeDeclarationSpecifiers,
     readExternalDeclaration,
     readDeclaration,
+    readCompoundStatementBody,
   };
 }
