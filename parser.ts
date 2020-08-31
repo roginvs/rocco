@@ -24,6 +24,7 @@ import {
   WhileStatement,
   ExpressionStatement,
   EmpryExpressionStatement,
+  DoWhileStatement,
 } from "./parser.definitions";
 import { ParserError } from "./error";
 import { SymbolTable } from "./parser.symboltable";
@@ -935,6 +936,29 @@ export function createParser(
         type: "while",
         condition: condition,
         body: body,
+      };
+      locator.set(node, {
+        ...token,
+        length: scanner.current().pos - token.pos,
+      });
+      return node;
+    } else if (token.type === "do") {
+      scanner.readNext();
+
+      const statement = readStatement();
+
+      assertTokenAndReadNext("while");
+      assertTokenAndReadNext("(");
+
+      const expression = expressionReader.readExpression();
+
+      assertTokenAndReadNext(")");
+      assertTokenAndReadNext(";");
+
+      const node: DoWhileStatement = {
+        type: "dowhile",
+        body: statement,
+        condition: expression,
       };
       locator.set(node, {
         ...token,

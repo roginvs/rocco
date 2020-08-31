@@ -1,0 +1,49 @@
+// translationunit
+// void f();  do f(); while(2);
+//
+//    at Object.testSnapshot (/Users/vasilii/demo_compiler/testsnapshot.ts:34:10)
+//    at Object.<anonymous> (/Users/vasilii/demo_compiler/parser.translationunit.test.ts:33:5)
+//    at Object.asyncJestTest (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:100:37)
+//    at resolve (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:47:12)
+//    at new Promise (<anonymous>)
+//    at mapper (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:30:19)
+//    at promise.then (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:77:41)
+//    at process._tickCallback (internal/process/next_tick.js:68:7)
+
+[
+  {
+    "type": "declarator",
+    "functionSpecifier": null,
+    "storageSpecifier": null,
+    "identifier": "f",
+    "typename": {
+      "type": "function",
+      "const": true,
+      "haveEndingEllipsis": false,
+      "parameters": [],
+      "returnType": {
+        "type": "void",
+        "const": false
+      }
+    }
+  },
+  {
+    "type": "dowhile",
+    "body": {
+      "type": "expression",
+      "expression": {
+        "type": "function call",
+        "target": {
+          "type": "identifier",
+          "value": "f"
+        },
+        "args": []
+      }
+    },
+    "condition": {
+      "type": "const",
+      "subtype": "int",
+      "value": 2
+    }
+  }
+]

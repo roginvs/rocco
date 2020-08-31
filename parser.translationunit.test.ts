@@ -74,4 +74,6 @@ describe("External declaration functions", () => {
   checkCompoundStatementBody("for(int i; i < 10; i++) 2;");
 
   checkCompoundStatementBody("for (;;) {} for(2+3;4;){}");
+
+  checkCompoundStatementBody("void f();  do f(); while(2);");
 });
