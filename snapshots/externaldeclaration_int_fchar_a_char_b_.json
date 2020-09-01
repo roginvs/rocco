@@ -61,36 +61,13 @@
           }
         }
       },
-      "declaratorId": "0004"
+      "declaratorId": "0004",
+      "initializer": null
     },
     "body": [],
     "declaredVariables": [
-      {
-        "type": "declarator",
-        "functionSpecifier": null,
-        "storageSpecifier": null,
-        "identifier": "a",
-        "typename": {
-          "type": "arithmetic",
-          "arithmeticType": "char",
-          "const": false,
-          "signedUnsigned": null
-        },
-        "declaratorId": "0002"
-      },
-      {
-        "type": "declarator",
-        "functionSpecifier": null,
-        "storageSpecifier": null,
-        "identifier": "b",
-        "typename": {
-          "type": "arithmetic",
-          "arithmeticType": "char",
-          "const": false,
-          "signedUnsigned": null
-        },
-        "declaratorId": "0003"
-      }
+      "0002",
+      "0003"
     ]
   }
 ]

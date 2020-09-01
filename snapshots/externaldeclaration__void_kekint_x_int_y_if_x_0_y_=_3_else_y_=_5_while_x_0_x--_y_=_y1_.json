@@ -55,7 +55,8 @@
           "const": false
         }
       },
-      "declaratorId": "0009"
+      "declaratorId": "0009",
+      "initializer": null
     },
     "body": [
       {
@@ -196,32 +197,8 @@
       }
     ],
     "declaredVariables": [
-      {
-        "type": "declarator",
-        "functionSpecifier": null,
-        "storageSpecifier": null,
-        "identifier": "x",
-        "typename": {
-          "type": "arithmetic",
-          "arithmeticType": "int",
-          "const": false,
-          "signedUnsigned": null
-        },
-        "declaratorId": "0008"
-      },
-      {
-        "type": "declarator",
-        "functionSpecifier": null,
-        "storageSpecifier": null,
-        "identifier": "y",
-        "typename": {
-          "type": "arithmetic",
-          "arithmeticType": "int",
-          "const": false,
-          "signedUnsigned": null
-        },
-        "declaratorId": "0010"
-      }
+      "0008",
+      "0010"
     ]
   }
 ]

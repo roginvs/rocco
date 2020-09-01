@@ -30,7 +30,8 @@
           "signedUnsigned": null
         }
       },
-      "declaratorId": "0001"
+      "declaratorId": "0001",
+      "initializer": null
     },
     "body": [],
     "declaredVariables": []

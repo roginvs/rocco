@@ -295,19 +295,7 @@
         }
       ],
       "declaredVariables": [
-        {
-          "type": "declarator",
-          "functionSpecifier": null,
-          "storageSpecifier": null,
-          "identifier": "idx",
-          "typename": {
-            "type": "arithmetic",
-            "arithmeticType": "int",
-            "const": false,
-            "signedUnsigned": null
-          },
-          "declaratorId": "0004"
-        }
+        "0004"
       ]
     },
     {
@@ -460,57 +448,8 @@
         }
       ],
       "declaredVariables": [
-        {
-          "type": "declarator",
-          "functionSpecifier": null,
-          "storageSpecifier": null,
-          "identifier": "j5",
-          "typename": {
-            "type": "arithmetic",
-            "arithmeticType": "int",
-            "const": false,
-            "signedUnsigned": null
-          },
-          "declaratorId": "0012",
-          "initializer": {
-            "type": "assigmnent-expression",
-            "expression": {
-              "type": "const",
-              "subtype": "int",
-              "value": 2
-            }
-          }
-        },
-        {
-          "type": "declarator",
-          "functionSpecifier": null,
-          "storageSpecifier": null,
-          "identifier": "j6",
-          "typename": {
-            "type": "arithmetic",
-            "arithmeticType": "int",
-            "const": false,
-            "signedUnsigned": null
-          },
-          "declaratorId": "0013",
-          "initializer": {
-            "type": "assigmnent-expression",
-            "expression": {
-              "type": "binary operator",
-              "operator": "+",
-              "left": {
-                "type": "identifier",
-                "value": "j5",
-                "declaratorNodeId": "0012"
-              },
-              "right": {
-                "type": "const",
-                "subtype": "int",
-                "value": 3
-              }
-            }
-          }
-        }
+        "0012",
+        "0013"
       ]
     },
     {
@@ -579,236 +518,16 @@
     }
   ],
   "declarations": [
-    {
-      "type": "declarator",
-      "functionSpecifier": null,
-      "storageSpecifier": null,
-      "identifier": "i",
-      "typename": {
-        "type": "arithmetic",
-        "arithmeticType": "int",
-        "const": false,
-        "signedUnsigned": null
-      },
-      "declaratorId": "0001"
-    },
-    {
-      "type": "declarator",
-      "functionSpecifier": null,
-      "storageSpecifier": null,
-      "identifier": "arr",
-      "typename": {
-        "type": "array",
-        "const": true,
-        "size": {
-          "type": "const",
-          "subtype": "int",
-          "value": 30
-        },
-        "elementsTypename": {
-          "type": "arithmetic",
-          "arithmeticType": "char",
-          "const": false,
-          "signedUnsigned": null
-        }
-      },
-      "declaratorId": "0002"
-    },
-    {
-      "type": "declarator",
-      "functionSpecifier": null,
-      "storageSpecifier": null,
-      "identifier": "func1",
-      "typename": {
-        "type": "function",
-        "const": true,
-        "haveEndingEllipsis": false,
-        "parameters": [],
-        "returnType": {
-          "type": "void",
-          "const": false
-        }
-      },
-      "declaratorId": "0003",
-      "initializer": null
-    },
-    {
-      "type": "declarator",
-      "functionSpecifier": null,
-      "storageSpecifier": "static",
-      "identifier": "staticcounter",
-      "typename": {
-        "type": "arithmetic",
-        "arithmeticType": "int",
-        "const": false,
-        "signedUnsigned": null
-      },
-      "declaratorId": "0006",
-      "initializer": {
-        "type": "assigmnent-expression",
-        "expression": {
-          "type": "binary operator",
-          "operator": "+",
-          "left": {
-            "type": "const",
-            "subtype": "int",
-            "value": 5
-          },
-          "right": {
-            "type": "const",
-            "subtype": "int",
-            "value": 3
-          }
-        }
-      }
-    },
-    {
-      "type": "declarator",
-      "functionSpecifier": null,
-      "storageSpecifier": null,
-      "identifier": "func2",
-      "typename": {
-        "type": "function",
-        "const": true,
-        "haveEndingEllipsis": false,
-        "parameters": [
-          {
-            "type": "declarator",
-            "functionSpecifier": null,
-            "storageSpecifier": null,
-            "identifier": "idx",
-            "typename": {
-              "type": "arithmetic",
-              "arithmeticType": "int",
-              "const": false,
-              "signedUnsigned": null
-            },
-            "declaratorId": "0004"
-          }
-        ],
-        "returnType": {
-          "type": "arithmetic",
-          "arithmeticType": "int",
-          "const": false,
-          "signedUnsigned": null
-        }
-      },
-      "declaratorId": "0005",
-      "initializer": null
-    },
-    {
-      "type": "declarator",
-      "functionSpecifier": null,
-      "storageSpecifier": null,
-      "identifier": "j1",
-      "typename": {
-        "type": "arithmetic",
-        "arithmeticType": "int",
-        "const": false,
-        "signedUnsigned": null
-      },
-      "declaratorId": "0007",
-      "initializer": {
-        "type": "assigmnent-expression",
-        "expression": {
-          "type": "const",
-          "subtype": "int",
-          "value": 2
-        }
-      }
-    },
-    {
-      "type": "declarator",
-      "functionSpecifier": null,
-      "storageSpecifier": null,
-      "identifier": "j2",
-      "typename": {
-        "type": "arithmetic",
-        "arithmeticType": "int",
-        "const": false,
-        "signedUnsigned": null
-      },
-      "declaratorId": "0008",
-      "initializer": {
-        "type": "assigmnent-expression",
-        "expression": {
-          "type": "const",
-          "subtype": "int",
-          "value": 4
-        }
-      }
-    },
-    {
-      "type": "declarator",
-      "functionSpecifier": null,
-      "storageSpecifier": null,
-      "identifier": "j3",
-      "typename": {
-        "type": "arithmetic",
-        "arithmeticType": "int",
-        "const": false,
-        "signedUnsigned": null
-      },
-      "declaratorId": "0009"
-    },
-    {
-      "type": "declarator",
-      "functionSpecifier": null,
-      "storageSpecifier": null,
-      "identifier": "j4",
-      "typename": {
-        "type": "arithmetic",
-        "arithmeticType": "int",
-        "const": false,
-        "signedUnsigned": null
-      },
-      "declaratorId": "0010",
-      "initializer": {
-        "type": "assigmnent-expression",
-        "expression": {
-          "type": "const",
-          "subtype": "int",
-          "value": 3
-        }
-      }
-    },
-    {
-      "type": "declarator",
-      "functionSpecifier": null,
-      "storageSpecifier": null,
-      "identifier": "func3",
-      "typename": {
-        "type": "function",
-        "const": true,
-        "haveEndingEllipsis": false,
-        "parameters": [],
-        "returnType": {
-          "type": "void",
-          "const": false
-        }
-      },
-      "declaratorId": "0011",
-      "initializer": null
-    },
-    {
-      "type": "declarator",
-      "functionSpecifier": null,
-      "storageSpecifier": null,
-      "identifier": "main",
-      "typename": {
-        "type": "function",
-        "const": true,
-        "haveEndingEllipsis": false,
-        "parameters": [],
-        "returnType": {
-          "type": "arithmetic",
-          "arithmeticType": "int",
-          "const": false,
-          "signedUnsigned": null
-        }
-      },
-      "declaratorId": "0014",
-      "initializer": null
-    }
+    "0001",
+    "0002",
+    "0003",
+    "0006",
+    "0005",
+    "0007",
+    "0008",
+    "0009",
+    "0010",
+    "0011",
+    "0014"
   ]
 }
