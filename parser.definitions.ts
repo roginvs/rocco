@@ -6,11 +6,11 @@ import {
   StorageClass,
 } from "./scanner.func";
 import { TokenLocation } from "./error";
-import { DeclaratorId } from "./declaratorId";
 
 //
 // ============= Expressions =============
 //
+export type DeclaratorId = string & { readonly _nominal: "declarator id " };
 
 export type IdentifierNode = {
   type: "identifier";

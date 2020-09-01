@@ -1,9 +1,12 @@
 import { Scanner } from "./scanner";
 import { createScannerFunc } from "./scanner.func";
-import { ExpressionNode, NodeLocator } from "./parser.definitions";
+import {
+  ExpressionNode,
+  NodeLocator,
+  DeclaratorId,
+} from "./parser.definitions";
 import { SymbolTable } from "./parser.symboltable";
 import { createParser } from "./parser.funcs";
-import { DeclaratorId } from "./declaratorId";
 
 function checkExpressionSkip(str: string, ast?: ExpressionNode) {
   it.skip(`Reads '${str}'`, () => {});

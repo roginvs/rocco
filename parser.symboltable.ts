@@ -4,11 +4,11 @@ import {
   DeclaratorNode,
   NodeLocator,
   DeclaratorMap,
+  DeclaratorId,
 } from "./parser.definitions";
 import pad from "pad";
 
 import { SymbolTableError } from "./error";
-import { DeclaratorId } from "./declaratorId";
 
 export type IdentifierToTypename = Map<IdentifierNode, DeclaratorNode>;
 

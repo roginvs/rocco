@@ -1,9 +1,8 @@
 import { createParser } from "./parser.funcs";
 import { Scanner } from "./scanner";
 import { createScannerFunc } from "./scanner.func";
-import { Typename, NodeLocator } from "./parser.definitions";
+import { Typename, NodeLocator, DeclaratorId } from "./parser.definitions";
 import { SymbolTable } from "./parser.symboltable";
-import { DeclaratorId } from "./declaratorId";
 
 describe("isCurrentTokenLooksLikeTypeName", () => {
   const YES = [

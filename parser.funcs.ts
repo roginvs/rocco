@@ -34,7 +34,6 @@ import {
 import { ParserError } from "./error";
 import { SymbolTable } from "./parser.symboltable";
 import { createExpressionParser } from "./parser.expression";
-import { createDeclaratorId } from "./declaratorId";
 
 export interface TypeParserDependencies {
   readAssignmentExpression: () => ExpressionNode;
@@ -587,7 +586,7 @@ export function createParser(
               storageSpecifier: null,
               identifier: token.text,
               typename: typeNode,
-              declaratorId: createDeclaratorId(),
+              declaratorId: symbolTable.createDeclaratorId(),
             };
             locator.set(declaratorNode, {
               ...token,
