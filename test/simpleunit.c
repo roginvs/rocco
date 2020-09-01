@@ -5,6 +5,8 @@ gcc -Wall -o simpleunit.bin simpleunit.c
 */
 
 int i;
+int j = 2, k = 4;
+
 char arr[30];
 
 void func1()

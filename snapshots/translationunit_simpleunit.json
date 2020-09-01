@@ -30,6 +30,48 @@
       "type": "declarator",
       "functionSpecifier": null,
       "storageSpecifier": null,
+      "identifier": "j",
+      "typename": {
+        "type": "arithmetic",
+        "arithmeticType": "int",
+        "const": false,
+        "signedUnsigned": null
+      },
+      "declaratorId": "0002",
+      "initializer": {
+        "type": "assigmnent-expression",
+        "expression": {
+          "type": "const",
+          "subtype": "int",
+          "value": 2
+        }
+      }
+    },
+    {
+      "type": "declarator",
+      "functionSpecifier": null,
+      "storageSpecifier": null,
+      "identifier": "k",
+      "typename": {
+        "type": "arithmetic",
+        "arithmeticType": "int",
+        "const": false,
+        "signedUnsigned": null
+      },
+      "declaratorId": "0003",
+      "initializer": {
+        "type": "assigmnent-expression",
+        "expression": {
+          "type": "const",
+          "subtype": "int",
+          "value": 4
+        }
+      }
+    },
+    {
+      "type": "declarator",
+      "functionSpecifier": null,
+      "storageSpecifier": null,
       "identifier": "arr",
       "typename": {
         "type": "array",
@@ -46,7 +88,7 @@
           "signedUnsigned": null
         }
       },
-      "declaratorId": "0002"
+      "declaratorId": "0004"
     },
     {
       "type": "function-declaration",
@@ -65,7 +107,7 @@
             "const": false
           }
         },
-        "declaratorId": "0003",
+        "declaratorId": "0005",
         "initializer": null
       },
       "body": [
@@ -105,7 +147,7 @@
               "target": {
                 "type": "identifier",
                 "value": "arr",
-                "declaratorNodeId": "0002"
+                "declaratorNodeId": "0004"
               },
               "index": {
                 "type": "identifier",
@@ -155,7 +197,7 @@
                 "const": false,
                 "signedUnsigned": null
               },
-              "declaratorId": "0004"
+              "declaratorId": "0006"
             }
           ],
           "returnType": {
@@ -165,7 +207,7 @@
             "signedUnsigned": null
           }
         },
-        "declaratorId": "0005",
+        "declaratorId": "0007",
         "initializer": null
       },
       "body": [
@@ -180,7 +222,7 @@
             "const": false,
             "signedUnsigned": null
           },
-          "declaratorId": "0006",
+          "declaratorId": "0008",
           "initializer": {
             "type": "assigmnent-expression",
             "expression": {
@@ -207,7 +249,7 @@
             "lvalue": {
               "type": "identifier",
               "value": "staticcounter",
-              "declaratorNodeId": "0006"
+              "declaratorNodeId": "0008"
             },
             "rvalue": {
               "type": "const",
@@ -224,7 +266,7 @@
             "left": {
               "type": "identifier",
               "value": "idx",
-              "declaratorNodeId": "0004"
+              "declaratorNodeId": "0006"
             },
             "right": {
               "type": "const",
@@ -245,12 +287,12 @@
                     "target": {
                       "type": "identifier",
                       "value": "arr",
-                      "declaratorNodeId": "0002"
+                      "declaratorNodeId": "0004"
                     },
                     "index": {
                       "type": "identifier",
                       "value": "idx",
-                      "declaratorNodeId": "0004"
+                      "declaratorNodeId": "0006"
                     }
                   },
                   "right": {
@@ -275,12 +317,12 @@
                     "target": {
                       "type": "identifier",
                       "value": "arr",
-                      "declaratorNodeId": "0002"
+                      "declaratorNodeId": "0004"
                     },
                     "index": {
                       "type": "identifier",
                       "value": "idx",
-                      "declaratorNodeId": "0004"
+                      "declaratorNodeId": "0006"
                     }
                   },
                   "right": {
@@ -306,7 +348,7 @@
             "const": false,
             "signedUnsigned": null
           },
-          "declaratorId": "0004"
+          "declaratorId": "0006"
         }
       ]
     },
@@ -329,7 +371,7 @@
             "signedUnsigned": null
           }
         },
-        "declaratorId": "0007",
+        "declaratorId": "0009",
         "initializer": null
       },
       "body": [
@@ -340,7 +382,7 @@
             "target": {
               "type": "identifier",
               "value": "func1",
-              "declaratorNodeId": "0003"
+              "declaratorNodeId": "0005"
             },
             "args": []
           }
@@ -352,7 +394,7 @@
             "target": {
               "type": "identifier",
               "value": "func2",
-              "declaratorNodeId": "0005"
+              "declaratorNodeId": "0007"
             },
             "args": [
               {
@@ -393,6 +435,48 @@
       "type": "declarator",
       "functionSpecifier": null,
       "storageSpecifier": null,
+      "identifier": "j",
+      "typename": {
+        "type": "arithmetic",
+        "arithmeticType": "int",
+        "const": false,
+        "signedUnsigned": null
+      },
+      "declaratorId": "0002",
+      "initializer": {
+        "type": "assigmnent-expression",
+        "expression": {
+          "type": "const",
+          "subtype": "int",
+          "value": 2
+        }
+      }
+    },
+    {
+      "type": "declarator",
+      "functionSpecifier": null,
+      "storageSpecifier": null,
+      "identifier": "k",
+      "typename": {
+        "type": "arithmetic",
+        "arithmeticType": "int",
+        "const": false,
+        "signedUnsigned": null
+      },
+      "declaratorId": "0003",
+      "initializer": {
+        "type": "assigmnent-expression",
+        "expression": {
+          "type": "const",
+          "subtype": "int",
+          "value": 4
+        }
+      }
+    },
+    {
+      "type": "declarator",
+      "functionSpecifier": null,
+      "storageSpecifier": null,
       "identifier": "arr",
       "typename": {
         "type": "array",
@@ -409,7 +493,7 @@
           "signedUnsigned": null
         }
       },
-      "declaratorId": "0002"
+      "declaratorId": "0004"
     },
     {
       "type": "declarator",
@@ -426,7 +510,7 @@
           "const": false
         }
       },
-      "declaratorId": "0003",
+      "declaratorId": "0005",
       "initializer": null
     },
     {
@@ -440,7 +524,7 @@
         "const": false,
         "signedUnsigned": null
       },
-      "declaratorId": "0006",
+      "declaratorId": "0008",
       "initializer": {
         "type": "assigmnent-expression",
         "expression": {
@@ -480,7 +564,7 @@
               "const": false,
               "signedUnsigned": null
             },
-            "declaratorId": "0004"
+            "declaratorId": "0006"
           }
         ],
         "returnType": {
@@ -490,7 +574,7 @@
           "signedUnsigned": null
         }
       },
-      "declaratorId": "0005",
+      "declaratorId": "0007",
       "initializer": null
     },
     {
@@ -510,7 +594,7 @@
           "signedUnsigned": null
         }
       },
-      "declaratorId": "0007",
+      "declaratorId": "0009",
       "initializer": null
     }
   ]
