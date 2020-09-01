@@ -20,6 +20,10 @@ int main()
   float f = i;
   i = f;
 
+  // Without casting it shows warning:
+  //   incompatible pointer types assigning to 'int *' from 'unsigned char *'
+  p = &c;
+
   // Casting example
   p = (int *)i;
 
