@@ -26,7 +26,7 @@
         "const": false,
         "signedUnsigned": null
       },
-      "declaratorId": "0015"
+      "declaratorId": "0001"
     },
     {
       "type": "declarator",
@@ -43,7 +43,7 @@
           "signedUnsigned": null
         }
       },
-      "declaratorId": "0016"
+      "declaratorId": "0002"
     },
     {
       "type": "function-declaration",
@@ -68,7 +68,7 @@
                 "const": false,
                 "signedUnsigned": null
               },
-              "declaratorId": "0017"
+              "declaratorId": "0003"
             }
           ],
           "returnType": {
@@ -78,7 +78,7 @@
             "signedUnsigned": null
           }
         },
-        "declaratorId": "0018",
+        "declaratorId": "0004",
         "initializer": null
       },
       "body": [
@@ -90,7 +90,7 @@
             "left": {
               "type": "identifier",
               "value": "x",
-              "declaratorNodeId": "0017"
+              "declaratorNodeId": "0003"
             },
             "right": {
               "type": "const",
@@ -101,7 +101,7 @@
         }
       ],
       "declaredVariables": [
-        "0017"
+        "0003"
       ]
     },
     {
@@ -123,7 +123,7 @@
             "signedUnsigned": null
           }
         },
-        "declaratorId": "0019",
+        "declaratorId": "0005",
         "initializer": null
       },
       "body": [
@@ -138,7 +138,7 @@
             "const": false,
             "signedUnsigned": "unsigned"
           },
-          "declaratorId": "0020"
+          "declaratorId": "0006"
         },
         {
           "type": "expression",
@@ -148,12 +148,12 @@
             "lvalue": {
               "type": "identifier",
               "value": "c",
-              "declaratorNodeId": "0020"
+              "declaratorNodeId": "0006"
             },
             "rvalue": {
               "type": "identifier",
               "value": "i",
-              "declaratorNodeId": "0015"
+              "declaratorNodeId": "0001"
             }
           }
         },
@@ -168,13 +168,13 @@
             "const": false,
             "signedUnsigned": null
           },
-          "declaratorId": "0021",
+          "declaratorId": "0007",
           "initializer": {
             "type": "assigmnent-expression",
             "expression": {
               "type": "identifier",
               "value": "i",
-              "declaratorNodeId": "0015"
+              "declaratorNodeId": "0001"
             }
           }
         },
@@ -186,12 +186,12 @@
             "lvalue": {
               "type": "identifier",
               "value": "i",
-              "declaratorNodeId": "0015"
+              "declaratorNodeId": "0001"
             },
             "rvalue": {
               "type": "identifier",
               "value": "f",
-              "declaratorNodeId": "0021"
+              "declaratorNodeId": "0007"
             }
           }
         },
@@ -203,7 +203,7 @@
             "lvalue": {
               "type": "identifier",
               "value": "p",
-              "declaratorNodeId": "0016"
+              "declaratorNodeId": "0002"
             },
             "rvalue": {
               "type": "cast",
@@ -220,7 +220,7 @@
               "target": {
                 "type": "identifier",
                 "value": "i",
-                "declaratorNodeId": "0015"
+                "declaratorNodeId": "0001"
               }
             }
           }
@@ -233,7 +233,7 @@
             "lvalue": {
               "type": "identifier",
               "value": "p",
-              "declaratorNodeId": "0016"
+              "declaratorNodeId": "0002"
             },
             "rvalue": {
               "type": "cast",
@@ -248,7 +248,7 @@
               "target": {
                 "type": "identifier",
                 "value": "i",
-                "declaratorNodeId": "0015"
+                "declaratorNodeId": "0001"
               }
             }
           }
@@ -261,7 +261,7 @@
             "lvalue": {
               "type": "identifier",
               "value": "i",
-              "declaratorNodeId": "0015"
+              "declaratorNodeId": "0001"
             },
             "rvalue": {
               "type": "cast",
@@ -274,7 +274,7 @@
               "target": {
                 "type": "identifier",
                 "value": "p",
-                "declaratorNodeId": "0016"
+                "declaratorNodeId": "0002"
               }
             }
           }
@@ -287,7 +287,7 @@
             "lvalue": {
               "type": "identifier",
               "value": "i",
-              "declaratorNodeId": "0015"
+              "declaratorNodeId": "0001"
             },
             "rvalue": {
               "type": "unary-operator",
@@ -313,7 +313,7 @@
                     "target": {
                       "type": "identifier",
                       "value": "i",
-                      "declaratorNodeId": "0015"
+                      "declaratorNodeId": "0001"
                     }
                   }
                 },
@@ -334,7 +334,7 @@
             "lvalue": {
               "type": "identifier",
               "value": "p",
-              "declaratorNodeId": "0016"
+              "declaratorNodeId": "0002"
             },
             "rvalue": {
               "type": "cast",
@@ -379,7 +379,7 @@
                       "target": {
                         "type": "identifier",
                         "value": "i",
-                        "declaratorNodeId": "0015"
+                        "declaratorNodeId": "0001"
                       }
                     }
                   }
@@ -417,7 +417,7 @@
                     "const": false,
                     "signedUnsigned": null
                   },
-                  "declaratorId": "0022"
+                  "declaratorId": "0008"
                 }
               ],
               "returnType": {
@@ -428,7 +428,7 @@
               }
             }
           },
-          "declaratorId": "0023",
+          "declaratorId": "0009",
           "initializer": {
             "type": "assigmnent-expression",
             "expression": {
@@ -437,7 +437,7 @@
               "target": {
                 "type": "identifier",
                 "value": "func",
-                "declaratorNodeId": "0018"
+                "declaratorNodeId": "0004"
               }
             }
           }
@@ -450,7 +450,7 @@
             "lvalue": {
               "type": "identifier",
               "value": "pf",
-              "declaratorNodeId": "0023"
+              "declaratorNodeId": "0009"
             },
             "rvalue": {
               "type": "cast",
@@ -480,7 +480,7 @@
               "target": {
                 "type": "identifier",
                 "value": "p",
-                "declaratorNodeId": "0016"
+                "declaratorNodeId": "0002"
               }
             }
           }
@@ -493,7 +493,7 @@
             "lvalue": {
               "type": "identifier",
               "value": "c",
-              "declaratorNodeId": "0020"
+              "declaratorNodeId": "0006"
             },
             "rvalue": {
               "type": "binary operator",
@@ -501,7 +501,7 @@
               "left": {
                 "type": "identifier",
                 "value": "c",
-                "declaratorNodeId": "0020"
+                "declaratorNodeId": "0006"
               },
               "right": {
                 "type": "const",
@@ -519,7 +519,7 @@
             "lvalue": {
               "type": "identifier",
               "value": "f",
-              "declaratorNodeId": "0021"
+              "declaratorNodeId": "0007"
             },
             "rvalue": {
               "type": "binary operator",
@@ -527,7 +527,7 @@
               "left": {
                 "type": "identifier",
                 "value": "f",
-                "declaratorNodeId": "0021"
+                "declaratorNodeId": "0007"
               },
               "right": {
                 "type": "const",
@@ -547,16 +547,16 @@
         }
       ],
       "declaredVariables": [
-        "0020",
-        "0021",
-        "0023"
+        "0006",
+        "0007",
+        "0009"
       ]
     }
   ],
   "declarations": [
-    "0015",
-    "0016",
-    "0018",
-    "0019"
+    "0001",
+    "0002",
+    "0004",
+    "0005"
   ]
 }

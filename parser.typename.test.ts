@@ -296,7 +296,7 @@ describe("Parsing typename", () => {
                   signedUnsigned: null,
                 },
               },
-              declaratorId: "0002" as DeclaratorId,
+              declaratorId: "0001" as DeclaratorId,
             },
             {
               type: "function",

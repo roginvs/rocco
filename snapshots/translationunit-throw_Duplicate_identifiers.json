@@ -20,7 +20,7 @@
 {
   "name": "Error",
   "message": "Duplicate declaration r",
-  "pos": 3,
   "line": 4,
+  "pos": 3,
   "length": 5
 }

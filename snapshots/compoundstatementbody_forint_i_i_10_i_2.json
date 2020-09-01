@@ -27,7 +27,7 @@
           "const": false,
           "signedUnsigned": null
         },
-        "declaratorId": "0011"
+        "declaratorId": "0001"
       },
       {
         "type": "while",
@@ -37,7 +37,7 @@
           "left": {
             "type": "identifier",
             "value": "i",
-            "declaratorNodeId": "0011"
+            "declaratorNodeId": "0001"
           },
           "right": {
             "type": "const",
@@ -63,7 +63,7 @@
                 "target": {
                   "type": "identifier",
                   "value": "i",
-                  "declaratorNodeId": "0011"
+                  "declaratorNodeId": "0001"
                 }
               }
             }

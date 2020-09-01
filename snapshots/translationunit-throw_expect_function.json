@@ -19,7 +19,7 @@
 {
   "name": "Error",
   "message": "Expecting function type (6.9.1 2)",
-  "pos": 9,
   "line": 2,
+  "pos": 9,
   "length": 1
 }

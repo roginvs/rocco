@@ -49,7 +49,7 @@
               "const": false,
               "signedUnsigned": null
             },
-            "declaratorId": "0008"
+            "declaratorId": "0001"
           }
         ],
         "returnType": {
@@ -57,7 +57,7 @@
           "const": false
         }
       },
-      "declaratorId": "0009",
+      "declaratorId": "0002",
       "initializer": null
     },
     "body": [
@@ -72,7 +72,7 @@
           "const": false,
           "signedUnsigned": null
         },
-        "declaratorId": "0010"
+        "declaratorId": "0003"
       },
       {
         "type": "if",
@@ -82,7 +82,7 @@
           "left": {
             "type": "identifier",
             "value": "x",
-            "declaratorNodeId": "0008"
+            "declaratorNodeId": "0001"
           },
           "right": {
             "type": "const",
@@ -101,7 +101,7 @@
                 "lvalue": {
                   "type": "identifier",
                   "value": "y",
-                  "declaratorNodeId": "0010"
+                  "declaratorNodeId": "0003"
                 },
                 "rvalue": {
                   "type": "const",
@@ -123,7 +123,7 @@
                 "lvalue": {
                   "type": "identifier",
                   "value": "y",
-                  "declaratorNodeId": "0010"
+                  "declaratorNodeId": "0003"
                 },
                 "rvalue": {
                   "type": "const",
@@ -146,7 +146,7 @@
           "left": {
             "type": "identifier",
             "value": "x",
-            "declaratorNodeId": "0008"
+            "declaratorNodeId": "0001"
           },
           "right": {
             "type": "const",
@@ -164,7 +164,7 @@
                 "target": {
                   "type": "identifier",
                   "value": "x",
-                  "declaratorNodeId": "0008"
+                  "declaratorNodeId": "0001"
                 }
               }
             },
@@ -176,7 +176,7 @@
                 "lvalue": {
                   "type": "identifier",
                   "value": "y",
-                  "declaratorNodeId": "0010"
+                  "declaratorNodeId": "0003"
                 },
                 "rvalue": {
                   "type": "binary operator",
@@ -184,7 +184,7 @@
                   "left": {
                     "type": "identifier",
                     "value": "y",
-                    "declaratorNodeId": "0010"
+                    "declaratorNodeId": "0003"
                   },
                   "right": {
                     "type": "const",
@@ -199,8 +199,8 @@
       }
     ],
     "declaredVariables": [
-      "0008",
-      "0010"
+      "0001",
+      "0003"
     ]
   }
 ]

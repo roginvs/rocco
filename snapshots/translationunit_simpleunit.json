@@ -366,7 +366,7 @@
         "const": false,
         "signedUnsigned": null
       },
-      "declaratorId": "0010",
+      "declaratorId": "000A",
       "initializer": {
         "type": "assigmnent-expression",
         "expression": {
@@ -393,7 +393,7 @@
             "const": false
           }
         },
-        "declaratorId": "0011",
+        "declaratorId": "000B",
         "initializer": null
       },
       "body": [
@@ -408,7 +408,7 @@
             "const": false,
             "signedUnsigned": null
           },
-          "declaratorId": "0012",
+          "declaratorId": "000C",
           "initializer": {
             "type": "assigmnent-expression",
             "expression": {
@@ -429,7 +429,7 @@
             "const": false,
             "signedUnsigned": null
           },
-          "declaratorId": "0013",
+          "declaratorId": "000D",
           "initializer": {
             "type": "assigmnent-expression",
             "expression": {
@@ -438,7 +438,7 @@
               "left": {
                 "type": "identifier",
                 "value": "j5",
-                "declaratorNodeId": "0012"
+                "declaratorNodeId": "000C"
               },
               "right": {
                 "type": "const",
@@ -450,8 +450,8 @@
         }
       ],
       "declaredVariables": [
-        "0012",
-        "0013"
+        "000C",
+        "000D"
       ]
     },
     {
@@ -473,7 +473,7 @@
             "signedUnsigned": null
           }
         },
-        "declaratorId": "0014",
+        "declaratorId": "000E",
         "initializer": null
       },
       "body": [
@@ -528,8 +528,8 @@
     "0007",
     "0008",
     "0009",
-    "0010",
-    "0011",
-    "0014"
+    "000A",
+    "000B",
+    "000E"
   ]
 }

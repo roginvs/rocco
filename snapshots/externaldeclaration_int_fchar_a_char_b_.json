@@ -36,7 +36,7 @@
               "const": false,
               "signedUnsigned": null
             },
-            "declaratorId": "0002"
+            "declaratorId": "0001"
           },
           {
             "type": "declarator",
@@ -49,7 +49,7 @@
               "const": false,
               "signedUnsigned": null
             },
-            "declaratorId": "0003"
+            "declaratorId": "0002"
           }
         ],
         "returnType": {
@@ -63,13 +63,13 @@
           }
         }
       },
-      "declaratorId": "0004",
+      "declaratorId": "0003",
       "initializer": null
     },
     "body": [],
     "declaredVariables": [
-      "0002",
-      "0003"
+      "0001",
+      "0002"
     ]
   }
 ]

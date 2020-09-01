@@ -28,7 +28,7 @@
         "const": false
       }
     },
-    "declaratorId": "0012"
+    "declaratorId": "0001"
   },
   {
     "type": "dowhile",
@@ -39,7 +39,7 @@
         "target": {
           "type": "identifier",
           "value": "f",
-          "declaratorNodeId": "0012"
+          "declaratorNodeId": "0001"
         },
         "args": []
       }

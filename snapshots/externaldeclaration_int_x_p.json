@@ -24,7 +24,7 @@
       "const": false,
       "signedUnsigned": null
     },
-    "declaratorId": "0006"
+    "declaratorId": "0001"
   },
   {
     "type": "declarator",
@@ -41,6 +41,6 @@
         "signedUnsigned": null
       }
     },
-    "declaratorId": "0007"
+    "declaratorId": "0002"
   }
 ]
