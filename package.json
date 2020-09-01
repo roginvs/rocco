@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/node": "^14.0.23",
+    "pad": "^3.2.0",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7",
     "wabt": "^1.0.19"

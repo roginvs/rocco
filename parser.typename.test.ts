@@ -4,6 +4,7 @@ import { createScannerFunc } from "./scanner.func";
 import { Typename, NodeLocator } from "./parser.definitions";
 import { SymbolTable } from "./parser.symboltable";
 import { DeepPartial } from "./utils";
+import { DeclaratorId } from "./declaratorId";
 
 describe("isCurrentTokenLooksLikeTypeName", () => {
   const YES = [
@@ -39,6 +40,7 @@ describe("isCurrentTokenLooksLikeTypeName", () => {
           signedUnsigned: null,
         },
         functionSpecifier: null,
+        declaratorId: "kekeke" as DeclaratorId,
       });
       const parser = createParser(scanner, locator, symbolTable);
       expect(parser.isCurrentTokenLooksLikeTypeName()).toStrictEqual(t.yes);
@@ -70,6 +72,7 @@ function checkTypename(str: string, ast?: DeepPartial<Typename>) {
           signedUnsigned: null,
         },
       },
+      declaratorId: "p_int" as DeclaratorId,
     });
     const node = parser.readTypeName();
     if (ast) {

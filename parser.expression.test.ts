@@ -4,6 +4,7 @@ import { ExpressionNode, NodeLocator } from "./parser.definitions";
 import { SymbolTable } from "./parser.symboltable";
 import { DeepPartial } from "./utils";
 import { createParser } from "./parser";
+import { DeclaratorId } from "./declaratorId";
 
 function checkExpressionSkip(str: string, ast?: ExpressionNode) {
   it.skip(`Reads '${str}'`, () => {});
@@ -32,6 +33,7 @@ function checkExpression(str: string, ast?: DeepPartial<ExpressionNode>) {
           const: false,
         },
       },
+      declaratorId: "f" as DeclaratorId,
     });
     for (const v of ["a", "b", "c", "kek"]) {
       symbolTable.addEntry({
@@ -45,6 +47,7 @@ function checkExpression(str: string, ast?: DeepPartial<ExpressionNode>) {
           arithmeticType: "char",
           signedUnsigned: null,
         },
+        declaratorId: v as DeclaratorId,
       });
     }
     symbolTable.addEntry({
@@ -63,6 +66,7 @@ function checkExpression(str: string, ast?: DeepPartial<ExpressionNode>) {
           signedUnsigned: null,
         },
       },
+      declaratorId: "arr" as DeclaratorId,
     });
     const parser = createParser(scanner, locator, symbolTable);
     const node = parser.readExpression();

@@ -6,6 +6,7 @@ import {
   StorageClass,
 } from "./scanner.func";
 import { TokenLocation } from "./error";
+import { DeclaratorId } from "./declaratorId";
 
 //
 // ============= Expressions =============
@@ -199,6 +200,8 @@ type DeclaratorNodeGeneric<T extends Typename> = {
   typename: T;
   storageSpecifier: StorageClass | null;
   functionSpecifier: "inline" | null;
+
+  declaratorId: DeclaratorId;
   /**
    * Not in use for "register" and "typedef" storage
    */
