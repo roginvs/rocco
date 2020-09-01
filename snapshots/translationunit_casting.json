@@ -206,6 +206,27 @@
               "declaratorNodeId": "0002"
             },
             "rvalue": {
+              "type": "unary-operator",
+              "operator": "&",
+              "target": {
+                "type": "identifier",
+                "value": "c",
+                "declaratorNodeId": "0006"
+              }
+            }
+          }
+        },
+        {
+          "type": "expression",
+          "expression": {
+            "type": "assignment",
+            "operator": "=",
+            "lvalue": {
+              "type": "identifier",
+              "value": "p",
+              "declaratorNodeId": "0002"
+            },
+            "rvalue": {
               "type": "cast",
               "typename": {
                 "type": "pointer",
