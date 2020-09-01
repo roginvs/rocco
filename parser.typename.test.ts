@@ -3,7 +3,6 @@ import { Scanner } from "./scanner";
 import { createScannerFunc } from "./scanner.func";
 import { Typename, NodeLocator } from "./parser.definitions";
 import { SymbolTable } from "./parser.symboltable";
-import { DeepPartial } from "./utils";
 import { DeclaratorId } from "./declaratorId";
 
 describe("isCurrentTokenLooksLikeTypeName", () => {
@@ -48,8 +47,7 @@ describe("isCurrentTokenLooksLikeTypeName", () => {
   }
 });
 
-// TODO: Remove DeepPartial
-function checkTypename(str: string, ast?: DeepPartial<Typename>) {
+function checkTypename(str: string, ast?: Typename) {
   it(`Reads '${str}'`, () => {
     const scanner = new Scanner(createScannerFunc(str));
     const locator: NodeLocator = new Map();
@@ -231,6 +229,7 @@ describe("Parsing typename", () => {
       target: {
         type: "identifier",
         value: "p_int",
+        declaratorNodeId: "p_int" as DeclaratorId,
       },
     },
     elementsTypename: {
@@ -257,6 +256,7 @@ describe("Parsing typename", () => {
           const: false,
           signedUnsigned: null,
         },
+        declaratorId: "0001" as DeclaratorId,
       },
     ],
     returnType: {
@@ -297,6 +297,7 @@ describe("Parsing typename", () => {
                   signedUnsigned: null,
                 },
               },
+              declaratorId: "0002" as DeclaratorId,
             },
             {
               type: "function",

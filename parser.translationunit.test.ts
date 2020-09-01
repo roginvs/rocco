@@ -1,4 +1,3 @@
-import { DeepPartial } from "./utils";
 import { ExternalDeclarations, NodeLocator } from "./parser.definitions";
 import { Scanner } from "./scanner";
 import { createScannerFunc } from "./scanner.func";
@@ -6,7 +5,6 @@ import { createParser } from "./parser";
 import { SymbolTable } from "./parser.symboltable";
 import { testSnapshot } from "./testsnapshot";
 
-// TODO: Remove DeepPartial
 function checkExternalDeclaration(str: string) {
   it(`Reads '${str}'`, () => {
     const scanner = new Scanner(createScannerFunc(str));

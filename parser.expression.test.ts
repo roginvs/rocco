@@ -2,7 +2,6 @@ import { Scanner } from "./scanner";
 import { createScannerFunc } from "./scanner.func";
 import { ExpressionNode, NodeLocator } from "./parser.definitions";
 import { SymbolTable } from "./parser.symboltable";
-import { DeepPartial } from "./utils";
 import { createParser } from "./parser";
 import { DeclaratorId } from "./declaratorId";
 
@@ -10,7 +9,6 @@ function checkExpressionSkip(str: string, ast?: ExpressionNode) {
   it.skip(`Reads '${str}'`, () => {});
 }
 
-// TODO: Remove DeepPartial
 function checkExpression(str: string, ast?: ExpressionNode) {
   it(`Reads '${str}'`, () => {
     const scanner = new Scanner(createScannerFunc(str));
