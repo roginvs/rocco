@@ -18,8 +18,8 @@ function checkTranslationUnitThrows(testname: string, code: string) {
       const err = {
         name: e.name,
         message: e.message,
-        pos: e.location.pos,
         line: e.location.line,
+        pos: e.location.pos,
         length: e.location.length,
       };
       if (
@@ -58,5 +58,15 @@ checkTranslationUnitThrows(
 int f()[] {
 
 }
+`
+);
+
+checkTranslationUnitThrows(
+  `Parameter name omitted`,
+  `
+void kek2(int){
+  
+}
+
 `
 );

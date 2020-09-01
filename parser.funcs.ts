@@ -841,7 +841,6 @@ export function createParser(
     if (scanner.current().type !== "{") {
       throwError("Expected compount-statement");
     }
-    scanner.readNext();
 
     symbolTable.enterFunctionScope();
     for (const param of declaration.typename.parameters) {
@@ -850,6 +849,10 @@ export function createParser(
       }
       symbolTable.addEntry(param);
     }
+
+    // Do this after we check for "Parameter name omitted" error
+    // So current token will show correct position
+    scanner.readNext();
 
     const body = readCompoundStatementBody();
 
