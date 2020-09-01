@@ -29,7 +29,7 @@ function checkTranslationUnitThrows(testname: string, code: string) {
       ) {
         throw new Error("No location for error");
       }
-      testSnapshot("translationunit-throw", testname, err);
+      testSnapshot("translationunit-throw", testname, err, code);
     }
   });
 }

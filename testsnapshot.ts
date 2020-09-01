@@ -1,6 +1,11 @@
 import * as fs from "fs";
 
-export function testSnapshot(id: string, testname: string, node: object) {
+export function testSnapshot(
+  id: string,
+  testname: string,
+  node: object,
+  comments: string = ""
+) {
   const fname =
     __dirname +
     "/snapshots/" +
@@ -27,6 +32,11 @@ export function testSnapshot(id: string, testname: string, node: object) {
       fname,
       `// ${id.replace(/\n/g, "")}\n` +
         testname
+          .split("\n")
+          .map((l) => `// ${l}\n`)
+          .join("") +
+        "//\n" +
+        comments
           .split("\n")
           .map((l) => `// ${l}\n`)
           .join("") +
