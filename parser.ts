@@ -10,6 +10,7 @@ import { createParser } from "./parser.funcs";
 export function readTranslationUnit(scanner: Scanner) {
   const locator: NodeLocator = new Map();
   const symbolTable = new SymbolTable(locator);
+  symbolTable.enterScope();
 
   const parser = createParser(scanner, locator, symbolTable);
 

@@ -1,0 +1,487 @@
+// checkTranslationUnit
+// simpleunit
+//
+//    at Object.testSnapshot (/Users/vasilii/demo_compiler/testsnapshot.ts:34:10)
+//    at Object.<anonymous> (/Users/vasilii/demo_compiler/parser.test.ts:17:5)
+//    at Object.asyncJestTest (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:100:37)
+//    at resolve (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:47:12)
+//    at new Promise (<anonymous>)
+//    at mapper (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:30:19)
+//    at promise.then (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:77:41)
+//    at process._tickCallback (internal/process/next_tick.js:68:7)
+
+{
+  "type": "translation-unit",
+  "body": [
+    [
+      {
+        "type": "declarator",
+        "functionSpecifier": null,
+        "storageSpecifier": null,
+        "identifier": "i",
+        "typename": {
+          "type": "arithmetic",
+          "arithmeticType": "int",
+          "const": false,
+          "signedUnsigned": null
+        },
+        "declaratorId": "0001"
+      }
+    ],
+    [
+      {
+        "type": "declarator",
+        "functionSpecifier": null,
+        "storageSpecifier": null,
+        "identifier": "arr",
+        "typename": {
+          "type": "array",
+          "const": true,
+          "size": {
+            "type": "const",
+            "subtype": "int",
+            "value": 30
+          },
+          "elementsTypename": {
+            "type": "arithmetic",
+            "arithmeticType": "char",
+            "const": false,
+            "signedUnsigned": null
+          }
+        },
+        "declaratorId": "0002"
+      }
+    ],
+    [
+      {
+        "type": "function-declaration",
+        "declaration": {
+          "type": "declarator",
+          "functionSpecifier": null,
+          "storageSpecifier": null,
+          "identifier": "func1",
+          "typename": {
+            "type": "function",
+            "const": true,
+            "haveEndingEllipsis": false,
+            "parameters": [],
+            "returnType": {
+              "type": "void",
+              "const": false
+            }
+          },
+          "declaratorId": "0003"
+        },
+        "body": [
+          {
+            "type": "expression",
+            "expression": {
+              "type": "assignment",
+              "operator": "=",
+              "lvalue": {
+                "type": "identifier",
+                "value": "i",
+                "declaratorNodeId": "0001"
+              },
+              "rvalue": {
+                "type": "binary operator",
+                "operator": "+",
+                "left": {
+                  "type": "identifier",
+                  "value": "i",
+                  "declaratorNodeId": "0001"
+                },
+                "right": {
+                  "type": "const",
+                  "subtype": "int",
+                  "value": 1
+                }
+              }
+            }
+          },
+          {
+            "type": "expression",
+            "expression": {
+              "type": "assignment",
+              "operator": "=",
+              "lvalue": {
+                "type": "subscript operator",
+                "target": {
+                  "type": "identifier",
+                  "value": "arr",
+                  "declaratorNodeId": "0002"
+                },
+                "index": {
+                  "type": "identifier",
+                  "value": "i",
+                  "declaratorNodeId": "0001"
+                }
+              },
+              "rvalue": {
+                "type": "binary operator",
+                "operator": "*",
+                "left": {
+                  "type": "identifier",
+                  "value": "i",
+                  "declaratorNodeId": "0001"
+                },
+                "right": {
+                  "type": "const",
+                  "subtype": "int",
+                  "value": 2
+                }
+              }
+            }
+          }
+        ],
+        "declaredVariables": []
+      }
+    ],
+    [
+      {
+        "type": "function-declaration",
+        "declaration": {
+          "type": "declarator",
+          "functionSpecifier": null,
+          "storageSpecifier": null,
+          "identifier": "func2",
+          "typename": {
+            "type": "function",
+            "const": true,
+            "haveEndingEllipsis": false,
+            "parameters": [
+              {
+                "type": "declarator",
+                "functionSpecifier": null,
+                "storageSpecifier": null,
+                "identifier": "idx",
+                "typename": {
+                  "type": "arithmetic",
+                  "arithmeticType": "int",
+                  "const": false,
+                  "signedUnsigned": null
+                },
+                "declaratorId": "0004"
+              }
+            ],
+            "returnType": {
+              "type": "arithmetic",
+              "arithmeticType": "int",
+              "const": false,
+              "signedUnsigned": null
+            }
+          },
+          "declaratorId": "0005"
+        },
+        "body": [
+          {
+            "type": "declarator",
+            "functionSpecifier": null,
+            "storageSpecifier": "static",
+            "identifier": "staticcounter",
+            "typename": {
+              "type": "arithmetic",
+              "arithmeticType": "int",
+              "const": false,
+              "signedUnsigned": null
+            },
+            "declaratorId": "0006"
+          },
+          {
+            "type": "expression",
+            "expression": {
+              "type": "assignment",
+              "operator": "=",
+              "lvalue": {
+                "type": "identifier",
+                "value": "staticcounter",
+                "declaratorNodeId": "0006"
+              },
+              "rvalue": {
+                "type": "const",
+                "subtype": "int",
+                "value": 3
+              }
+            }
+          },
+          {
+            "type": "if",
+            "condition": {
+              "type": "binary operator",
+              "operator": ">",
+              "left": {
+                "type": "identifier",
+                "value": "idx",
+                "declaratorNodeId": "0004"
+              },
+              "right": {
+                "type": "const",
+                "subtype": "int",
+                "value": 10
+              }
+            },
+            "iftrue": {
+              "type": "compound-statement",
+              "body": [
+                {
+                  "type": "return",
+                  "expression": {
+                    "type": "binary operator",
+                    "operator": "+",
+                    "left": {
+                      "type": "subscript operator",
+                      "target": {
+                        "type": "identifier",
+                        "value": "arr",
+                        "declaratorNodeId": "0002"
+                      },
+                      "index": {
+                        "type": "identifier",
+                        "value": "idx",
+                        "declaratorNodeId": "0004"
+                      }
+                    },
+                    "right": {
+                      "type": "const",
+                      "subtype": "int",
+                      "value": 9
+                    }
+                  }
+                }
+              ]
+            },
+            "iffalse": {
+              "type": "compound-statement",
+              "body": [
+                {
+                  "type": "return",
+                  "expression": {
+                    "type": "binary operator",
+                    "operator": "+",
+                    "left": {
+                      "type": "subscript operator",
+                      "target": {
+                        "type": "identifier",
+                        "value": "arr",
+                        "declaratorNodeId": "0002"
+                      },
+                      "index": {
+                        "type": "identifier",
+                        "value": "idx",
+                        "declaratorNodeId": "0004"
+                      }
+                    },
+                    "right": {
+                      "type": "const",
+                      "subtype": "int",
+                      "value": 4
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "declaredVariables": [
+          {
+            "type": "declarator",
+            "functionSpecifier": null,
+            "storageSpecifier": null,
+            "identifier": "idx",
+            "typename": {
+              "type": "arithmetic",
+              "arithmeticType": "int",
+              "const": false,
+              "signedUnsigned": null
+            },
+            "declaratorId": "0004"
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "type": "function-declaration",
+        "declaration": {
+          "type": "declarator",
+          "functionSpecifier": null,
+          "storageSpecifier": null,
+          "identifier": "main",
+          "typename": {
+            "type": "function",
+            "const": true,
+            "haveEndingEllipsis": false,
+            "parameters": [],
+            "returnType": {
+              "type": "arithmetic",
+              "arithmeticType": "int",
+              "const": false,
+              "signedUnsigned": null
+            }
+          },
+          "declaratorId": "0007"
+        },
+        "body": [
+          {
+            "type": "expression",
+            "expression": {
+              "type": "function call",
+              "target": {
+                "type": "identifier",
+                "value": "func1",
+                "declaratorNodeId": "0003"
+              },
+              "args": []
+            }
+          },
+          {
+            "type": "expression",
+            "expression": {
+              "type": "function call",
+              "target": {
+                "type": "identifier",
+                "value": "func2",
+                "declaratorNodeId": "0005"
+              },
+              "args": [
+                {
+                  "type": "const",
+                  "subtype": "int",
+                  "value": 3
+                }
+              ]
+            }
+          },
+          {
+            "type": "return",
+            "expression": {
+              "type": "const",
+              "subtype": "int",
+              "value": 3
+            }
+          }
+        ],
+        "declaredVariables": []
+      }
+    ]
+  ],
+  "declarations": [
+    {
+      "type": "declarator",
+      "functionSpecifier": null,
+      "storageSpecifier": null,
+      "identifier": "i",
+      "typename": {
+        "type": "arithmetic",
+        "arithmeticType": "int",
+        "const": false,
+        "signedUnsigned": null
+      },
+      "declaratorId": "0001"
+    },
+    {
+      "type": "declarator",
+      "functionSpecifier": null,
+      "storageSpecifier": null,
+      "identifier": "arr",
+      "typename": {
+        "type": "array",
+        "const": true,
+        "size": {
+          "type": "const",
+          "subtype": "int",
+          "value": 30
+        },
+        "elementsTypename": {
+          "type": "arithmetic",
+          "arithmeticType": "char",
+          "const": false,
+          "signedUnsigned": null
+        }
+      },
+      "declaratorId": "0002"
+    },
+    {
+      "type": "declarator",
+      "functionSpecifier": null,
+      "storageSpecifier": null,
+      "identifier": "func1",
+      "typename": {
+        "type": "function",
+        "const": true,
+        "haveEndingEllipsis": false,
+        "parameters": [],
+        "returnType": {
+          "type": "void",
+          "const": false
+        }
+      },
+      "declaratorId": "0003"
+    },
+    {
+      "type": "declarator",
+      "functionSpecifier": null,
+      "storageSpecifier": "static",
+      "identifier": "staticcounter",
+      "typename": {
+        "type": "arithmetic",
+        "arithmeticType": "int",
+        "const": false,
+        "signedUnsigned": null
+      },
+      "declaratorId": "0006"
+    },
+    {
+      "type": "declarator",
+      "functionSpecifier": null,
+      "storageSpecifier": null,
+      "identifier": "func2",
+      "typename": {
+        "type": "function",
+        "const": true,
+        "haveEndingEllipsis": false,
+        "parameters": [
+          {
+            "type": "declarator",
+            "functionSpecifier": null,
+            "storageSpecifier": null,
+            "identifier": "idx",
+            "typename": {
+              "type": "arithmetic",
+              "arithmeticType": "int",
+              "const": false,
+              "signedUnsigned": null
+            },
+            "declaratorId": "0004"
+          }
+        ],
+        "returnType": {
+          "type": "arithmetic",
+          "arithmeticType": "int",
+          "const": false,
+          "signedUnsigned": null
+        }
+      },
+      "declaratorId": "0005"
+    },
+    {
+      "type": "declarator",
+      "functionSpecifier": null,
+      "storageSpecifier": null,
+      "identifier": "main",
+      "typename": {
+        "type": "function",
+        "const": true,
+        "haveEndingEllipsis": false,
+        "parameters": [],
+        "returnType": {
+          "type": "arithmetic",
+          "arithmeticType": "int",
+          "const": false,
+          "signedUnsigned": null
+        }
+      },
+      "declaratorId": "0007"
+    }
+  ]
+}
