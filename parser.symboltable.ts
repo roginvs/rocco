@@ -3,6 +3,7 @@ import {
   Typename,
   DeclaratorNode,
   NodeLocator,
+  DeclaratorMap,
 } from "./parser.definitions";
 import pad from "pad";
 
@@ -17,7 +18,7 @@ export class SymbolTable {
   }
 
   /** List of declarations for whole compilaion unit */
-  private readonly externAndStaticDeclarations: DeclaratorNode[] = [];
+  private readonly compilationUnitDeclarations: DeclaratorNode[] = [];
   /** List of declarations inside current function scope */
   private autoInFunctionDeclarations: DeclaratorNode[] | null = null;
 
@@ -59,21 +60,20 @@ export class SymbolTable {
 
     if (
       declaration.storageSpecifier === "extern" ||
-      declaration.storageSpecifier === "static"
+      declaration.storageSpecifier === "static" ||
+      !this.autoInFunctionDeclarations
     ) {
-      this.externAndStaticDeclarations.push(declaration);
+      this.compilationUnitDeclarations.push(declaration);
     } else {
-      if (this.autoInFunctionDeclarations) {
-        this.autoInFunctionDeclarations.push(declaration);
-      }
+      this.autoInFunctionDeclarations.push(declaration);
     }
 
     this.declaratorIdToDeclaratorMap.set(declaration.declaratorId, declaration);
   }
 
   /** Call me when parsing is complete */
-  getExternAndStaticDeclarations() {
-    return this.externAndStaticDeclarations;
+  getCompilatioUnittDeclarations() {
+    return this.compilationUnitDeclarations;
   }
 
   leaveScope(): void {
@@ -141,10 +141,7 @@ export class SymbolTable {
     return id as DeclaratorId;
   }
 
-  private readonly declaratorIdToDeclaratorMap = new Map<
-    DeclaratorId,
-    DeclaratorNode
-  >();
+  private readonly declaratorIdToDeclaratorMap: DeclaratorMap = new Map();
   /** Call me when parsing is complete */
   public getDeclaratorsMap() {
     return this.declaratorIdToDeclaratorMap;

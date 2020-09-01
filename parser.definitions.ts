@@ -289,3 +289,12 @@ export type ExternalDeclarations = (
   | DeclaratorNode
   | /** This is for initializers */ AssignmentExpression
 )[];
+
+export type DeclaratorMap = Map<DeclaratorId, DeclaratorNode>;
+
+export type TranslationUnit = {
+  type: "translation-unit";
+  body: ExternalDeclarations[];
+  declarations: DeclaratorNode[];
+  declaratorMap: () => DeclaratorMap;
+};

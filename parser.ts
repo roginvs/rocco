@@ -28,6 +28,7 @@ import {
   ContinueStatement,
   BreakStatement,
   ReturnStatement,
+  ExternalDeclarations,
 } from "./parser.definitions";
 import { ParserError } from "./error";
 import { SymbolTable } from "./parser.symboltable";
@@ -1166,6 +1167,15 @@ export function createParser(
     }
 
     return body;
+  }
+
+  function readComplilationUnit() {
+    // TODO: Move me to another file
+    const body: ExternalDeclarations[] = [];
+    while (scanner.current().type !== "end") {
+      const node: ExternalDeclarations = readExternalDeclaration();
+      body.push(node);
+    }
   }
 
   return {
