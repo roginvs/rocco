@@ -29,7 +29,6 @@ import {
   BreakStatement,
   ReturnStatement,
   ExternalDeclarations,
-  DeclaratorInitializerNode,
   InitializerNode,
 } from "./parser.definitions";
 import { ParserError } from "./error";
@@ -696,7 +695,7 @@ export function createParser(
   function readDeclaration() {
     const nodes = readExternalDeclaration();
 
-    const resultNodes: (DeclaratorNode | DeclaratorInitializerNode)[] = [];
+    const resultNodes: DeclaratorNode[] = [];
 
     for (const node of nodes) {
       if (node.type === "function-declaration") {
@@ -740,9 +739,7 @@ export function createParser(
         ...tokenForLocator,
         length: scanner.current().pos - tokenForLocator.pos,
       });
-      const declarationNodes: (DeclaratorNode | DeclaratorInitializerNode)[] = [
-        firstDeclaration,
-      ];
+      const declarationNodes: DeclaratorNode[] = [firstDeclaration];
 
       while (scanner.current().type !== ";") {
         if (scanner.current().type === "=") {
@@ -754,8 +751,8 @@ export function createParser(
           if (!lastDeclaration) {
             throwError("Internal error: declaration list is empty");
           }
-          if (lastDeclaration.type !== "declarator") {
-            throwError("Internal error: last item should be declaration");
+          if (lastDeclaration.initializer) {
+            throwError("Internal error: already have initializer");
           }
 
           if (scanner.current().type === "{") {
@@ -773,18 +770,9 @@ export function createParser(
             length: scanner.current().pos - initializerTokenForLocation.pos,
           });
 
-          const declarationWithInitializer: DeclaratorInitializerNode = {
-            type: "declarator with initializer",
-            declarator: lastDeclaration,
-            initializer: initializer,
-          };
+          lastDeclaration.initializer = initializer;
 
-          locator.set(declarationWithInitializer, {
-            ...tokenForLocator,
-            length: scanner.current().pos - tokenForLocator.pos,
-          });
-
-          declarationNodes.push(declarationWithInitializer);
+          declarationNodes.push(lastDeclaration);
         } else if ((scanner.current().type = ",")) {
           scanner.readNext();
           const declarator = readAbstractDeclaratorOrDeclaratorCoreless();
@@ -806,12 +794,12 @@ export function createParser(
       }
       scanner.readNext();
 
-      declarationNodes.forEach((node) => {
-        const declarationNode =
-          node.type === "declarator" ? node : node.declarator;
+      declarationNodes.forEach((declarationNode) => {
         declarationNode.functionSpecifier = functionSpecifier;
         declarationNode.storageSpecifier = storageClassSpecifier;
+      });
 
+      declarationNodes.forEach((declarationNode) => {
         symbolTable.addEntry(declarationNode);
       });
 
@@ -873,6 +861,7 @@ export function createParser(
     const functionDeclaration: DeclaratorNodeFunction = {
       ...declaration,
       typename: declaration.typename,
+      initializer: null,
     };
 
     const func: FunctionDefinition = {

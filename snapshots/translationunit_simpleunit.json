@@ -65,7 +65,8 @@
             "const": false
           }
         },
-        "declaratorId": "0003"
+        "declaratorId": "0003",
+        "initializer": null
       },
       "body": [
         {
@@ -164,7 +165,8 @@
             "signedUnsigned": null
           }
         },
-        "declaratorId": "0005"
+        "declaratorId": "0005",
+        "initializer": null
       },
       "body": [
         {
@@ -310,7 +312,8 @@
             "signedUnsigned": null
           }
         },
-        "declaratorId": "0007"
+        "declaratorId": "0007",
+        "initializer": null
       },
       "body": [
         {
@@ -406,7 +409,8 @@
           "const": false
         }
       },
-      "declaratorId": "0003"
+      "declaratorId": "0003",
+      "initializer": null
     },
     {
       "type": "declarator",
@@ -452,7 +456,8 @@
           "signedUnsigned": null
         }
       },
-      "declaratorId": "0005"
+      "declaratorId": "0005",
+      "initializer": null
     },
     {
       "type": "declarator",
@@ -471,7 +476,8 @@
           "signedUnsigned": null
         }
       },
-      "declaratorId": "0007"
+      "declaratorId": "0007",
+      "initializer": null
     }
   ]
 }

@@ -326,6 +326,11 @@ void test26()
   }
 }
 
+void test27()
+{
+  // int fffffff() = 3;
+}
+
 int main(int argc, char **argv)
 {
   int x = 1 + argc;

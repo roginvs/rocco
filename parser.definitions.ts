@@ -206,6 +206,8 @@ type DeclaratorNodeGeneric<T extends Typename> = {
    * Not in use for "register" and "typedef" storage
    */
   memoryOffset?: number;
+
+  initializer?: T extends FunctionTypename ? null : InitializerNode;
 };
 
 /**
@@ -285,19 +287,7 @@ export type InitializerNode =
       // TODO
     };
 
-/**
- * This is very close to "declaration", but it have only one declaration
- */
-export type DeclaratorInitializerNode = {
-  type: "declarator with initializer";
-  declarator: DeclaratorNode;
-  initializer: InitializerNode;
-};
-
-export type CompoundStatementBody =
-  | Statement
-  | DeclaratorNode
-  | DeclaratorInitializerNode;
+export type CompoundStatementBody = Statement | DeclaratorNode;
 
 export type CompoundStatement = {
   type: "compound-statement";
@@ -311,11 +301,7 @@ export type FunctionDefinition = {
   declaredVariables: DeclaratorNode[];
 };
 
-export type ExternalDeclarations = (
-  | FunctionDefinition
-  | DeclaratorNode
-  | DeclaratorInitializerNode
-)[];
+export type ExternalDeclarations = (FunctionDefinition | DeclaratorNode)[];
 
 export type DeclaratorMap = Map<DeclaratorId, DeclaratorNode>;
 
