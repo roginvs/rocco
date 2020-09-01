@@ -14,10 +14,10 @@ export function readTranslationUnit(scanner: Scanner) {
 
   const parser = createParser(scanner, locator, symbolTable);
 
-  const body: ExternalDeclarations[] = [];
+  const body: ExternalDeclarations = [];
   while (scanner.current().type !== "end") {
-    const node: ExternalDeclarations = parser.readExternalDeclaration();
-    body.push(node);
+    const nodes: ExternalDeclarations = parser.readExternalDeclaration();
+    nodes.forEach((node) => body.push(node));
   }
 
   const declarations = symbolTable.getTranslationUnittDeclarations();

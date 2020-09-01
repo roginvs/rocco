@@ -321,7 +321,7 @@ export type DeclaratorMap = Map<DeclaratorId, DeclaratorNode>;
 
 export type TranslationUnit = {
   type: "translation-unit";
-  body: ExternalDeclarations[];
+  body: ExternalDeclarations;
   declarations: DeclaratorNode[];
   /**
    *  A function here to support JSON.stringify
