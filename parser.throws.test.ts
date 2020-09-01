@@ -18,14 +18,14 @@ function checkTranslationUnitFile(testname: string, code: string) {
       const err = {
         name: e.name,
         message: e.message,
-        pos: e.pos,
-        line: e.line,
-        length: e.length,
+        pos: e.location.pos,
+        line: e.location.line,
+        length: e.location.length,
       };
       if (
         err.pos === undefined ||
         err.line === undefined ||
-        e.length === undefined
+        err.length === undefined
       ) {
         throw new Error("No location for error");
       }
@@ -37,11 +37,9 @@ function checkTranslationUnitFile(testname: string, code: string) {
 checkTranslationUnitFile(
   `Duplicate identifiers`,
   `
-
 void test(){
   int r;
   int r;
 }
-
 `
 );

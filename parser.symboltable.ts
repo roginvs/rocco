@@ -51,6 +51,7 @@ export class SymbolTable {
           `Duplicate declaration ${declaration.identifier} and not able to find location for previous declaration`
         );
       }
+
       throw new SymbolTableError(
         `Duplicate declaration ${declaration.identifier}`,
         declaratorLocation
