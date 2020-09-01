@@ -4,7 +4,7 @@ gcc -Wall -o casting.bin casting.c
 
 */
 
-long int i;
+int long i;
 int *p;
 
 int func(int x)
@@ -30,7 +30,7 @@ int main()
 
   i = *((char *)&i + 1);
 
-  p = (int *)((long int *)(void *)&i + 1);
+  p = (int *)((int long *)(void *)&i + 1);
 
   // A pointer to function
   int (*pf)(int xxx) = &func;
