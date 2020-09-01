@@ -1,8 +1,8 @@
-// translationunit
+// externaldeclaration
 // int* f(char a, char b) {}
 //
 //    at Object.testSnapshot (/Users/vasilii/demo_compiler/testsnapshot.ts:34:10)
-//    at Object.<anonymous> (/Users/vasilii/demo_compiler/parser.translationunit.test.ts:18:5)
+//    at Object.<anonymous> (/Users/vasilii/demo_compiler/parser.funcs.test.ts:16:5)
 //    at Object.asyncJestTest (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:100:37)
 //    at resolve (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:47:12)
 //    at new Promise (<anonymous>)
@@ -33,7 +33,8 @@
               "arithmeticType": "char",
               "const": false,
               "signedUnsigned": null
-            }
+            },
+            "declaratorId": "0002"
           },
           {
             "type": "declarator",
@@ -45,7 +46,8 @@
               "arithmeticType": "char",
               "const": false,
               "signedUnsigned": null
-            }
+            },
+            "declaratorId": "0003"
           }
         ],
         "returnType": {
@@ -58,7 +60,8 @@
             "signedUnsigned": null
           }
         }
-      }
+      },
+      "declaratorId": "0004"
     },
     "body": [],
     "declaredVariables": [
@@ -72,7 +75,8 @@
           "arithmeticType": "char",
           "const": false,
           "signedUnsigned": null
-        }
+        },
+        "declaratorId": "0002"
       },
       {
         "type": "declarator",
@@ -84,7 +88,8 @@
           "arithmeticType": "char",
           "const": false,
           "signedUnsigned": null
-        }
+        },
+        "declaratorId": "0003"
       }
     ]
   }

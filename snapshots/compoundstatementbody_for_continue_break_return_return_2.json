@@ -1,8 +1,8 @@
-// translationunit
+// compoundstatementbody
 // for (;;) { continue; break; return; return 2;}
 //
 //    at Object.testSnapshot (/Users/vasilii/demo_compiler/testsnapshot.ts:34:10)
-//    at Object.<anonymous> (/Users/vasilii/demo_compiler/parser.translationunit.test.ts:33:5)
+//    at Object.<anonymous> (/Users/vasilii/demo_compiler/parser.funcs.test.ts:31:5)
 //    at Object.asyncJestTest (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:100:37)
 //    at resolve (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:47:12)
 //    at new Promise (<anonymous>)

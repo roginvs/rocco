@@ -13,7 +13,7 @@ function checkExternalDeclaration(str: string) {
     const parser = createParser(scanner, locator, symbolTable);
     symbolTable.enterScope();
     const node = parser.readExternalDeclaration();
-    testSnapshot("translationunit", str, node);
+    testSnapshot("externaldeclaration", str, node);
 
     expect(scanner.current().type).toBe("end");
   });
@@ -28,7 +28,7 @@ function checkCompoundStatementBody(str: string) {
     symbolTable.enterScope();
     symbolTable.enterFunctionScope();
     const node = parser.readCompoundStatementBody();
-    testSnapshot("translationunit", str, node);
+    testSnapshot("compoundstatementbody", str, node);
 
     expect(scanner.current().type).toBe("end");
   });

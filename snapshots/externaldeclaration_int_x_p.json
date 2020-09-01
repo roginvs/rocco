@@ -1,8 +1,8 @@
-// translationunit
-// void f();  do f(); while(2);
+// externaldeclaration
+// int x, *p;
 //
 //    at Object.testSnapshot (/Users/vasilii/demo_compiler/testsnapshot.ts:34:10)
-//    at Object.<anonymous> (/Users/vasilii/demo_compiler/parser.translationunit.test.ts:33:5)
+//    at Object.<anonymous> (/Users/vasilii/demo_compiler/parser.funcs.test.ts:16:5)
 //    at Object.asyncJestTest (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:100:37)
 //    at resolve (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:47:12)
 //    at new Promise (<anonymous>)
@@ -15,35 +15,30 @@
     "type": "declarator",
     "functionSpecifier": null,
     "storageSpecifier": null,
-    "identifier": "f",
+    "identifier": "x",
     "typename": {
-      "type": "function",
-      "const": true,
-      "haveEndingEllipsis": false,
-      "parameters": [],
-      "returnType": {
-        "type": "void",
-        "const": false
-      }
-    }
+      "type": "arithmetic",
+      "arithmeticType": "int",
+      "const": false,
+      "signedUnsigned": null
+    },
+    "declaratorId": "0006"
   },
   {
-    "type": "dowhile",
-    "body": {
-      "type": "expression",
-      "expression": {
-        "type": "function call",
-        "target": {
-          "type": "identifier",
-          "value": "f"
-        },
-        "args": []
+    "type": "declarator",
+    "functionSpecifier": null,
+    "storageSpecifier": null,
+    "identifier": "p",
+    "typename": {
+      "type": "pointer",
+      "const": false,
+      "pointsTo": {
+        "type": "arithmetic",
+        "arithmeticType": "int",
+        "const": false,
+        "signedUnsigned": null
       }
     },
-    "condition": {
-      "type": "const",
-      "subtype": "int",
-      "value": 2
-    }
+    "declaratorId": "0007"
   }
 ]

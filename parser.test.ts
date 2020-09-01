@@ -14,7 +14,7 @@ function checkTranslationUnit(fname: string) {
 
     const node = readTranslationUnit(scanner);
 
-    testSnapshot("checkTranslationUnit", fname, node);
+    testSnapshot("translationunit", fname, node);
 
     expect(scanner.current().type).toBe("end");
   });

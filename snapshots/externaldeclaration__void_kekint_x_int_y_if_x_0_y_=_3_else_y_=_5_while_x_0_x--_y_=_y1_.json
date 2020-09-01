@@ -1,4 +1,4 @@
-// translationunit
+// externaldeclaration
 // 
 //    void kek(int x) { 
 //       int y;
@@ -15,7 +15,7 @@
 //      }
 //
 //    at Object.testSnapshot (/Users/vasilii/demo_compiler/testsnapshot.ts:34:10)
-//    at Object.<anonymous> (/Users/vasilii/demo_compiler/parser.translationunit.test.ts:18:5)
+//    at Object.<anonymous> (/Users/vasilii/demo_compiler/parser.funcs.test.ts:16:5)
 //    at Object.asyncJestTest (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:100:37)
 //    at resolve (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:47:12)
 //    at new Promise (<anonymous>)
@@ -46,14 +46,16 @@
               "arithmeticType": "int",
               "const": false,
               "signedUnsigned": null
-            }
+            },
+            "declaratorId": "0008"
           }
         ],
         "returnType": {
           "type": "void",
           "const": false
         }
-      }
+      },
+      "declaratorId": "0009"
     },
     "body": [
       {
@@ -66,7 +68,8 @@
           "arithmeticType": "int",
           "const": false,
           "signedUnsigned": null
-        }
+        },
+        "declaratorId": "0010"
       },
       {
         "type": "if",
@@ -75,7 +78,8 @@
           "operator": ">",
           "left": {
             "type": "identifier",
-            "value": "x"
+            "value": "x",
+            "declaratorNodeId": "0008"
           },
           "right": {
             "type": "const",
@@ -93,7 +97,8 @@
                 "operator": "=",
                 "lvalue": {
                   "type": "identifier",
-                  "value": "y"
+                  "value": "y",
+                  "declaratorNodeId": "0010"
                 },
                 "rvalue": {
                   "type": "const",
@@ -114,7 +119,8 @@
                 "operator": "=",
                 "lvalue": {
                   "type": "identifier",
-                  "value": "y"
+                  "value": "y",
+                  "declaratorNodeId": "0010"
                 },
                 "rvalue": {
                   "type": "const",
@@ -136,7 +142,8 @@
           "operator": ">",
           "left": {
             "type": "identifier",
-            "value": "x"
+            "value": "x",
+            "declaratorNodeId": "0008"
           },
           "right": {
             "type": "const",
@@ -153,7 +160,8 @@
                 "type": "postfix --",
                 "target": {
                   "type": "identifier",
-                  "value": "x"
+                  "value": "x",
+                  "declaratorNodeId": "0008"
                 }
               }
             },
@@ -164,14 +172,16 @@
                 "operator": "=",
                 "lvalue": {
                   "type": "identifier",
-                  "value": "y"
+                  "value": "y",
+                  "declaratorNodeId": "0010"
                 },
                 "rvalue": {
                   "type": "binary operator",
                   "operator": "+",
                   "left": {
                     "type": "identifier",
-                    "value": "y"
+                    "value": "y",
+                    "declaratorNodeId": "0010"
                   },
                   "right": {
                     "type": "const",
@@ -196,7 +206,8 @@
           "arithmeticType": "int",
           "const": false,
           "signedUnsigned": null
-        }
+        },
+        "declaratorId": "0008"
       },
       {
         "type": "declarator",
@@ -208,7 +219,8 @@
           "arithmeticType": "int",
           "const": false,
           "signedUnsigned": null
-        }
+        },
+        "declaratorId": "0010"
       }
     ]
   }
