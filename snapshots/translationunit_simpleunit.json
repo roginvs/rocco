@@ -1,7 +1,9 @@
 // translationunit
 // simpleunit
 //
-//    at Object.testSnapshot (/Users/vasilii/demo_compiler/testsnapshot.ts:34:10)
+// 
+//
+//    at Object.testSnapshot (/Users/vasilii/demo_compiler/testsnapshot.ts:44:10)
 //    at Object.<anonymous> (/Users/vasilii/demo_compiler/parser.test.ts:17:5)
 //    at Object.asyncJestTest (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:100:37)
 //    at resolve (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:47:12)
