@@ -16,6 +16,10 @@ void func1()
 int func2(int idx)
 {
   // Really need initializer
+  /*
+  static int staticcounter = 5 + 3;
+  staticcounter += 1;
+  */
   static int staticcounter;
   staticcounter = 3;
 
