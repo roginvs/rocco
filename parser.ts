@@ -705,6 +705,7 @@ export function createParser(
     return resultNodes;
   }
 
+  /** Adds declarations into symbolable */
   function readExternalDeclaration() {
     const tokenForLocator = scanner.current();
 
@@ -840,6 +841,8 @@ export function createParser(
       body: body,
       declaredVariables,
     };
+
+    symbolTable.addEntry(functionDeclaration);
 
     locator.set(func, {
       ...tokenForLocator,

@@ -4,8 +4,10 @@ import {
   DeclaratorNode,
   NodeLocator,
 } from "./parser.definitions";
+import pad from "pad";
 
 import { SymbolTableError } from "./error";
+import { DeclaratorId } from "./declaratorId";
 
 export type IdentifierToTypename = Map<IdentifierNode, DeclaratorNode>;
 
@@ -45,7 +47,7 @@ export class SymbolTable {
       const declaratorLocation = this.locator.get(declaration);
       if (!declaratorLocation) {
         throw new Error(
-          `Duplicate declaration ${declaration.identifier} and not able to find location`
+          `Duplicate declaration ${declaration.identifier} and not able to find location for previous declaration`
         );
       }
       throw new SymbolTableError(
@@ -65,8 +67,11 @@ export class SymbolTable {
         this.autoInFunctionDeclarations.push(declaration);
       }
     }
+
+    this.declaratorIdToDeclaratorMap.set(declaration.declaratorId, declaration);
   }
 
+  /** Call me when parsing is complete */
   getExternAndStaticDeclarations() {
     return this.externAndStaticDeclarations;
   }
@@ -93,9 +98,9 @@ export class SymbolTable {
     return declaredInFunction;
   }
 
-  /**
+  /*
    * ???? Remove this
-   */
+   
   getCurrentScopeDeclarations() {
     const currentScope = this.declarations[this.declarations.length - 1];
     if (!currentScope) {
@@ -103,6 +108,7 @@ export class SymbolTable {
     }
     return currentScope;
   }
+  */
 
   lookupInScopes(identifier: string): DeclaratorNode | undefined {
     for (const scope of this.declarations.slice().reverse()) {
@@ -126,5 +132,21 @@ export class SymbolTable {
       }
     }
     return false;
+  }
+
+  private currentGlobalId = 1;
+  createDeclaratorId() {
+    let id = pad(4, `${this.currentGlobalId.toString(16).toUpperCase()}`, "0");
+    this.currentGlobalId++;
+    return id as DeclaratorId;
+  }
+
+  private readonly declaratorIdToDeclaratorMap = new Map<
+    DeclaratorId,
+    DeclaratorNode
+  >();
+  /** Call me when parsing is complete */
+  public getDeclaratorsMap() {
+    return this.declaratorIdToDeclaratorMap;
   }
 }
