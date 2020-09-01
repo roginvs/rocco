@@ -180,13 +180,30 @@
             "const": false,
             "signedUnsigned": null
           },
-          "declaratorId": "0006"
+          "declaratorId": "0006",
+          "initializer": {
+            "type": "assigmnent-expression",
+            "expression": {
+              "type": "binary operator",
+              "operator": "+",
+              "left": {
+                "type": "const",
+                "subtype": "int",
+                "value": 5
+              },
+              "right": {
+                "type": "const",
+                "subtype": "int",
+                "value": 3
+              }
+            }
+          }
         },
         {
           "type": "expression",
           "expression": {
             "type": "assignment",
-            "operator": "=",
+            "operator": "+=",
             "lvalue": {
               "type": "identifier",
               "value": "staticcounter",
@@ -195,7 +212,7 @@
             "rvalue": {
               "type": "const",
               "subtype": "int",
-              "value": 3
+              "value": 1
             }
           }
         },
@@ -423,7 +440,24 @@
         "const": false,
         "signedUnsigned": null
       },
-      "declaratorId": "0006"
+      "declaratorId": "0006",
+      "initializer": {
+        "type": "assigmnent-expression",
+        "expression": {
+          "type": "binary operator",
+          "operator": "+",
+          "left": {
+            "type": "const",
+            "subtype": "int",
+            "value": 5
+          },
+          "right": {
+            "type": "const",
+            "subtype": "int",
+            "value": 3
+          }
+        }
+      }
     },
     {
       "type": "declarator",
