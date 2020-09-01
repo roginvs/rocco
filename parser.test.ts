@@ -4,7 +4,7 @@ import { readTranslationUnit } from "./parser";
 import { testSnapshot } from "./testsnapshot";
 import * as fs from "fs";
 
-function checkTranslationUnit(fname: string) {
+function checkTranslationUnitFile(fname: string) {
   it(`Reads '${fname}'`, () => {
     const fdata = fs
       .readFileSync(__dirname + "/test/" + fname + ".c")
@@ -20,4 +20,4 @@ function checkTranslationUnit(fname: string) {
   });
 }
 
-checkTranslationUnit("simpleunit");
+checkTranslationUnitFile("simpleunit");
