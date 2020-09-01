@@ -15,7 +15,7 @@ import { DeclaratorId } from "./declaratorId";
 export type IdentifierNode = {
   type: "identifier";
   value: string;
-  declaratorNode: () => DeclaratorNode;
+  declaratorNodeId: DeclaratorId;
 };
 
 export type PrimaryExpressionNode =

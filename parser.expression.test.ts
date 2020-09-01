@@ -11,7 +11,7 @@ function checkExpressionSkip(str: string, ast?: ExpressionNode) {
 }
 
 // TODO: Remove DeepPartial
-function checkExpression(str: string, ast?: DeepPartial<ExpressionNode>) {
+function checkExpression(str: string, ast?: ExpressionNode) {
   it(`Reads '${str}'`, () => {
     const scanner = new Scanner(createScannerFunc(str));
 
@@ -108,6 +108,7 @@ describe("Parser test", () => {
   checkExpression("arr", {
     type: "identifier",
     value: "arr",
+    declaratorNodeId: "arr" as DeclaratorId,
   });
 
   checkExpression("arr[2]", {
@@ -115,6 +116,7 @@ describe("Parser test", () => {
     target: {
       type: "identifier",
       value: "arr",
+      declaratorNodeId: "arr" as DeclaratorId,
     },
     index: { type: "const", subtype: "int", value: 2 },
   });
@@ -126,6 +128,7 @@ describe("Parser test", () => {
       target: {
         type: "identifier",
         value: "arr",
+        declaratorNodeId: "arr" as DeclaratorId,
       },
       index: { type: "const", subtype: "int", value: 2 },
     },
@@ -137,6 +140,7 @@ describe("Parser test", () => {
     target: {
       type: "identifier",
       value: "f",
+      declaratorNodeId: "f" as DeclaratorId,
     },
     args: [],
   });
@@ -149,6 +153,7 @@ describe("Parser test", () => {
       target: {
         type: "identifier",
         value: "f",
+        declaratorNodeId: "f" as DeclaratorId,
       },
       args: [],
     },
@@ -162,6 +167,7 @@ describe("Parser test", () => {
       target: {
         type: "identifier",
         value: "f",
+        declaratorNodeId: "f" as DeclaratorId,
       },
       args: [],
     },
@@ -174,6 +180,7 @@ describe("Parser test", () => {
       target: {
         type: "identifier",
         value: "f",
+        declaratorNodeId: "f" as DeclaratorId,
       },
       args: [],
     },
@@ -184,12 +191,14 @@ describe("Parser test", () => {
         target: {
           type: "identifier",
           value: "arr",
+          declaratorNodeId: "arr" as DeclaratorId,
         },
         index: {
           type: "postfix ++",
           target: {
             type: "identifier",
             value: "a",
+            declaratorNodeId: "a" as DeclaratorId,
           },
         },
       },
@@ -216,6 +225,7 @@ describe("Parser test", () => {
       target: {
         type: "identifier",
         value: "kek",
+        declaratorNodeId: "kek" as DeclaratorId,
       },
     },
   });
@@ -225,6 +235,7 @@ describe("Parser test", () => {
     expression: {
       type: "identifier",
       value: "kek",
+      declaratorNodeId: "kek" as DeclaratorId,
     },
   });
 
@@ -233,6 +244,7 @@ describe("Parser test", () => {
     expression: {
       type: "identifier",
       value: "kek",
+      declaratorNodeId: "kek" as DeclaratorId,
     },
   });
 
@@ -268,6 +280,7 @@ describe("Parser test", () => {
     target: {
       type: "identifier",
       value: "kek",
+      declaratorNodeId: "kek" as DeclaratorId,
     },
   });
 
@@ -291,6 +304,7 @@ describe("Parser test", () => {
         target: {
           type: "identifier",
           value: "kek",
+          declaratorNodeId: "kek" as DeclaratorId,
         },
       },
     });
@@ -367,6 +381,7 @@ describe("Parser test", () => {
     lvalue: {
       type: "identifier",
       value: "a",
+      declaratorNodeId: "a" as DeclaratorId,
     },
     rvalue: {
       type: "assignment",
@@ -374,6 +389,7 @@ describe("Parser test", () => {
       lvalue: {
         type: "identifier",
         value: "b",
+        declaratorNodeId: "b" as DeclaratorId,
       },
       rvalue: { type: "const", subtype: "int", value: 4 },
     },
@@ -387,6 +403,7 @@ describe("Parser test", () => {
       target: {
         type: "identifier",
         value: "a",
+        declaratorNodeId: "a" as DeclaratorId,
       },
     },
     rvalue: { type: "const", subtype: "int", value: 2 },
@@ -398,6 +415,7 @@ describe("Parser test", () => {
     lvalue: {
       type: "identifier",
       value: "a",
+      declaratorNodeId: "a" as DeclaratorId,
     },
     rvalue: {
       type: "assignment",
@@ -405,6 +423,7 @@ describe("Parser test", () => {
       lvalue: {
         type: "identifier",
         value: "b",
+        declaratorNodeId: "b" as DeclaratorId,
       },
       rvalue: {
         type: "binary operator",
@@ -423,6 +442,7 @@ describe("Parser test", () => {
       lvalue: {
         type: "identifier",
         value: "a",
+        declaratorNodeId: "a" as DeclaratorId,
       },
       rvalue: { type: "const", subtype: "int", value: 2 },
     },
@@ -434,6 +454,7 @@ describe("Parser test", () => {
         lvalue: {
           type: "identifier",
           value: "b",
+          declaratorNodeId: "b" as DeclaratorId,
         },
         rvalue: { type: "const", subtype: "int", value: 3 },
       },
@@ -443,6 +464,7 @@ describe("Parser test", () => {
         lvalue: {
           type: "identifier",
           value: "c",
+          declaratorNodeId: "c" as DeclaratorId,
         },
         rvalue: { type: "const", subtype: "int", value: 4 },
       },
@@ -454,6 +476,7 @@ describe("Parser test", () => {
     target: {
       type: "identifier",
       value: "f",
+      declaratorNodeId: "f" as DeclaratorId,
     },
     args: [{ type: "const", subtype: "int", value: 2 }],
   });
@@ -462,6 +485,7 @@ describe("Parser test", () => {
     target: {
       type: "identifier",
       value: "f",
+      declaratorNodeId: "f" as DeclaratorId,
     },
     args: [],
   });
@@ -470,6 +494,7 @@ describe("Parser test", () => {
     target: {
       type: "identifier",
       value: "f",
+      declaratorNodeId: "f" as DeclaratorId,
     },
     args: [
       {
@@ -478,6 +503,7 @@ describe("Parser test", () => {
         lvalue: {
           type: "identifier",
           value: "a",
+          declaratorNodeId: "a" as DeclaratorId,
         },
         rvalue: { type: "const", subtype: "int", value: 3 },
       },
@@ -487,6 +513,7 @@ describe("Parser test", () => {
         lvalue: {
           type: "identifier",
           value: "b",
+          declaratorNodeId: "b" as DeclaratorId,
         },
         rvalue: { type: "const", subtype: "int", value: 5 },
       },
@@ -495,6 +522,7 @@ describe("Parser test", () => {
         target: {
           type: "identifier",
           value: "c",
+          declaratorNodeId: "c" as DeclaratorId,
         },
       },
     ],

@@ -81,7 +81,7 @@ export function createExpressionParser(
       const node: IdentifierNode = {
         type: "identifier",
         value: token.text,
-        declaratorNode: () => identifierDeclaration,
+        declaratorNodeId: identifierDeclaration.declaratorId,
       };
 
       locator.set(node, token);
