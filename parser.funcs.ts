@@ -216,10 +216,22 @@ export function createParser(
             throwError("Not allowed to add specifiers to this type");
           }
 
-          throwError("TODO: Add 'long long' and others, modify specifier");
+          // Same as below, treating "long int" as "int"
+          if (
+            specifier.arithmeticType === "int" &&
+            maybeArithmeticSpecifier === "long"
+          ) {
+            specifier.arithmeticType = "int";
+          } else {
+            throwError(
+              `TODO: Add 'long long' and others, modify specifier ` +
+                `s=${specifier.arithmeticType} m=${maybeArithmeticSpecifier} `
+            );
+          }
         } else {
           specifier = {
             type: "arithmetic",
+            // Treating "long" as "int"
             arithmeticType:
               maybeArithmeticSpecifier === "long"
                 ? "int"
