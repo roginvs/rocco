@@ -2,7 +2,7 @@ import { Scanner } from "./scanner";
 import { createScannerFunc } from "./scanner.func";
 import { ExpressionNode, NodeLocator } from "./parser.definitions";
 import { SymbolTable } from "./parser.symboltable";
-import { createParser } from "./parser";
+import { createParser } from "./parser.funcs";
 import { DeclaratorId } from "./declaratorId";
 
 function checkExpressionSkip(str: string, ast?: ExpressionNode) {

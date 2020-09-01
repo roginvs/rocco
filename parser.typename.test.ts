@@ -1,4 +1,4 @@
-import { createParser } from "./parser";
+import { createParser } from "./parser.funcs";
 import { Scanner } from "./scanner";
 import { createScannerFunc } from "./scanner.func";
 import { Typename, NodeLocator } from "./parser.definitions";

@@ -296,5 +296,14 @@ export type TranslationUnit = {
   type: "translation-unit";
   body: ExternalDeclarations[];
   declarations: DeclaratorNode[];
+  /**
+   *  A function here to support JSON.stringify
+   *  If deserialized, then map should be recalculated
+   */
   declaratorMap: () => DeclaratorMap;
+
+  /** Same reasons as declaratorMap.
+   *  Maybe every node should have own "location" property
+   */
+  locationMap: () => NodeLocator;
 };
