@@ -21,3 +21,5 @@ function checkTranslationUnitFile(fname: string) {
 }
 
 checkTranslationUnitFile("simpleunit");
+
+checkTranslationUnitFile("casting");
