@@ -8,3 +8,11 @@ export function createDeclaratorId() {
   currentGlobalId++;
   return id as DeclaratorId;
 }
+/*
+
+ TODO: Remove this file
+ Move createDeclaratorId into SymbolTable class
+ Add into Symboltable class a map id->DeclaratorNode 
+
+
+ */
