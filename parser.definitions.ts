@@ -208,6 +208,10 @@ type DeclaratorNodeGeneric<T extends Typename> = {
   memoryOffset?: number;
 };
 
+/**
+ * Proper name for this should be "parameter-declaration"
+ * Because it consists of only one declaration and have no initializer
+ */
 export type DeclaratorNode = DeclaratorNodeGeneric<Typename>;
 export type DeclaratorNodeFunction = DeclaratorNodeGeneric<FunctionTypename>;
 
@@ -279,6 +283,10 @@ export type InitializerNode =
       type: "initializer-list";
       // TODO
     };
+
+/**
+ * This is very close to "declaration", but it have only one declaration
+ */
 export type DeclaratorInitializerNode = {
   type: "declarator with initializer";
   declarator: DeclaratorNode;

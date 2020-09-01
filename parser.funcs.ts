@@ -29,6 +29,7 @@ import {
   BreakStatement,
   ReturnStatement,
   ExternalDeclarations,
+  DeclaratorInitializerNode,
 } from "./parser.definitions";
 import { ParserError } from "./error";
 import { SymbolTable } from "./parser.symboltable";
@@ -694,7 +695,7 @@ export function createParser(
   function readDeclaration() {
     const nodes = readExternalDeclaration();
 
-    const resultNodes: DeclaratorNode[] = [];
+    const resultNodes: (DeclaratorNode | DeclaratorInitializerNode)[] = [];
 
     for (const node of nodes) {
       if (node.type === "function-declaration") {
@@ -738,11 +739,22 @@ export function createParser(
         ...tokenForLocator,
         length: scanner.current().pos - tokenForLocator.pos,
       });
-      const declarationNodes = [firstDeclaration];
+      const declarationNodes: (DeclaratorNode | DeclaratorInitializerNode)[] = [
+        firstDeclaration,
+      ];
 
       while (scanner.current().type !== ";") {
         if (scanner.current().type === "=") {
           // An initializer
+          const lastDeclaration = declarationNodes.pop();
+          if (!lastDeclaration) {
+            throwError("Internal error: declaration list is empty");
+          }
+          if (lastDeclaration.type !== "declarator") {
+            throwError("Internal error: last item should be declaration");
+          }
+
+          // asd
           throwError("Initializers are not supported yet");
         } else if ((scanner.current().type = ",")) {
           scanner.readNext();
@@ -760,20 +772,18 @@ export function createParser(
           });
           declarationNodes.push(declarationNode);
 
-          if (scanner.current().type === "=") {
-            throwError("Initializers are not supported yet");
-          }
+          // Initializers will be read in next iteration of this cycle
         }
       }
       scanner.readNext();
 
       declarationNodes.forEach((node) => {
-        node.functionSpecifier = functionSpecifier;
-        node.storageSpecifier = storageClassSpecifier;
-      });
+        const declarationNode =
+          node.type === "declarator" ? node : node.declarator;
+        declarationNode.functionSpecifier = functionSpecifier;
+        declarationNode.storageSpecifier = storageClassSpecifier;
 
-      declarationNodes.forEach((node) => {
-        symbolTable.addEntry(node);
+        symbolTable.addEntry(declarationNode);
       });
 
       return declarationNodes;
