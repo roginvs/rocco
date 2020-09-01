@@ -5,7 +5,6 @@ gcc -Wall -o simpleunit.bin simpleunit.c
 */
 
 int i;
-int j = 2, k = 4;
 
 char arr[30];
 
@@ -28,6 +27,14 @@ int func2(int idx)
   {
     return arr[idx] + 4;
   }
+}
+
+int j1 = 2, j2 = 4;
+int j3, j4 = 3;
+
+void func3()
+{
+  int j5 = 2, j6 = j5 + 3;
 }
 
 int main()

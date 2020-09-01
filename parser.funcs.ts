@@ -739,7 +739,17 @@ export function createParser(
         ...tokenForLocator,
         length: scanner.current().pos - tokenForLocator.pos,
       });
-      const declarationNodes: DeclaratorNode[] = [firstDeclaration];
+
+      let lastDeclaration: DeclaratorNode = firstDeclaration;
+      const declarationNodes: DeclaratorNode[] = [];
+      const pushDeclaration = () => {
+        lastDeclaration.functionSpecifier = functionSpecifier;
+        lastDeclaration.storageSpecifier = storageClassSpecifier;
+
+        declarationNodes.push(lastDeclaration);
+
+        symbolTable.addEntry(lastDeclaration);
+      };
 
       while (scanner.current().type !== ";") {
         if (scanner.current().type === "=") {
@@ -747,7 +757,6 @@ export function createParser(
           // An initializer
           const initializerTokenForLocation = scanner.current();
 
-          const lastDeclaration = declarationNodes.pop();
           if (!lastDeclaration) {
             throwError("Internal error: declaration list is empty");
           }
@@ -771,9 +780,9 @@ export function createParser(
           });
 
           lastDeclaration.initializer = initializer;
-
-          declarationNodes.push(lastDeclaration);
         } else if ((scanner.current().type = ",")) {
+          pushDeclaration();
+
           scanner.readNext();
           const declarator = readAbstractDeclaratorOrDeclaratorCoreless();
 
@@ -787,21 +796,14 @@ export function createParser(
             ...tokenForLocator,
             length: scanner.current().pos - tokenForLocator.pos,
           });
-          declarationNodes.push(declarationNode);
+          lastDeclaration = declarationNode;
 
           // Initializers will be read in next iteration of this cycle
         }
       }
+      pushDeclaration();
+
       scanner.readNext();
-
-      declarationNodes.forEach((declarationNode) => {
-        declarationNode.functionSpecifier = functionSpecifier;
-        declarationNode.storageSpecifier = storageClassSpecifier;
-      });
-
-      declarationNodes.forEach((declarationNode) => {
-        symbolTable.addEntry(declarationNode);
-      });
 
       return declarationNodes;
     }
