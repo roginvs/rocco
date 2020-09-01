@@ -30,6 +30,7 @@ import {
   ReturnStatement,
   ExternalDeclarations,
   DeclaratorInitializerNode,
+  InitializerNode,
 } from "./parser.definitions";
 import { ParserError } from "./error";
 import { SymbolTable } from "./parser.symboltable";
@@ -745,7 +746,10 @@ export function createParser(
 
       while (scanner.current().type !== ";") {
         if (scanner.current().type === "=") {
+          scanner.readNext();
           // An initializer
+          const initializerTokenForLocation = scanner.current();
+
           const lastDeclaration = declarationNodes.pop();
           if (!lastDeclaration) {
             throwError("Internal error: declaration list is empty");
@@ -754,8 +758,33 @@ export function createParser(
             throwError("Internal error: last item should be declaration");
           }
 
-          // asd
-          throwError("Initializers are not supported yet");
+          if (scanner.current().type === "{") {
+            throwError("initializer-list is not supported yet");
+          }
+
+          const expression = expressionReader.readAssignmentExpression();
+
+          const initializer: InitializerNode = {
+            type: "assigmnent-expression",
+            expression: expression,
+          };
+          locator.set(initializer, {
+            ...initializerTokenForLocation,
+            length: scanner.current().pos - initializerTokenForLocation.pos,
+          });
+
+          const declarationWithInitializer: DeclaratorInitializerNode = {
+            type: "declarator with initializer",
+            declarator: lastDeclaration,
+            initializer: initializer,
+          };
+
+          locator.set(declarationWithInitializer, {
+            ...tokenForLocator,
+            length: scanner.current().pos - tokenForLocator.pos,
+          });
+
+          declarationNodes.push(declarationWithInitializer);
         } else if ((scanner.current().type = ",")) {
           scanner.readNext();
           const declarator = readAbstractDeclaratorOrDeclaratorCoreless();

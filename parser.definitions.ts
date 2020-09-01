@@ -221,7 +221,8 @@ export type NodeLocator = Map<
   | DeclaratorNode
   | FunctionDefinition
   | CompoundStatement
-  | CompoundStatementBody,
+  | CompoundStatementBody
+  | InitializerNode,
   TokenLocation
 >;
 
@@ -277,7 +278,7 @@ export type Statement =
 export type InitializerNode =
   | {
       type: "assigmnent-expression";
-      expression: AssignmentExpression;
+      expression: ExpressionNode;
     }
   | {
       type: "initializer-list";
