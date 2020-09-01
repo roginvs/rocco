@@ -270,7 +270,25 @@ export type Statement =
   | ExpressionStatement
   | EmpryExpressionStatement;
 
-export type CompoundStatementBody = Statement | DeclaratorNode;
+export type InitializerNode =
+  | {
+      type: "assigmnent-expression";
+      expression: AssignmentExpression;
+    }
+  | {
+      type: "initializer-list";
+      // TODO
+    };
+export type DeclaratorInitializerNode = {
+  type: "declarator with initializer";
+  declarator: DeclaratorNode;
+  initializer: InitializerNode;
+};
+
+export type CompoundStatementBody =
+  | Statement
+  | DeclaratorNode
+  | DeclaratorInitializerNode;
 
 export type CompoundStatement = {
   type: "compound-statement";
@@ -287,7 +305,7 @@ export type FunctionDefinition = {
 export type ExternalDeclarations = (
   | FunctionDefinition
   | DeclaratorNode
-  | /** This is for initializers */ AssignmentExpression
+  | DeclaratorInitializerNode
 )[];
 
 export type DeclaratorMap = Map<DeclaratorId, DeclaratorNode>;
