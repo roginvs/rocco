@@ -3,7 +3,7 @@ import { Scanner } from "./scanner";
 import { readTranslationUnit } from "./parser";
 import { testSnapshot } from "./testsnapshot";
 
-function checkTranslationUnitFile(testname: string, code: string) {
+function checkTranslationUnitThrows(testname: string, code: string) {
   it(`Reads '${testname}'`, () => {
     const scanner = new Scanner(createScannerFunc(code));
 
@@ -34,12 +34,29 @@ function checkTranslationUnitFile(testname: string, code: string) {
   });
 }
 
-checkTranslationUnitFile(
+checkTranslationUnitThrows(
   `Duplicate identifiers`,
   `
 void test(){
   int r;
   int r;
+}
+`
+);
+
+checkTranslationUnitThrows(
+  "expect function",
+  `
+int f[] {
+
+}
+`
+);
+checkTranslationUnitThrows(
+  "no array from function",
+  `
+int f()[] {
+
 }
 `
 );
