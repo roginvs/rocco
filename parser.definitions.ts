@@ -298,7 +298,7 @@ export type FunctionDefinition = {
   type: "function-declaration";
   declaration: DeclaratorNodeFunction;
   body: CompoundStatementBody[];
-  declaredVariables: DeclaratorNode[];
+  declaredVariables: DeclaratorId[];
 };
 
 export type ExternalDeclarations = (FunctionDefinition | DeclaratorNode)[];
@@ -308,7 +308,7 @@ export type DeclaratorMap = Map<DeclaratorId, DeclaratorNode>;
 export type TranslationUnit = {
   type: "translation-unit";
   body: ExternalDeclarations;
-  declarations: DeclaratorNode[];
+  declarations: DeclaratorId[];
   /**
    *  A function here to support JSON.stringify
    *  If deserialized, then map should be recalculated

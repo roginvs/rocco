@@ -18,9 +18,9 @@ export class SymbolTable {
   }
 
   /** List of declarations for whole compilaion unit */
-  private readonly translationUnitDeclarations: DeclaratorNode[] = [];
+  private readonly translationUnitDeclarations: DeclaratorId[] = [];
   /** List of declarations inside current function scope */
-  private autoInFunctionDeclarations: DeclaratorNode[] | null = null;
+  private autoInFunctionDeclarations: DeclaratorId[] | null = null;
 
   private readonly declarations: DeclaratorNode[][] = [];
 
@@ -63,9 +63,9 @@ export class SymbolTable {
       declaration.storageSpecifier === "static" ||
       !this.autoInFunctionDeclarations
     ) {
-      this.translationUnitDeclarations.push(declaration);
+      this.translationUnitDeclarations.push(declaration.declaratorId);
     } else {
-      this.autoInFunctionDeclarations.push(declaration);
+      this.autoInFunctionDeclarations.push(declaration.declaratorId);
     }
 
     this.declaratorIdToDeclaratorMap.set(declaration.declaratorId, declaration);
