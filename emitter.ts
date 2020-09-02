@@ -124,10 +124,26 @@ export function emit(unit: TranslationUnit) {
     }
   };
 
+  const isArrayStaticSize = (node: Typename) => {
+    if (node.type !== "array") {
+      throw new Error("Internal error: isArrayStaticSize called for non-array");
+    }
+    const size = typeSize(node);
+    if (typeof size === "number") {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   interface ExpressionInfo {
     type: Typename;
-    rvalue: WAInstuction[];
-    lvalue: WAInstuction[] | null;
+
+    // For int and floats - just value on stack
+    value: (scope: "file" | "function") => WAInstuction[] | null;
+
+    address: (scope: "file" | "function") => WAInstuction[] | null;
+
     staticValue: number | null;
   }
   const expressionInfo = (expression: ExpressionNode): ExpressionInfo => {
@@ -144,12 +160,113 @@ export function emit(unit: TranslationUnit) {
             const: true,
             signedUnsigned: "signed",
           },
-          rvalue: [`i32.const ${expression.value}`],
-          lvalue: null,
+          value: () => [`i32.const ${expression.value}`],
+          address: () => null,
           staticValue: expression.value,
         };
       } else if (expression.subtype === "float") {
         error(expression, "Floats are not supported yet");
+      }
+    } else if (expression.type === "identifier") {
+      const declaration = getDeclaration(expression);
+      if (declaration.typename.type === "arithmetic") {
+        if (
+          declaration.typename.arithmeticType === "char" ||
+          declaration.typename.arithmeticType === "int"
+        ) {
+          let staticValue: number | null = null;
+          if (
+            declaration.typename.const /** todo: check volatile */ &&
+            declaration.initializer &&
+            declaration.initializer.type === "assigmnent-expression"
+          ) {
+            const initializerInfo = expressionInfo(
+              declaration.initializer.expression
+            );
+            if (initializerInfo.staticValue) {
+              staticValue = initializerInfo.staticValue;
+            }
+          }
+          return {
+            type: declaration.typename,
+            staticValue: staticValue,
+            value: (scope) =>
+              scope === "file"
+                ? [`i32.const ${declaration.memoryOffset}`, `i32.load 2 0`]
+                : [`local.get $ebp`, `i32.load 2 ${declaration.memoryOffset}`],
+            address: (scope) =>
+              scope === "file"
+                ? [`i32.const ${declaration.memoryOffset}`]
+                : [
+                    `local.get $ebp`,
+                    `i32.const ${declaration.memoryOffset}`,
+                    `i32.add`,
+                  ],
+          };
+        } else if (
+          declaration.typename.arithmeticType === "double" ||
+          declaration.typename.arithmeticType === "float"
+        ) {
+          error(expression, "Floats are not supported yet");
+        } else {
+          error(expression, "TODO support other types");
+        }
+      } else if (declaration.typename.type === "function-knr") {
+        error(
+          declaration,
+          "Internal error: K&R notations should be replated to this point"
+        );
+      } else if (declaration.typename.type === "function") {
+        return {
+          type: declaration.typename,
+          staticValue: null,
+          value: () => null,
+          address: () => [`i32.const ${declaration.memoryOffset}`],
+        };
+      } else if (declaration.typename.type === "pointer") {
+        return {
+          type: declaration.typename,
+          staticValue: null,
+          value: (scope) =>
+            scope === "file"
+              ? [`i32.const ${declaration.memoryOffset}`, `i32.load 2 0`]
+              : [`local.get $ebp`, `i32.load 2 ${declaration.memoryOffset}`],
+          address: (scope) =>
+            scope === "file"
+              ? [`i32.const ${declaration.memoryOffset}`]
+              : [
+                  `local.get $ebp`,
+                  `i32.const ${declaration.memoryOffset}`,
+                  `i32.add`,
+                ],
+        };
+      } else if (declaration.typename.type === "array") {
+        return {
+          type: declaration.typename,
+          staticValue: null,
+          value: () => null,
+          address: (scope) => {
+            if (!isArrayStaticSize(declaration.typename)) {
+              error(declaration, "TODO: Dynamic arrays are not supported yet");
+            }
+            return scope === "file"
+              ? [`i32.const ${declaration.memoryOffset}`]
+              : [
+                  `local.get $ebp`,
+                  `i32.const ${declaration.memoryOffset}`,
+                  `i32.add`,
+                ];
+          },
+        };
+      } else if (
+        declaration.typename.type === "enum" ||
+        declaration.typename.type === "struct"
+      ) {
+        error(declaration, "TODO, not implemented yett");
+      } else if (declaration.typename.type === "void") {
+        error(declaration, "Used void declaration");
+      } else {
+        assertNever(declaration.typename);
       }
     }
 
