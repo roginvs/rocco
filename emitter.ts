@@ -136,13 +136,14 @@ export function emit(unit: TranslationUnit) {
     }
   };
 
+  type InfoScope = "file" | "function";
   interface ExpressionInfo {
     type: Typename;
 
     // For int and floats - just value on stack
-    value: (scope: "file" | "function") => WAInstuction[] | null;
+    value: (scope: InfoScope) => WAInstuction[] | null;
 
-    address: (scope: "file" | "function") => WAInstuction[] | null;
+    address: (scope: InfoScope) => WAInstuction[] | null;
 
     staticValue: number | null;
   }
@@ -174,6 +175,9 @@ export function emit(unit: TranslationUnit) {
           declaration.typename.arithmeticType === "char" ||
           declaration.typename.arithmeticType === "int"
         ) {
+          const isChar = declaration.typename.arithmeticType === "char";
+          const isSigned = declaration.typename.signedUnsigned === "signed";
+
           let staticValue: number | null = null;
           if (
             declaration.typename.const /** todo: check volatile */ &&
@@ -192,7 +196,15 @@ export function emit(unit: TranslationUnit) {
             staticValue: staticValue,
             value: (scope) =>
               scope === "file"
-                ? [`i32.const ${declaration.memoryOffset}`, `i32.load 2 0`]
+                ? [
+                    `i32.const ${declaration.memoryOffset}`,
+
+                    isChar
+                      ? isSigned
+                        ? `i32.load8_s`
+                        : `i32.load8_u`
+                      : `i32.load 2 0`,
+                  ]
                 : [`local.get $ebp`, `i32.load 2 ${declaration.memoryOffset}`],
             address: (scope) =>
               scope === "file"
@@ -268,6 +280,50 @@ export function emit(unit: TranslationUnit) {
       } else {
         assertNever(declaration.typename);
       }
+    } else if (expression.type === "subscript operator") {
+      const target = expression.target;
+      const index = expression.index;
+      const targetInfo = expressionInfo(target);
+      const indexInfo = expressionInfo(index);
+
+      if (indexInfo.type.type !== "arithmetic") {
+        error(index, "Must be arithmetic type");
+      }
+      if (
+        indexInfo.type.arithmeticType !== "int" &&
+        indexInfo.type.arithmeticType !== "char"
+      ) {
+        error(index, "Only int/char are supported now");
+      }
+      if (targetInfo.type.type !== "array") {
+        error(target, "Must be array type");
+      }
+
+      const getAddress = (scope: InfoScope) => {
+        const arrayAddress = targetInfo.address(scope);
+        if (!arrayAddress) {
+          return null;
+        }
+        const indexValue = indexInfo.value(scope);
+        if (indexValue) {
+          return [...arrayAddress, ...indexValue, `i32.add`];
+        }
+        const indexAddress = indexInfo.address(scope);
+        if (indexAddress) {
+          return [...arrayAddress, ...indexAddress, `i32.load`, `i32.add`];
+        }
+        return null;
+      };
+      return {
+        type: targetInfo.type.elementsTypename,
+        staticValue: null,
+        value: (scope) => [
+          // Now we have address of cell
+          // But value is only possible to load if type of elements is int/char
+          // TODO A function "loadIntBYaddress", same as above
+        ],
+        address: (scope) => getAddress(scope),
+      };
     }
 
     throw new Error("TODO");
