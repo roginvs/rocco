@@ -216,16 +216,15 @@ type DeclaratorNodeGeneric<T extends Typename> = {
 export type DeclaratorNode = DeclaratorNodeGeneric<Typename>;
 export type DeclaratorNodeFunction = DeclaratorNodeGeneric<FunctionTypename>;
 
-export type NodeLocator = Map<
+export type Node =
   | ExpressionNode
   | Typename
   | DeclaratorNode
   | FunctionDefinition
   | CompoundStatement
   | CompoundStatementBody
-  | InitializerNode,
-  TokenLocation
->;
+  | InitializerNode;
+export type NodeLocator = Map<Node, TokenLocation>;
 
 export interface IfStatement {
   type: "if";

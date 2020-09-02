@@ -330,8 +330,12 @@ void test27()
 {
   // int fffffff() = 3;
   int r;
-  int r;
+  //  int r;
+  //void k;
 }
+
+//int my_len = 10;
+//char my_array[];
 
 int main(int argc, char **argv)
 {
