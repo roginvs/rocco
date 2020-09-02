@@ -141,14 +141,13 @@ export function emit(unit: TranslationUnit) {
     }
   };
 
-  type InfoScope = "file" | "function";
   interface ExpressionInfo {
     type: Typename;
 
     // For int and floats - just value on stack
-    value: (scope: InfoScope) => WAInstuction[] | null;
+    value: () => WAInstuction[] | null;
 
-    address: (scope: InfoScope) => WAInstuction[] | null;
+    address: () => WAInstuction[] | null;
 
     staticValue: number | null;
   }
@@ -199,8 +198,8 @@ export function emit(unit: TranslationUnit) {
           return {
             type: declaration.typename,
             staticValue: staticValue,
-            value: (scope) =>
-              scope === "file"
+            value: () =>
+              declaration.memoryIsGlobal
                 ? [
                     `i32.const ${declaration.memoryOffset}`,
 
@@ -211,8 +210,8 @@ export function emit(unit: TranslationUnit) {
                       : `i32.load 2 0`,
                   ]
                 : [`local.get $ebp`, `i32.load 2 ${declaration.memoryOffset}`],
-            address: (scope) =>
-              scope === "file"
+            address: () =>
+              declaration.memoryIsGlobal
                 ? [`i32.const ${declaration.memoryOffset}`]
                 : [
                     `local.get $ebp`,
@@ -244,12 +243,12 @@ export function emit(unit: TranslationUnit) {
         return {
           type: declaration.typename,
           staticValue: null,
-          value: (scope) =>
-            scope === "file"
+          value: () =>
+            declaration.memoryIsGlobal
               ? [`i32.const ${declaration.memoryOffset}`, `i32.load 2 0`]
               : [`local.get $ebp`, `i32.load 2 ${declaration.memoryOffset}`],
-          address: (scope) =>
-            scope === "file"
+          address: () =>
+            declaration.memoryIsGlobal
               ? [`i32.const ${declaration.memoryOffset}`]
               : [
                   `local.get $ebp`,
@@ -262,11 +261,11 @@ export function emit(unit: TranslationUnit) {
           type: declaration.typename,
           staticValue: null,
           value: () => null,
-          address: (scope) => {
+          address: () => {
             if (!isArrayStaticSize(declaration.typename)) {
               error(declaration, "TODO: Dynamic arrays are not supported yet");
             }
-            return scope === "file"
+            return declaration.memoryIsGlobal
               ? [`i32.const ${declaration.memoryOffset}`]
               : [
                   `local.get $ebp`,
@@ -304,16 +303,16 @@ export function emit(unit: TranslationUnit) {
         error(target, "Must be array type");
       }
 
-      const getAddress = (scope: InfoScope) => {
-        const arrayAddress = targetInfo.address(scope);
+      const getAddress = () => {
+        const arrayAddress = targetInfo.address();
         if (!arrayAddress) {
           return null;
         }
-        const indexValue = indexInfo.value(scope);
+        const indexValue = indexInfo.value();
         if (indexValue) {
           return [...arrayAddress, ...indexValue, `i32.add`];
         }
-        const indexAddress = indexInfo.address(scope);
+        const indexAddress = indexInfo.address();
         if (indexAddress) {
           return [...arrayAddress, ...indexAddress, `i32.load`, `i32.add`];
         }
@@ -322,12 +321,12 @@ export function emit(unit: TranslationUnit) {
       return {
         type: targetInfo.type.elementsTypename,
         staticValue: null,
-        value: (scope) => [
+        value: () => [
           // Now we have address of cell
           // But value is only possible to load if type of elements is int/char
           // TODO A function "loadIntBYaddress", same as above
         ],
-        address: (scope) => getAddress(scope),
+        address: () => getAddress(),
       };
     }
 

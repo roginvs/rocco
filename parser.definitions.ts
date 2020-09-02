@@ -208,7 +208,7 @@ type DeclaratorNodeGeneric<T extends Typename> = {
    * Not in use for "register" and "typedef" storage
    */
   memoryOffset?: number;
-  memoryIsLocal?: boolean;
+  memoryIsGlobal?: boolean;
 };
 
 /**
