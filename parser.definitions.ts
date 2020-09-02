@@ -1,6 +1,5 @@
 import {
   BinaryOperator,
-  TypeSpecifierArithmetic,
   TypeSignedUnsigned,
   AssignmentOperator,
   StorageClass,

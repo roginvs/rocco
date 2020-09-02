@@ -1,8 +1,8 @@
-import { createScannerFunc, Token } from "./scanner.func";
+import { Token } from "./scanner.func";
 
 export class Scanner {
   private currentToken: Token;
-  constructor(private scanner: () => Token) {
+  constructor(private readonly scanner: () => Token) {
     this.currentToken = this.scanner();
   }
 

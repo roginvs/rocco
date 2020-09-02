@@ -242,7 +242,7 @@ export function createScannerFunc(str: string) {
       scanWhitespace();
     }
 
-    if (current() === "/" && next() == "/") {
+    if (current() === "/" && next() === "/") {
       incPos(2);
       while (current() !== "\n") {
         incPos();

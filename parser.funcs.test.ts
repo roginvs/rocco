@@ -1,4 +1,4 @@
-import { ExternalDeclarations, NodeLocator } from "./parser.definitions";
+import { NodeLocator } from "./parser.definitions";
 import { Scanner } from "./scanner";
 import { createScannerFunc } from "./scanner.func";
 import { createParser } from "./parser.funcs";

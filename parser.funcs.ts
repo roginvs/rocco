@@ -1200,7 +1200,6 @@ export function createParser(
     const body: CompoundStatementBody[] = [];
 
     while (scanner.current().type !== "end" && scanner.current().type !== "}") {
-      const token = scanner.current();
       if (isCurrentTokenLooksLikeDeclarationSpecifiers()) {
         const declarations = readDeclaration();
         declarations.forEach((declaration) => body.push(declaration));
