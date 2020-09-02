@@ -9,7 +9,7 @@ char arr2[10];
 char arr3[5][6];
 
 char c;
-int z = 402;
+int z = 402 + 1;
 
 int func1()
 {

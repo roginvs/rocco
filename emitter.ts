@@ -365,7 +365,7 @@ export function emit(unit: TranslationUnit) {
       };
     }
 
-    throw new Error("TODO");
+    throw new Error("TODO other expressionInfo");
   };
 
   // Initial step: assign global memory
