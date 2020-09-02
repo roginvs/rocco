@@ -156,6 +156,27 @@ export function emit(unit: TranslationUnit) {
     // rvalue code = address in stack
     // lvalue code (if any)
     // static value (if known)
+
+    const readArithmetic = (
+      t: Typename,
+      alignment = 2,
+      offset = 0
+    ): WAInstuction => {
+      if (t.type !== "arithmetic") {
+        throw new Error("Internal error");
+      }
+      if (t.arithmeticType === "int") {
+        return `i32.load ${alignment} ${offset}`;
+      } else if (t.arithmeticType === "char") {
+        if (t.signedUnsigned === "signed") {
+          return `i32.load8_s ${alignment} ${offset}`;
+        } else {
+          return `i32.load8_u ${alignment} ${offset}`;
+        }
+      }
+      throw new Error("Internal error or not suppored yet");
+    };
+
     if (expression.type === "const") {
       if (expression.subtype === "int" || expression.subtype === "char") {
         return {
@@ -202,14 +223,16 @@ export function emit(unit: TranslationUnit) {
               declaration.memoryIsGlobal
                 ? [
                     `i32.const ${declaration.memoryOffset}`,
-
-                    isChar
-                      ? isSigned
-                        ? `i32.load8_s`
-                        : `i32.load8_u`
-                      : `i32.load 2 0`,
+                    readArithmetic(declaration.typename),
                   ]
-                : [`local.get $ebp`, `i32.load 2 ${declaration.memoryOffset}`],
+                : [
+                    `local.get $ebp`,
+                    readArithmetic(
+                      declaration.typename,
+                      2,
+                      declaration.memoryOffset
+                    ),
+                  ],
             address: () =>
               declaration.memoryIsGlobal
                 ? [`i32.const ${declaration.memoryOffset}`]
@@ -303,7 +326,7 @@ export function emit(unit: TranslationUnit) {
         error(target, "Must be array type");
       }
 
-      const getAddress = () => {
+      const getArrayElementAddress = () => {
         const arrayAddress = targetInfo.address();
         if (!arrayAddress) {
           return null;
@@ -321,12 +344,24 @@ export function emit(unit: TranslationUnit) {
       return {
         type: targetInfo.type.elementsTypename,
         staticValue: null,
-        value: () => [
-          // Now we have address of cell
-          // But value is only possible to load if type of elements is int/char
-          // TODO A function "loadIntBYaddress", same as above
-        ],
-        address: () => getAddress(),
+        value: () => {
+          const address = getArrayElementAddress();
+          if (!address) {
+            return null;
+          }
+          if (targetInfo.type.type !== "array") {
+            // Additinal check for TS
+            return null;
+          }
+          if (targetInfo.type.elementsTypename.type !== "arithmetic") {
+            return null;
+          }
+          return [
+            ...address,
+            readArithmetic(targetInfo.type.elementsTypename, 0, 0),
+          ];
+        },
+        address: () => getArrayElementAddress(),
       };
     }
 
