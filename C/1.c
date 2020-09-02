@@ -332,6 +332,9 @@ void test27()
   int r;
   //  int r;
   //void k;
+
+  int *p;
+  p = p - 2;
 }
 
 //int my_len = 10;
