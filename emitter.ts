@@ -7,6 +7,7 @@ import {
   Typename,
   ExpressionNode,
   IdentifierNode,
+  DeclaratorId,
 } from "./parser.definitions";
 import { TokenLocation } from "./error";
 import { assertNever } from "./assertNever";
@@ -39,12 +40,11 @@ export function emit(unit: TranslationUnit) {
   const locator = unit.locationMap();
   const declaratorMap = unit.declaratorMap();
 
-  function getDeclaration(identifier: IdentifierNode) {
-    const declaration = declaratorMap.get(identifier.declaratorNodeId);
+  function getDeclaration(declaratorId: DeclaratorId) {
+    const declaration = declaratorMap.get(declaratorId);
     if (!declaration) {
-      error(
-        identifier,
-        `Internal error: unable to find declaration ${identifier.declaratorNodeId}`
+      throw new Error(
+        `Internal error: unable to find declaration ${declaratorId}`
       );
     }
     return declaration;
@@ -103,7 +103,7 @@ export function emit(unit: TranslationUnit) {
         error(typename, "Star in array is not supported");
       }
 
-      const size = expressionInfo(typename.size);
+      const size = getExpressionInfo(typename.size);
 
       if (typeof elementSize === "number" && size.staticValue) {
         return elementSize * size.staticValue;
@@ -151,7 +151,7 @@ export function emit(unit: TranslationUnit) {
 
     staticValue: number | null;
   }
-  const expressionInfo = (expression: ExpressionNode): ExpressionInfo => {
+  const getExpressionInfo = (expression: ExpressionNode): ExpressionInfo => {
     // type
     // rvalue code = address in stack
     // lvalue code (if any)
@@ -194,7 +194,7 @@ export function emit(unit: TranslationUnit) {
         error(expression, "Floats are not supported yet");
       }
     } else if (expression.type === "identifier") {
-      const declaration = getDeclaration(expression);
+      const declaration = getDeclaration(expression.declaratorNodeId);
       if (declaration.typename.type === "arithmetic") {
         if (
           declaration.typename.arithmeticType === "char" ||
@@ -209,7 +209,7 @@ export function emit(unit: TranslationUnit) {
             declaration.initializer &&
             declaration.initializer.type === "assigmnent-expression"
           ) {
-            const initializerInfo = expressionInfo(
+            const initializerInfo = getExpressionInfo(
               declaration.initializer.expression
             );
             if (initializerInfo.staticValue) {
@@ -310,8 +310,8 @@ export function emit(unit: TranslationUnit) {
     } else if (expression.type === "subscript operator") {
       const target = expression.target;
       const index = expression.index;
-      const targetInfo = expressionInfo(target);
-      const indexInfo = expressionInfo(index);
+      const targetInfo = getExpressionInfo(target);
+      const indexInfo = getExpressionInfo(index);
 
       if (indexInfo.type.type !== "arithmetic") {
         error(index, "Must be arithmetic type");
@@ -345,7 +345,7 @@ export function emit(unit: TranslationUnit) {
         type: targetInfo.type.elementsTypename,
         staticValue: null,
         value: () => {
-          const address = getArrayElementAddress();
+          const address = gi();
           if (!address) {
             return null;
           }
@@ -367,6 +367,30 @@ export function emit(unit: TranslationUnit) {
 
     throw new Error("TODO");
   };
+
+  // Initial step: assign global memory
+  let memoryOffset = 4;
+  for (const declarationId of unit.declarations) {
+    const declaration = getDeclaration(declarationId);
+    const size = getTypeSize(declaration.typename);
+    if (typeof size !== "number") {
+      error(declaration, `Globals must have known size`);
+    }
+    if (memoryOffset % 4 !== 0) {
+      throw new Error("Self-check failed, wrong alignment");
+    }
+    declaration.memoryOffset = memoryOffset;
+    declaration.memoryIsGlobal = true;
+    memoryOffset += size;
+    const alignment = memoryOffset % 4;
+    if (alignment !== 0) {
+      memoryOffset += 4 - alignment;
+    }
+  }
+
+  console.info(
+    `Globals size = ${memoryOffset - 4}, usable memory from ${memoryOffset}`
+  );
 
   return {
     warnings,
