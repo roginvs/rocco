@@ -124,18 +124,34 @@ export function emit(unit: TranslationUnit) {
     }
   };
 
-  const expressionInfo = (
-    expression: ExpressionNode
-  ): {
+  interface ExpressionInfo {
     type: Typename;
     rvalue: WAInstuction[];
-    lvalue?: WAInstuction[];
-    staticValue?: number;
-  } => {
+    lvalue: WAInstuction[] | null;
+    staticValue: number | null;
+  }
+  const expressionInfo = (expression: ExpressionNode): ExpressionInfo => {
     // type
     // rvalue code = address in stack
     // lvalue code (if any)
     // static value (if known)
+    if (expression.type === "const") {
+      if (expression.subtype === "int" || expression.subtype === "char") {
+        return {
+          type: {
+            type: "arithmetic",
+            arithmeticType: expression.subtype,
+            const: true,
+            signedUnsigned: "signed",
+          },
+          rvalue: [`i32.const ${expression.value}`],
+          lvalue: null,
+          staticValue: expression.value,
+        };
+      } else if (expression.subtype === "float") {
+        error(expression, "Floats are not supported yet");
+      }
+    }
 
     throw new Error("TODO");
   };
