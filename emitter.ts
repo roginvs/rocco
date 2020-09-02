@@ -345,7 +345,7 @@ export function emit(unit: TranslationUnit) {
         type: targetInfo.type.elementsTypename,
         staticValue: null,
         value: () => {
-          const address = gi();
+          const address = getArrayElementAddress();
           if (!address) {
             return null;
           }
@@ -363,9 +363,105 @@ export function emit(unit: TranslationUnit) {
         },
         address: () => getArrayElementAddress(),
       };
+    } else if (expression.type === "binary operator") {
+      const leftInfo = getExpressionInfo(expression.left);
+      const rightInfo = getExpressionInfo(expression.right);
+
+      const op = expression.operator;
+
+      // Very hacky
+      if (
+        leftInfo.type.type === "arithmetic" &&
+        (leftInfo.type.arithmeticType === "char" ||
+          leftInfo.type.arithmeticType === "int") &&
+        rightInfo.type.type === "arithmetic" &&
+        (rightInfo.type.arithmeticType === "char" ||
+          rightInfo.type.arithmeticType === "int")
+      ) {
+        const finalType =
+          leftInfo.type.arithmeticType === "char" &&
+          rightInfo.type.arithmeticType === "char"
+            ? leftInfo.type
+            : leftInfo.type.arithmeticType === "int"
+            ? leftInfo.type
+            : rightInfo.type;
+
+        const operatorInstruction =
+          op === "+"
+            ? "i32.add"
+            : op === "-"
+            ? "i32.sub"
+            : op === "*"
+            ? "i32.mul"
+            : op === "/"
+            ? finalType.signedUnsigned === "signed"
+              ? "i32.div_s"
+              : "i32.div_u"
+            : op === "%"
+            ? finalType.signedUnsigned === "signed"
+              ? "i32.rem_s"
+              : "i32.rem_u"
+            : op === "&"
+            ? "i32.and"
+            : op === "|"
+            ? "i32.or"
+            : op === "&&"
+            ? "i32.and"
+            : op === "||"
+            ? "i32.or"
+            : undefined;
+        const prepareInstructions =
+          op === "&&" || op === "||"
+            ? [
+                "ieqz ;; Return 1 if i is zero, 0 overwise",
+                "ieqz ;; Invert value",
+              ]
+            : [];
+        if (!operatorInstruction) {
+          error(expression, `TODO: This operator ${op} is not implemented`);
+        }
+
+        // Todo: other operators here too
+        const staticValue =
+          leftInfo.staticValue && rightInfo.staticValue
+            ? op === "+"
+              ? leftInfo.staticValue + rightInfo.staticValue
+              : op === "-"
+              ? leftInfo.staticValue - rightInfo.staticValue
+              : null
+            : null;
+        return {
+          type: finalType,
+          staticValue: staticValue,
+          address: () => null,
+          value: () => {
+            const leftVal = leftInfo.value();
+            const rightVal = rightInfo.value();
+            if (!leftVal) {
+              return null;
+            }
+            if (!rightVal) {
+              return null;
+            }
+            return [
+              ...leftVal,
+              ...prepareInstructions,
+              ...rightVal,
+              ...prepareInstructions,
+              operatorInstruction,
+            ];
+          },
+        };
+        //
+      } else {
+        error(
+          expression,
+          "Not supported yet. Todo: other types for binary operations"
+        );
+      }
     }
 
-    throw new Error("TODO other expressionInfo");
+    error(expression, "TODO other expressionInfo");
   };
 
   // Initial step: assign global memory
