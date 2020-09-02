@@ -79,48 +79,53 @@ export function emit(unit: TranslationUnit) {
     }
   }
 
-  const typeSize = (type: Typename): ExpressionNode | undefined | number => {
+  const getTypeSize = (
+    typename: Typename
+  ): ExpressionNode | undefined | number => {
     // Fixed size = number
     // Depended size = expression
     // Incomplete = undefined
-    if (type.type === "arithmetic") {
-      if (type.arithmeticType === "char") {
+    if (typename.type === "arithmetic") {
+      if (typename.arithmeticType === "char") {
         return 1;
-      } else if (type.arithmeticType === "int") {
+      } else if (typename.arithmeticType === "int") {
         return 4;
       } else {
-        error(type, "Not supported yet");
+        error(typename, "Not supported yet");
       }
-    } else if (type.type === "array") {
-      const elementSize = typeSize(type.elementsTypename);
+    } else if (typename.type === "array") {
+      const elementSize = getTypeSize(typename.elementsTypename);
 
-      if (type.size === null) {
+      if (typename.size === null) {
         return undefined;
       }
-      if (type.size === "*") {
-        error(type, "Star in array is not supported");
+      if (typename.size === "*") {
+        error(typename, "Star in array is not supported");
       }
 
-      const size = expressionInfo(type.size);
+      const size = expressionInfo(typename.size);
 
       if (typeof elementSize === "number" && size.staticValue) {
         return elementSize * size.staticValue;
       } else {
         error(
-          type,
+          typename,
           "Dynamic arrays are not supported yet. Todo: return created expression for size if possible"
         );
       }
-    } else if (type.type === "enum" || type.type === "struct") {
-      error(type, "Not supported yet");
-    } else if (type.type === "function" || type.type === "function-knr") {
-      error(type, "Internal error: functions have no size");
-    } else if (type.type === "pointer") {
+    } else if (typename.type === "enum" || typename.type === "struct") {
+      error(typename, "Not supported yet");
+    } else if (
+      typename.type === "function" ||
+      typename.type === "function-knr"
+    ) {
+      error(typename, "Internal error: functions have no size");
+    } else if (typename.type === "pointer") {
       return 4;
-    } else if (type.type === "void") {
-      error(type, "Void have no size");
+    } else if (typename.type === "void") {
+      error(typename, "Void have no size");
     } else {
-      assertNever(type);
+      assertNever(typename);
     }
   };
 
@@ -128,7 +133,7 @@ export function emit(unit: TranslationUnit) {
     if (node.type !== "array") {
       throw new Error("Internal error: isArrayStaticSize called for non-array");
     }
-    const size = typeSize(node);
+    const size = getTypeSize(node);
     if (typeof size === "number") {
       return true;
     } else {

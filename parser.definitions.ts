@@ -201,12 +201,14 @@ type DeclaratorNodeGeneric<T extends Typename> = {
   functionSpecifier: "inline" | null;
 
   declaratorId: DeclaratorId;
+
+  initializer?: T extends FunctionTypename ? null : InitializerNode;
+
   /**
    * Not in use for "register" and "typedef" storage
    */
   memoryOffset?: number;
-
-  initializer?: T extends FunctionTypename ? null : InitializerNode;
+  memoryIsLocal?: boolean;
 };
 
 /**
