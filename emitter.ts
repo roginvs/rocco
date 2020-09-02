@@ -369,28 +369,80 @@ export function emit(unit: TranslationUnit) {
   };
 
   // Initial step: assign global memory
-  let memoryOffset = 4;
+  let memoryOffsetForGlobals = 4;
+  const globalsInitializers: WAInstuction[] = [];
   for (const declarationId of unit.declarations) {
     const declaration = getDeclaration(declarationId);
+    if (
+      declaration.typename.type === "function" ||
+      declaration.typename.type === "function-knr"
+    ) {
+      continue;
+    }
+    if (declaration.typename.type === "void") {
+      error(declaration, "Void for variable is not allowed");
+    }
     const size = getTypeSize(declaration.typename);
     if (typeof size !== "number") {
       error(declaration, `Globals must have known size`);
     }
-    if (memoryOffset % 4 !== 0) {
+    if (memoryOffsetForGlobals % 4 !== 0) {
       throw new Error("Self-check failed, wrong alignment");
     }
-    declaration.memoryOffset = memoryOffset;
+    declaration.memoryOffset = memoryOffsetForGlobals;
     declaration.memoryIsGlobal = true;
-    memoryOffset += size;
-    const alignment = memoryOffset % 4;
+    memoryOffsetForGlobals += size;
+    const alignment = memoryOffsetForGlobals % 4;
     if (alignment !== 0) {
-      memoryOffset += 4 - alignment;
+      memoryOffsetForGlobals += 4 - alignment;
+    }
+
+    if (declaration.initializer) {
+      if (declaration.typename.type === "arithmetic") {
+        if (declaration.initializer.type !== "assigmnent-expression") {
+          error(
+            declaration.initializer,
+            "Wrong iniializer for arithmetic type"
+          );
+        }
+
+        const initializerExpressionInfo = getExpressionInfo(
+          declaration.initializer.expression
+        );
+        if (initializerExpressionInfo.type.type !== "arithmetic") {
+          error(declaration.initializer.expression, "Must be arithmetic");
+        }
+        if (initializerExpressionInfo.staticValue === null) {
+          error(
+            declaration.initializer.expression,
+            "Initializer value must be known on compilation time"
+          );
+        }
+        if (initializerExpressionInfo.type.arithmeticType !== "int") {
+          error(
+            declaration.initializer.expression,
+            "TODO: Only int is supported for initializers"
+          );
+        }
+
+        globalsInitializers.push(
+          `;; Initializer for global ${declaration.identifier} id=${declaration.declaratorId}`,
+          `i32.const ${declaration.memoryOffset} ;; address`,
+          `i32.const ${initializerExpressionInfo.staticValue} ;; value`,
+          `i32.store 2 0`
+        );
+      }
     }
   }
 
   console.info(
-    `Globals size = ${memoryOffset - 4}, usable memory from ${memoryOffset}`
+    `Globals size = ${
+      memoryOffsetForGlobals - 4
+    }, usable memory from ${memoryOffsetForGlobals}`
   );
+
+  console.info("");
+  console.info(globalsInitializers.join("\n"));
 
   return {
     warnings,
