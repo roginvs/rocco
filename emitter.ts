@@ -13,6 +13,7 @@ import { TokenLocation } from "./error";
 import { assertNever } from "./assertNever";
 import { CheckerError } from "./error";
 import { type } from "os";
+import { stat } from "fs";
 
 export interface CheckerWarning extends TokenLocation {
   msg: string;
@@ -466,14 +467,17 @@ export function emit(unit: TranslationUnit) {
 
   // Initial step: assign global memory
   let memoryOffsetForGlobals = 4;
+  let functionIdAddress = 1;
   const globalsInitializers: WAInstuction[] = [];
   for (const declarationId of unit.declarations) {
     const declaration = getDeclaration(declarationId);
-    if (
-      declaration.typename.type === "function" ||
-      declaration.typename.type === "function-knr"
-    ) {
+    if (declaration.typename.type === "function") {
+      declaration.memoryOffset = functionIdAddress;
+      functionIdAddress++;
       continue;
+    }
+    if (declaration.typename.type === "function-knr") {
+      throw new Error("No K&R here");
     }
     if (declaration.typename.type === "void") {
       error(declaration, "Void for variable is not allowed");
@@ -537,9 +541,70 @@ export function emit(unit: TranslationUnit) {
     }, usable memory from ${memoryOffsetForGlobals}`
   );
 
+  function createFunctionCode(func: FunctionDefinition): WAInstuction[] {
+    let inFuncAddress = 0;
+    for (const declarationId of func.declaredVariables) {
+      const declaration = getDeclaration(declarationId);
+      const size = getTypeSize(declaration.typename);
+      if (typeof size !== "number") {
+        error(declaration, "Dynamic or incomplete size is not supported yet");
+      }
+      declaration.memoryOffset = inFuncAddress;
+      declaration.memoryIsGlobal = false;
+      inFuncAddress += size;
+    }
+
+    const returnType =
+      (func.declaration.typename.returnType.type === "arithmetic" &&
+        (func.declaration.typename.returnType.arithmeticType === "int" ||
+          func.declaration.typename.returnType.arithmeticType === "char")) ||
+      func.declaration.typename.returnType.type === "pointer"
+        ? `(result i32)`
+        : func.declaration.typename.returnType.type === "void"
+        ? ""
+        : undefined;
+    if (returnType === undefined) {
+      error(
+        func.declaration.typename.returnType,
+        "This return type is not supported yet"
+      );
+    }
+
+    const funcCode: WAInstuction[] = [];
+
+    const returnCode: WAInstuction[] = [`local.get $ebp`, `global.set $esp`];
+
+    // asdasd
+    // generate function code here
+
+    return [
+      `;; Function ${func.declaration.identifier} localSize=${inFuncAddress}`,
+      `(func $F${func.declaration.declaratorId} ${returnType}(local $ebp i32)`,
+      `global.get $esp`,
+      `local.tee $ebp ;; Save esp -> ebp`,
+      `i32.const ${inFuncAddress}`,
+      `i32.add ;; Add all locals to esp`,
+      `global.set $esp ;; And update esp`,
+      ...funcCode,
+
+      `)`,
+    ];
+  }
+
+  const functionsCode: WAInstuction[] = [];
+  // Now create functions
+  for (const statement of unit.body) {
+    if (statement.type === "function-declaration") {
+      const lines = createFunctionCode(statement);
+      functionsCode.push(...lines);
+    }
+  }
+
   console.info("");
   console.info(globalsInitializers.join("\n"));
-
+  console.info("");
+  console.info(functionsCode.join("\n"));
+  console.info("");
   return {
     warnings,
   };
