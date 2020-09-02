@@ -70,3 +70,12 @@ void kek2(int){
 
 `
 );
+
+checkTranslationUnitThrows(
+  "return in file scope",
+  `
+
+return;
+
+`
+);
