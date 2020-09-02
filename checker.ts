@@ -12,10 +12,6 @@ import { TokenLocation } from "./error";
 import { assertNever } from "./assertNever";
 import { CheckerError } from "./error";
 
-export interface CheckerWarning extends TokenLocation {
-  msg: string;
-}
-
 export function checkTranslationUnit(unit: TranslationUnit): CheckerWarning[] {
   const warnings: CheckerWarning[] = [];
 
