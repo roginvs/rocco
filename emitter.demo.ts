@@ -1,8 +1,8 @@
 import fs from "fs";
-import { createScannerFunc } from "./scanner.func";
-import { Scanner } from "./scanner";
-import { readTranslationUnit } from "./parser";
-import { emit } from "./emitter";
+import { createScannerFunc } from "./core/scanner.func";
+import { Scanner } from "./core/scanner";
+import { readTranslationUnit } from "./core/parser";
+import { emit } from "./core/emitter";
 import pad from "pad";
 
 const fdata = fs.readFileSync(__dirname + "/test/emitter1.c").toString();

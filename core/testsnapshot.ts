@@ -8,7 +8,7 @@ export function testSnapshot(
 ) {
   const fname =
     __dirname +
-    "/snapshots/" +
+    "/../snapshots/" +
     id +
     "_" +
     testname

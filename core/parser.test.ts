@@ -7,7 +7,7 @@ import * as fs from "fs";
 function checkTranslationUnitFile(fname: string) {
   it(`Reads '${fname}'`, () => {
     const fdata = fs
-      .readFileSync(__dirname + "/test/" + fname + ".c")
+      .readFileSync(__dirname + "/../test/" + fname + ".c")
       .toString();
 
     const scanner = new Scanner(createScannerFunc(fdata));
