@@ -1,7 +1,12 @@
 (module
 ;; asdasd
 (; comment ;)
+  (global $g (import "js" "global") (mut i32))
+
   (memory 127)
+
+  
+
   ;;(import "js" "mem" (memory 1))
 
   (func (param $kek i32)(local $l i32)

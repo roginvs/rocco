@@ -168,12 +168,12 @@ export function emit(unit: TranslationUnit) {
         throw new Error("Internal error");
       }
       if (t.arithmeticType === "int") {
-        return `i32.load ${alignment} ${offset}`;
+        return `i32.load offset=${offset} align=${alignment} `;
       } else if (t.arithmeticType === "char") {
         if (t.signedUnsigned === "signed") {
-          return `i32.load8_s ${alignment} ${offset}`;
+          return `i32.load8_s offset=${offset} align=${alignment}`;
         } else {
-          return `i32.load8_u ${alignment} ${offset}`;
+          return `i32.load8_u offset=${offset} align=${alignment} `;
         }
       }
       throw new Error("Internal error or not suppored yet");
@@ -531,8 +531,8 @@ export function emit(unit: TranslationUnit) {
           // For declarators we do not have "address" function we duplicate code here
           `i32.const ${declaration.memoryOffset} ;; global address`,
           `i32.const ${initializerExpressionInfo.staticValue} ;; value`,
-          // Everything have 4-bytes alignment, so it is ok
-          `i32.store 2 0`
+          // Everything have 4-bytes alignment, so it is ok to load 8 bytes as i32
+          `i32.store offset=0 align=2 `
         );
       }
     }
@@ -608,8 +608,8 @@ export function emit(unit: TranslationUnit) {
                 `local.get $ebp ;;  address, first part`,
 
                 ...initializerValueCode,
-                // Everything have 4-bytes alignment, so it is ok
-                `i32.store 2 ${statement.memoryOffset}`
+                // Everything have 4-bytes alignment, so it is ok to load 8 bytes as i32
+                `i32.store offset=${statement.memoryOffset} align=2 `
               );
             } else {
               assertNever(statement.initializer);
@@ -684,6 +684,9 @@ export function emit(unit: TranslationUnit) {
       `;; Cleanup`,
       ...returnCode,
       `)`,
+      "",
+      `(export "${func.declaration.identifier}" (func $F${func.declaration.declaratorId}))`,
+      "",
     ];
   }
 
@@ -696,12 +699,26 @@ export function emit(unit: TranslationUnit) {
     }
   }
 
-  console.info("");
-  console.info(globalsInitializers.join("\n"));
-  console.info("");
-  console.info(functionsCode.join("\n"));
-  console.info("");
+  const moduleCode: WAInstuction[] = [
+    "(module",
+
+    '(global $esp (import "js" "esp") (mut i32))',
+
+    // TODO: Import memory
+    "(memory 127)",
+
+    ...functionsCode,
+
+    " (func $init  ",
+    ...globalsInitializers,
+    ")",
+    " (start $init)",
+
+    ")",
+  ];
+
   return {
     warnings,
+    moduleCode,
   };
 }
