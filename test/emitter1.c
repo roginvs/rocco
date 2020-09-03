@@ -11,18 +11,24 @@ char arr3[5][6];
 char c;
 int z = 402 + 1;
 
-void func1()
+void void_func()
 {
   // do nothing
 }
 
-int func2()
+int return_const()
 {
   static int arr4[5];
-  static int z = 401;
 
   int x = 20 + 21;
   int y = 30;
 
   return x;
+}
+
+int counter()
+{
+  static int counts = 0;
+  counts = counts + 1;
+  return counts;
 }
