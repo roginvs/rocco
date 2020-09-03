@@ -15,3 +15,12 @@ describe(`Emits and compiles`, () => {
     expect(d.compiled._debug_get_esp()).toBe(132);
   });
 });
+
+/*
+TODO:
+- https://mbebenita.github.io/WasmExplorer/ 
+
+- (data ... )  for initialization
+
+
+*/
