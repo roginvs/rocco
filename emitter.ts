@@ -652,7 +652,7 @@ export function emit(unit: TranslationUnit) {
             }
           }
 
-          code.push("TODO TODO: RETURN");
+          code.push("br 0 ;; TODO TODO use real depth here");
           returnFound = true;
         } else {
           error(statement, "TODO statement");
@@ -678,7 +678,9 @@ export function emit(unit: TranslationUnit) {
       `i32.add ;; Add all locals to esp`,
       `global.set $esp ;; And update esp`,
       `;; Function body`,
+      'block ;; main function block '
       ...funcCode,
+      'end ;; main function block end',
       `;; Cleanup`,
       ...returnCode,
       `)`,
