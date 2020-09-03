@@ -21,7 +21,7 @@ int func2()
   static int arr4[5];
   static int z = 401;
 
-  int x = 20 + 20;
+  int x = 20 + 21;
   int y = 30;
 
   return x;
