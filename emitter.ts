@@ -678,9 +678,9 @@ export function emit(unit: TranslationUnit) {
       `i32.add ;; Add all locals to esp`,
       `global.set $esp ;; And update esp`,
       `;; Function body`,
-      'block ;; main function block '
+      "block ;; main function block ",
       ...funcCode,
-      'end ;; main function block end',
+      "end ;; main function block end",
       `;; Cleanup`,
       ...returnCode,
       `)`,
