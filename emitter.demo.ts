@@ -54,6 +54,15 @@ try {
     });
 
     console.info(instance.exports);
+    const compiled = instance.exports as {
+      func2(): number;
+      func1(): void;
+    };
+
+    const mem = new Uint32Array(memory.buffer);
+    console.info(`ESP now is ${mem[1]}`);
+    console.info(`Complied func2 = ${compiled.func2()}`);
+    console.info(`ESP now is ${mem[1]}`);
   })().catch((e) => {
     console.error(e);
     process.exit(1);
