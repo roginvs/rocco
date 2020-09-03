@@ -14,7 +14,7 @@ import { TokenLocation } from "./error";
 import { assertNever } from "./assertNever";
 import { CheckerError } from "./error";
 import { type } from "os";
-import { stat } from "fs";
+import { stat, write } from "fs";
 
 export interface CheckerWarning extends TokenLocation {
   msg: string;
@@ -467,7 +467,17 @@ export function emit(unit: TranslationUnit) {
   };
 
   // Initial step: assign global memory
-  let memoryOffsetForGlobals = 4;
+  let memoryOffsetForGlobals = 8; // 4 for move from 0 address, and 0x4 for esp
+  const readEspCode: WAInstuction[] = [
+    `i32.const 4 ;; Read $esp`,
+    "i32.load offset=0 align=2 ;; Read $esp",
+  ];
+  const writeEspCode = (value: WAInstuction[]) => [
+    `i32.const 4 ;; Prepare $esp write - address`,
+    ...value,
+    `i32.store offset=0 align=2 ;; Write $esp`,
+  ];
+
   let functionIdAddress = 1;
   const globalsInitializers: WAInstuction[] = [];
   for (const declarationId of unit.declarations) {
@@ -664,7 +674,7 @@ export function emit(unit: TranslationUnit) {
 
     const funcCode: WAInstuction[] = createFunctionCodeForBlock(func.body);
 
-    const returnCode: WAInstuction[] = [`local.get $ebp`, `global.set $esp`];
+    const returnCode: WAInstuction[] = [...writeEspCode([`local.get $ebp`])];
 
     // asdasd
     // generate function code here
@@ -672,11 +682,14 @@ export function emit(unit: TranslationUnit) {
     return [
       `;; Function ${func.declaration.identifier} localSize=${inFuncAddress}`,
       `(func $F${func.declaration.declaratorId} ${returnTypeCode}(local $ebp i32)`,
-      `global.get $esp`,
-      `local.tee $ebp ;; Save esp -> ebp`,
-      `i32.const ${inFuncAddress}`,
-      `i32.add ;; Add all locals to esp`,
-      `global.set $esp ;; And update esp`,
+      ...readEspCode,
+      `local.set $ebp ;; Save esp -> ebp`,
+
+      ...writeEspCode([
+        `local.get $ebp`,
+        `i32.const ${inFuncAddress}`,
+        `i32.add ;; Add all locals to esp`,
+      ]),
       `;; Function body`,
       "block ;; main function block ",
       ...funcCode,
@@ -700,8 +713,7 @@ export function emit(unit: TranslationUnit) {
   }
 
   const setupEsp: WAInstuction[] = [
-    `i32.const ${memoryOffsetForGlobals} ;; Prepare esp`,
-    `global.set $esp ;; Prepare esp`,
+    ...writeEspCode([`i32.const ${memoryOffsetForGlobals} ;; Prepare esp`]),
   ];
 
   const moduleCode: WAInstuction[] = [
@@ -710,15 +722,15 @@ export function emit(unit: TranslationUnit) {
     `(import "js" "memory" (memory 0))`,
 
     //'(global $esp (import "js" "esp") (mut i32))',
-    "(global $esp (mut i32))",
-
-    ...functionsCode,
+    //"(global $esp (mut i32))",
 
     " (func $init  ",
     ...setupEsp,
     ...globalsInitializers,
     ")",
     " (start $init)",
+
+    ...functionsCode,
 
     ")",
   ];

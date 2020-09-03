@@ -11,7 +11,12 @@ char arr3[5][6];
 char c;
 int z = 402 + 1;
 
-int func1()
+void func1()
+{
+  // do nothing
+}
+
+int func2()
 {
   static int arr4[5];
   static int z = 401;
