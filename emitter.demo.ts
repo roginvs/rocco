@@ -41,6 +41,19 @@ try {
     });
 
     console.info(wasmdata.log);
+
+    console.info("======== running ==== ");
+
+    const module = await WebAssembly.compile(wasmdata.buffer);
+
+    // const esp = new WebAssembly.Global({ value: "i32", mutable: true }, 0);
+    const memory = new WebAssembly.Memory({ initial: 10, maximum: 100 });
+
+    const instance = await WebAssembly.instantiate(module, {
+      js: { memory: memory },
+    });
+
+    console.info(instance.exports);
   })().catch((e) => {
     console.error(e);
     process.exit(1);

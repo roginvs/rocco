@@ -699,17 +699,23 @@ export function emit(unit: TranslationUnit) {
     }
   }
 
+  const setupEsp: WAInstuction[] = [
+    `i32.const ${memoryOffsetForGlobals} ;; Prepare esp`,
+    `global.set $esp ;; Prepare esp`,
+  ];
+
   const moduleCode: WAInstuction[] = [
     "(module",
 
-    '(global $esp (import "js" "esp") (mut i32))',
+    `(import "js" "memory" (memory 0))`,
 
-    // TODO: Import memory
-    "(memory 127)",
+    //'(global $esp (import "js" "esp") (mut i32))',
+    "(global $esp (mut i32))",
 
     ...functionsCode,
 
     " (func $init  ",
+    ...setupEsp,
     ...globalsInitializers,
     ")",
     " (start $init)",
