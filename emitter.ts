@@ -168,7 +168,7 @@ export function emit(unit: TranslationUnit) {
         throw new Error("Internal error");
       }
       if (t.arithmeticType === "int") {
-        return `i32.load offset=${offset} align=${alignment} `;
+        return `i32.load offset=${offset} align=${alignment} ;; readArithmetic int`;
       } else if (t.arithmeticType === "char") {
         if (t.signedUnsigned === "signed") {
           return `i32.load8_s offset=${offset} align=${alignment}`;
@@ -626,7 +626,7 @@ export function emit(unit: TranslationUnit) {
             }
           }
         } else if (statement.type === "return") {
-          // asdasd
+          code.push(";; return");
           if (func.declaration.typename.returnType.type === "void") {
             if (statement.expression) {
               error(
@@ -636,7 +636,6 @@ export function emit(unit: TranslationUnit) {
             }
             // Do not place anything on stack
           } else {
-            code.push(";; return");
             if (!statement.expression) {
               error(statement, "Must be an expression here");
             }
@@ -691,7 +690,7 @@ export function emit(unit: TranslationUnit) {
         `i32.add ;; Add all locals to esp`,
       ]),
       `;; Function body`,
-      "block ;; main function block ",
+      `block ${returnTypeCode};; main function block `,
       ...funcCode,
       "end ;; main function block end",
       `;; Cleanup`,
