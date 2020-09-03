@@ -18,4 +18,6 @@ int func1()
 
   int x = 20 + 20;
   int y = 30;
+
+  return x;
 }

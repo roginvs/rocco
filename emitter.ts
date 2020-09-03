@@ -557,7 +557,7 @@ export function emit(unit: TranslationUnit) {
       inFuncAddress += size;
     }
 
-    const returnType =
+    const returnTypeCode =
       (func.declaration.typename.returnType.type === "arithmetic" &&
         (func.declaration.typename.returnType.arithmeticType === "int" ||
           func.declaration.typename.returnType.arithmeticType === "char")) ||
@@ -566,16 +566,24 @@ export function emit(unit: TranslationUnit) {
         : func.declaration.typename.returnType.type === "void"
         ? ""
         : undefined;
-    if (returnType === undefined) {
+    if (returnTypeCode === undefined) {
       error(
         func.declaration.typename.returnType,
         "This return type is not supported yet"
       );
     }
 
-    function createFunctionCode(body: CompoundStatementBody[]): WAInstuction[] {
+    function createFunctionCodeForBlock(
+      body: CompoundStatementBody[]
+    ): WAInstuction[] {
       const code: WAInstuction[] = [];
+      let returnFound = false;
       for (const statement of body) {
+        if (returnFound) {
+          warn(statement, "Unreachable code detected");
+          continue;
+        }
+
         if (statement.type === "declarator") {
           // TODO: Dynamic arrays case
 
@@ -607,13 +615,54 @@ export function emit(unit: TranslationUnit) {
               assertNever(statement.initializer);
             }
           }
+        } else if (statement.type === "return") {
+          // asdasd
+          if (func.declaration.typename.returnType.type === "void") {
+            if (statement.expression) {
+              error(
+                statement.expression,
+                "void function should not return value"
+              );
+            }
+            // Do not place anything on stack
+          } else {
+            code.push(";; return");
+            if (!statement.expression) {
+              error(statement, "Must be an expression here");
+            }
+            const returnExpressionInfo = getExpressionInfo(
+              statement.expression
+            );
+            const returnExpressionValueCode = returnExpressionInfo.value();
+
+            if (
+              (func.declaration.typename.returnType.type === "arithmetic" &&
+                (func.declaration.typename.returnType.arithmeticType ===
+                  "int" ||
+                  func.declaration.typename.returnType.arithmeticType ===
+                    "char")) ||
+              func.declaration.typename.returnType.type === "pointer"
+            ) {
+              if (!returnExpressionValueCode) {
+                error(statement.expression, "Must be a value here");
+              }
+              code.push(...returnExpressionValueCode);
+            } else {
+              error(statement, "This return type is not supported yet");
+            }
+          }
+
+          code.push("TODO TODO: RETURN");
+          returnFound = true;
+        } else {
+          error(statement, "TODO statement");
         }
       }
 
       return code;
     }
 
-    const funcCode: WAInstuction[] = createFunctionCode(func.body);
+    const funcCode: WAInstuction[] = createFunctionCodeForBlock(func.body);
 
     const returnCode: WAInstuction[] = [`local.get $ebp`, `global.set $esp`];
 
@@ -622,7 +671,7 @@ export function emit(unit: TranslationUnit) {
 
     return [
       `;; Function ${func.declaration.identifier} localSize=${inFuncAddress}`,
-      `(func $F${func.declaration.declaratorId} ${returnType}(local $ebp i32)`,
+      `(func $F${func.declaration.declaratorId} ${returnTypeCode}(local $ebp i32)`,
       `global.get $esp`,
       `local.tee $ebp ;; Save esp -> ebp`,
       `i32.const ${inFuncAddress}`,
