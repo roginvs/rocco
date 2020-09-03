@@ -16,6 +16,6 @@ int func1()
   static int arr4[5];
   static int z = 401;
 
-  int x = 20;
+  int x = 20 + 20;
   int y = 30;
 }

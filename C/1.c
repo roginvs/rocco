@@ -337,6 +337,11 @@ void test27()
   p = p - 2;
 }
 
+int test28()
+{
+  // asd
+}
+
 //int my_len = 10;
 //char my_array[];
 

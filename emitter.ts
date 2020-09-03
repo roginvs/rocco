@@ -8,6 +8,7 @@ import {
   ExpressionNode,
   IdentifierNode,
   DeclaratorId,
+  CompoundStatementBody,
 } from "./parser.definitions";
 import { TokenLocation } from "./error";
 import { assertNever } from "./assertNever";
@@ -527,8 +528,10 @@ export function emit(unit: TranslationUnit) {
 
         globalsInitializers.push(
           `;; Initializer for global ${declaration.identifier} id=${declaration.declaratorId}`,
-          `i32.const ${declaration.memoryOffset} ;; address`,
+          // For declarators we do not have "address" function we duplicate code here
+          `i32.const ${declaration.memoryOffset} ;; global address`,
           `i32.const ${initializerExpressionInfo.staticValue} ;; value`,
+          // Everything have 4-bytes alignment, so it is ok
           `i32.store 2 0`
         );
       }
@@ -570,7 +573,47 @@ export function emit(unit: TranslationUnit) {
       );
     }
 
-    const funcCode: WAInstuction[] = [];
+    function createFunctionCode(body: CompoundStatementBody[]): WAInstuction[] {
+      const code: WAInstuction[] = [];
+      for (const statement of body) {
+        if (statement.type === "declarator") {
+          // TODO: Dynamic arrays case
+
+          if (statement.initializer) {
+            if (statement.initializer.type === "initializer-list") {
+              error(statement.initializer, "Not supported yet");
+            } else if (statement.initializer.type === "assigmnent-expression") {
+              if (statement.memoryIsGlobal) {
+                continue;
+              }
+              const initializerInfo = getExpressionInfo(
+                statement.initializer.expression
+              );
+              const initializerValueCode = initializerInfo.value();
+              if (!initializerValueCode) {
+                error(statement.initializer.expression, "Must return a value");
+              }
+              code.push(
+                `;; Initializer for local ${statement.identifier} id=${statement.declaratorId}`,
+
+                // For declarators we do not have "address" function we duplicate code here
+                `local.get $ebp ;;  address, first part`,
+
+                ...initializerValueCode,
+                // Everything have 4-bytes alignment, so it is ok
+                `i32.store 2 ${statement.memoryOffset}`
+              );
+            } else {
+              assertNever(statement.initializer);
+            }
+          }
+        }
+      }
+
+      return code;
+    }
+
+    const funcCode: WAInstuction[] = createFunctionCode(func.body);
 
     const returnCode: WAInstuction[] = [`local.get $ebp`, `global.set $esp`];
 
@@ -585,8 +628,10 @@ export function emit(unit: TranslationUnit) {
       `i32.const ${inFuncAddress}`,
       `i32.add ;; Add all locals to esp`,
       `global.set $esp ;; And update esp`,
+      `;; Function body`,
       ...funcCode,
-
+      `;; Cleanup`,
+      ...returnCode,
       `)`,
     ];
   }
