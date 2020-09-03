@@ -715,6 +715,12 @@ export function emit(unit: TranslationUnit) {
     ...writeEspCode([`i32.const ${memoryOffsetForGlobals} ;; Prepare esp`]),
   ];
 
+  const debugHelpers: WAInstuction[] = [
+    `(func (export "_debug_get_esp") (result i32)`,
+    ...readEspCode,
+    ")",
+  ];
+
   const moduleCode: WAInstuction[] = [
     "(module",
 
@@ -731,6 +737,7 @@ export function emit(unit: TranslationUnit) {
 
     ...functionsCode,
 
+    ...debugHelpers,
     ")",
   ];
 

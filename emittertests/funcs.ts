@@ -18,6 +18,10 @@ function writeErrorInfo(e: any) {
   );
 }
 
+interface DebugHelpersExports {
+  _debug_get_esp: () => number;
+}
+
 export async function compile<E extends WebAssembly.Exports>(fname: string) {
   const fdata = fs.readFileSync(__dirname + "/../test/" + fname).toString();
 
@@ -65,7 +69,7 @@ export async function compile<E extends WebAssembly.Exports>(fname: string) {
       js: { memory: memory },
     });
 
-    const compiled = instance.exports as E;
+    const compiled = instance.exports as E & DebugHelpersExports;
 
     const mem32 = new Uint32Array(memory.buffer);
 
