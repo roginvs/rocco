@@ -1,7 +1,7 @@
 (module
 ;; asdasd
 (; comment ;)
-  (global $g (import "js" "global") (mut i32))
+  ;; (global $g (import "js" "global") (mut i32))
 
   (memory 127)
 
@@ -113,5 +113,16 @@
 
   (start $init)
 
-   (export "savingadd" (func $savingadd2))
+  (func $test_nested_br (export "test_nested_br") (result i32)
+    (block (result i32)
+      (block (result i32)
+        (block (result i32) ;; Every block must have return type
+        i32.const 88
+        br 2
+        )
+      )
+    )
+  )
+
+  (export "savingadd" (func $savingadd2))
 )
