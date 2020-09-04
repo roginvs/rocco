@@ -36,6 +36,32 @@ function cacheFunc<T, U>(func: (param1: T) => U): (param1: T) => U {
 
 type WAInstuction = string;
 
+type RegisterType = "i32" | "i64" | "f32" | "f64";
+function typenameToRegister(typename: Typename): RegisterType | null {
+  if (typename.type === "arithmetic") {
+    if (
+      typename.arithmeticType === "char" ||
+      typename.arithmeticType === "short" ||
+      typename.arithmeticType === "int"
+    ) {
+      return "i32" as const;
+    } else if (typename.arithmeticType === "long long") {
+      return "i64" as const;
+    } else if (typename.arithmeticType === "float") {
+      return "f32" as const;
+    } else if (typename.arithmeticType === "double") {
+      return "f64" as const;
+    } else {
+      assertNever(typename.arithmeticType);
+    }
+  } else if (typename.type === "pointer") {
+    return "i32" as const;
+  } else {
+    // TODO: enums are in registers too
+    return null;
+  }
+}
+
 export function emit(unit: TranslationUnit) {
   const warnings: CheckerWarning[] = [];
 
@@ -146,7 +172,11 @@ export function emit(unit: TranslationUnit) {
   interface ExpressionInfo {
     type: Typename;
 
-    // For int and floats - just value on stack
+    /**
+     * Value is available only for arithmetic types and pointers
+     * I.e. "scalar types"
+     * It is like "get value to register"
+     */
     value: () => WAInstuction[] | null;
 
     address: () => WAInstuction[] | null;
@@ -567,21 +597,20 @@ export function emit(unit: TranslationUnit) {
       inFuncAddress += size;
     }
 
-    const returnTypeCode =
-      (func.declaration.typename.returnType.type === "arithmetic" &&
-        (func.declaration.typename.returnType.arithmeticType === "int" ||
-          func.declaration.typename.returnType.arithmeticType === "char")) ||
-      func.declaration.typename.returnType.type === "pointer"
-        ? `(result i32)`
-        : func.declaration.typename.returnType.type === "void"
-        ? ""
-        : undefined;
-    if (returnTypeCode === undefined) {
+    const functionReturnsInRegister = typenameToRegister(
+      func.declaration.typename.returnType
+    );
+    if (
+      functionReturnsInRegister === null &&
+      func.declaration.typename.returnType.type !== "void"
+    ) {
       error(
         func.declaration.typename.returnType,
         "This return type is not supported yet"
       );
     }
+
+    const returnValueLocalName = "$return_value";
 
     function createFunctionCodeForBlock(
       body: CompoundStatementBody[]
@@ -644,20 +673,27 @@ export function emit(unit: TranslationUnit) {
             );
             const returnExpressionValueCode = returnExpressionInfo.value();
 
+            const expressionRegisterType = typenameToRegister(
+              returnExpressionInfo.type
+            );
+
             if (
-              (func.declaration.typename.returnType.type === "arithmetic" &&
-                (func.declaration.typename.returnType.arithmeticType ===
-                  "int" ||
-                  func.declaration.typename.returnType.arithmeticType ===
-                    "char")) ||
-              func.declaration.typename.returnType.type === "pointer"
+              expressionRegisterType &&
+              expressionRegisterType === functionReturnsInRegister
             ) {
               if (!returnExpressionValueCode) {
-                error(statement.expression, "Must be a value here");
+                error(
+                  statement.expression,
+                  `Internal error: Type ${returnExpressionInfo.type.type} must have value`
+                );
               }
               code.push(...returnExpressionValueCode);
+              code.push(`local.set ${returnValueLocalName}`);
             } else {
-              error(statement, "This return type is not supported yet");
+              error(
+                statement.expression,
+                "This return type is not supported yet"
+              );
             }
           }
 
@@ -673,14 +709,26 @@ export function emit(unit: TranslationUnit) {
 
     const funcCode: WAInstuction[] = createFunctionCodeForBlock(func.body);
 
-    const returnCode: WAInstuction[] = [...writeEspCode([`local.get $ebp`])];
-
+    const restoreEsp: WAInstuction[] = [...writeEspCode([`local.get $ebp`])];
+    const returnValueInRegisterIfAny: WAInstuction[] = functionReturnsInRegister
+      ? [`local.get ${returnValueLocalName}`]
+      : [];
     // asdasd
     // generate function code here
 
     return [
       `;; Function ${func.declaration.identifier} localSize=${inFuncAddress}`,
-      `(func $F${func.declaration.declaratorId} ${returnTypeCode}(local $ebp i32)`,
+      `(func $F${func.declaration.declaratorId} ` +
+        `${
+          functionReturnsInRegister
+            ? `(result ${functionReturnsInRegister})`
+            : ""
+        }` +
+        `(local $ebp i32)` +
+        (functionReturnsInRegister
+          ? `(local ${returnValueLocalName} ${functionReturnsInRegister})`
+          : ""),
+
       ...readEspCode,
       `local.set $ebp ;; Save esp -> ebp`,
 
@@ -690,11 +738,12 @@ export function emit(unit: TranslationUnit) {
         `i32.add ;; Add all locals to esp`,
       ]),
       `;; Function body`,
-      `block ${returnTypeCode};; main function block `,
+      `block ;; main function block `,
       ...funcCode,
       "end ;; main function block end",
       `;; Cleanup`,
-      ...returnCode,
+      ...restoreEsp,
+      ...returnValueInRegisterIfAny,
       `)`,
       "",
       `(export "${func.declaration.identifier}" (func $F${func.declaration.declaratorId}))`,

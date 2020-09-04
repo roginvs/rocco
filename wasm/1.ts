@@ -24,7 +24,7 @@ async function main() {
     savingadd: (n: number) => number;
     test_nested_br: () => number;
     test_stack_values: () => number;
-    blocks_and_ifs: () => number;
+    blocks_and_ifs: (n: number) => number;
   };
 
   /*
