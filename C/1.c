@@ -340,6 +340,9 @@ void test27()
 int test28()
 {
   // asd
+
+  int a;
+  int b;
 }
 
 //int my_len = 10;

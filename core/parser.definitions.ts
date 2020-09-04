@@ -156,14 +156,24 @@ type FunctionTypename = {
   const: true;
 };
 
+export type TypenameArithmetic = {
+  type: "arithmetic";
+  arithmeticType: ArithmeticType;
+  signedUnsigned: TypeSignedUnsigned | null;
+  const: boolean;
+};
+
+export type TypenamePointer = {
+  type: "pointer";
+  const: boolean;
+  pointsTo: Typename;
+};
+
+export type TypenameScalar = TypenameArithmetic | TypenamePointer;
+
 export type Typename =
+  | TypenameScalar
   | { type: "void"; const: boolean }
-  | {
-      type: "arithmetic";
-      arithmeticType: ArithmeticType;
-      signedUnsigned: TypeSignedUnsigned | null;
-      const: boolean;
-    }
   | {
       type: "struct";
       const: boolean;
@@ -173,11 +183,6 @@ export type Typename =
       type: "enum";
       const: boolean;
       // @TODO
-    }
-  | {
-      type: "pointer";
-      const: boolean;
-      pointsTo: Typename;
     }
   | {
       type: "array";

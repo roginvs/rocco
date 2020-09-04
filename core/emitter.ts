@@ -9,12 +9,14 @@ import {
   IdentifierNode,
   DeclaratorId,
   CompoundStatementBody,
+  TypenameScalar,
 } from "./parser.definitions";
 import { TokenLocation } from "./error";
 import { assertNever } from "./assertNever";
 import { CheckerError } from "./error";
 import { type } from "os";
 import { stat, write } from "fs";
+import { assert } from "console";
 
 export interface CheckerWarning extends TokenLocation {
   msg: string;
@@ -62,6 +64,63 @@ function typenameToRegister(typename: Typename): RegisterType | null {
   }
 }
 
+function storeScalarType(
+  typename: Typename,
+  fromRegister: RegisterType,
+  offset = 0,
+  align = 0
+): WAInstuction {
+  const offsetAlign =
+    (offset !== 0 ? ` offset=${offset}` : "") +
+    (align !== 0 ? ` align=${align}` : "");
+  if (typename.type === "arithmetic") {
+    if (typename.arithmeticType === "char") {
+      if (fromRegister !== "i32" && fromRegister !== "i64") {
+        throw new Error(
+          `Internal error: unable to save char from ${fromRegister} register`
+        );
+      }
+      return `${fromRegister}.store8 ${offsetAlign}`;
+    } else if (typename.arithmeticType === "short") {
+      if (fromRegister !== "i32" && fromRegister !== "i64") {
+        throw new Error(
+          `Internal error: unable to save short from ${fromRegister} register`
+        );
+      }
+      return `${fromRegister}.store16 ${offsetAlign}`;
+    } else if (typename.arithmeticType === "int") {
+      if (fromRegister === "i32") {
+        return `i32.store ${offsetAlign}`;
+      } else if (fromRegister === "i64") {
+        return `i64.store32 ${offsetAlign}`;
+      } else {
+        throw new Error(
+          `Internal error: unable to save int from ${fromRegister} register`
+        );
+      }
+    } else if (typename.arithmeticType === "long long") {
+      if (fromRegister !== "i64") {
+        throw new Error(
+          `Internal error: unable to save longlong from ${fromRegister} register`
+        );
+      }
+      return `i64.store ${offsetAlign}`;
+    } else if (
+      typename.arithmeticType === "double" ||
+      typename.arithmeticType === "float"
+    ) {
+      throw new Error("TOOD: Store float/double");
+    } else {
+      assertNever(typename.arithmeticType);
+    }
+  } else if (typename.type === "pointer") {
+    return `i32.store ${offsetAlign}`;
+  }
+  throw new Error(
+    `Wrong usage, expecting only scalar types but got type=${typename.type}`
+  );
+}
+
 export function emit(unit: TranslationUnit) {
   const warnings: CheckerWarning[] = [];
 
@@ -76,6 +135,15 @@ export function emit(unit: TranslationUnit) {
       );
     }
     return declaration;
+  }
+
+  function cloneLocation(fromNode: Node, toNode: Node) {
+    const location = locator.get(fromNode);
+    if (!location) {
+      console.warn(`No location for node`, fromNode);
+      return;
+    }
+    locator.set(toNode, location);
   }
 
   function warn(node: Node, msg: string) {
@@ -359,13 +427,14 @@ export function emit(unit: TranslationUnit) {
           return null;
         }
         const indexValue = indexInfo.value();
-        if (indexValue) {
-          return [...arrayAddress, ...indexValue, `i32.add`];
+        if (!indexValue) {
+          error(index, "Internal error: must have value");
         }
-        const indexAddress = indexInfo.address();
-        if (indexAddress) {
-          return [...arrayAddress, ...indexAddress, `i32.load`, `i32.add`];
+        if (1 + 1 === 2) {
+          throw new Error("TODO: Multiply by element size");
         }
+        return [...arrayAddress, ...indexValue, `i32.add`];
+
         return null;
       };
       return {
@@ -505,8 +574,55 @@ export function emit(unit: TranslationUnit) {
           `Type assigment ${rvalueInfo.type} to ${lvalueInfo.type} is not supported yet`
         );
       }
-      // asdasd TODO
-      asdasdasdasd;
+
+      if (lvalueIsInRegister !== "i32") {
+        error(expression.lvalue, "Not supported yet");
+      }
+
+      if (lvalueInfo.type.const) {
+        error(expression.lvalue, "Have const modifier, unable to change");
+      }
+
+      const sideEffect = () => {
+        const lvalueAddress = lvalueInfo.address();
+        if (!lvalueAddress) {
+          error(expression.lvalue, "Not an lvalue");
+        }
+        const rvalueValue = rvalueInfo.value();
+        if (!rvalueValue) {
+          error(expression.rvalue, "Internal error: no value for rvalue");
+        }
+        return [
+          ...lvalueAddress,
+          ...rvalueValue,
+          storeScalarType(lvalueInfo.type, lvalueIsInRegister),
+        ];
+      };
+
+      // not modifiable anymore
+      const newTypeNode: Typename = { ...lvalueInfo.type, const: true };
+      cloneLocation(lvalueInfo.type, newTypeNode);
+
+      return {
+        address: () => {
+          const lvalueAddress = lvalueInfo.address();
+          if (!lvalueAddress) {
+            error(expression.lvalue, "lvalue have no address");
+          }
+          // This should be never used because we add "const" modifier
+          // And we now support only i32 values, so everything have value
+          return [...sideEffect(), ...lvalueAddress];
+        },
+        value: () => {
+          const lvalueValue = lvalueInfo.value();
+          if (!lvalueValue) {
+            error(expression.lvalue, "lvalue have no value");
+          }
+          return [...sideEffect(), ...lvalueValue];
+        },
+        staticValue: null,
+        type: newTypeNode,
+      };
       // Get address of lvalue
       // Get value of rvalue (must be because in register)
       // Place value in memory using lvalue type (char, short, int, etc)
@@ -748,8 +864,6 @@ export function emit(unit: TranslationUnit) {
     const returnValueInRegisterIfAny: WAInstuction[] = functionReturnsInRegister
       ? [`local.get ${returnValueLocalName}`]
       : [];
-    // asdasd
-    // generate function code here
 
     return [
       `;; Function ${func.declaration.identifier} localSize=${inFuncAddress}`,
