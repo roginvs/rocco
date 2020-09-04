@@ -29,6 +29,6 @@ int return_const()
 int counter()
 {
   static int counts = 0;
-  // counts = counts + 1;
+  counts = counts + 1;
   return counts;
 }

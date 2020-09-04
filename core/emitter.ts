@@ -184,11 +184,6 @@ export function emit(unit: TranslationUnit) {
     staticValue: number | null;
   }
   const getExpressionInfo = (expression: ExpressionNode): ExpressionInfo => {
-    // type
-    // rvalue code = address in stack
-    // lvalue code (if any)
-    // static value (if known)
-
     const readArithmetic = (
       t: Typename,
       alignment = 2,
@@ -491,9 +486,33 @@ export function emit(unit: TranslationUnit) {
           "Not supported yet. Todo: other types for binary operations"
         );
       }
+    } else if (expression.type === "assignment") {
+      const lvalueInfo = getExpressionInfo(expression.lvalue);
+      const rvalueInfo = getExpressionInfo(expression.rvalue);
+
+      const lvalueIsInRegister = typenameToRegister(lvalueInfo.type);
+      if (!lvalueIsInRegister) {
+        error(
+          expression.lvalue,
+          `Assignment to this type=${lvalueInfo.type} is not supported yet`
+        );
+      }
+
+      if (lvalueIsInRegister !== typenameToRegister(rvalueInfo.type)) {
+        // For example, i32 -> i64
+        error(
+          expression.rvalue,
+          `Type assigment ${rvalueInfo.type} to ${lvalueInfo.type} is not supported yet`
+        );
+      }
+      // asdasd TODO
+      asdasdasdasd;
+      // Get address of lvalue
+      // Get value of rvalue (must be because in register)
+      // Place value in memory using lvalue type (char, short, int, etc)
     }
 
-    error(expression, "TODO other expressionInfo");
+    error(expression, `TODO other expressionInfo for type=${expression.type}`);
   };
 
   // Initial step: assign global memory
@@ -699,6 +718,22 @@ export function emit(unit: TranslationUnit) {
 
           code.push("br 0 ;; TODO TODO use real depth here");
           returnFound = true;
+        } else if (statement.type === "expression") {
+          const info = getExpressionInfo(statement.expression);
+          // Here we need only side effects
+          const value = info.value();
+          const address = info.address();
+          if (value) {
+            code.push(...value);
+          } else if (address) {
+            code.push(...address);
+          } else {
+            error(
+              statement.expression,
+              "Internal error: expression must have value or address"
+            );
+          }
+          code.push("drop");
         } else {
           error(statement, "TODO statement");
         }
