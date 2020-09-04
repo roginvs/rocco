@@ -24,6 +24,7 @@ async function main() {
     savingadd: (n: number) => number;
     test_nested_br: () => number;
     test_stack_values: () => number;
+    blocks_and_ifs: () => number;
   };
 
   /*
@@ -38,6 +39,10 @@ async function main() {
 
   console.info(`test_nested_br = ${mymodule.test_nested_br()}`);
   console.info(`test_stack_values = ${mymodule.test_stack_values()}`);
+  console.info("");
+  for (const v of [9, 11]) {
+    console.info(`blocks_and_ifs(${v}) = ${mymodule.blocks_and_ifs(v)}`);
+  }
 }
 
 main().catch((e) => {

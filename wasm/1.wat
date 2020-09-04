@@ -127,16 +127,60 @@
     i32.const 89
   )
 
-    (func $test_stack_values (export "test_stack_values") (result i32)
-      ;; i32.const 3
-      ;; i64.extend_i32_u
-      i64.const 2 ;; 
-      i32.wrap_i64 ;; Return type must be i32
-      ;; Just testing extend/wrap
-      i64.extend_i32_u
-      i32.wrap_i64
+  (func $test_stack_values (export "test_stack_values") (result i32)
+    ;; i32.const 3
+    ;; i64.extend_i32_u
+    i64.const 2 ;; 
+    i32.wrap_i64 ;; Return type must be i32
+    ;; Just testing extend/wrap
+    i64.extend_i32_u
+    i32.wrap_i64
+  )
+
+  (func $blocks_and_ifs (export "blocks_and_ifs")  (param $x i32) (result i32) (local $value_to_return i32)
+    i32.const  0 ;; A default value
+    local.set $value_to_return
+
+    (block $label0
+       (block $label1
+        
+
+          local.get $x
+          i32.const 10
+          i32.lt_s ;; If x < 10
+
+          if $what_is_this_label_for ;; (result i32)     ;; no result
+           ;; i32.const 79
+             i32.const 100
+             local.set $value_to_return
+             br $label0
+          else 
+            nop
+          end
+          ;; br_if $label0            
+        
+      )
+      local.get $value_to_return
+      i32.const 1
+      i32.add
+      local.set $value_to_return
     )
 
+    local.get $value_to_return
+
+  )
+  
+  (func $blocks_and_ifs2 (export "blocks_and_ifs2")  (param $x i32) (result i32) (local $value_to_return i32)
+    ;;
+    ;;  http://mbebenita.github.io/WasmExplorer/ shows that clang is making
+    ;;  blocks for ifs too. Blocks are like "goto_forward"
+    ;;
+    ;;
+    ;;     
+
+    local.get $x
+  )
+ 
   
 
   (export "savingadd" (func $savingadd2))
