@@ -77,13 +77,15 @@ export function createExpressionAndTypes(helpers: EmitterHelpers) {
   const getExpressionInfo = (expression: ExpressionNode): ExpressionInfo => {
     if (expression.type === "const") {
       if (expression.subtype === "int" || expression.subtype === "char") {
+        const typeNode: Typename = {
+          type: "arithmetic",
+          arithmeticType: expression.subtype,
+          const: true,
+          signedUnsigned: "signed",
+        };
+        cloneLocation(expression, typeNode);
         return {
-          type: {
-            type: "arithmetic",
-            arithmeticType: expression.subtype,
-            const: true,
-            signedUnsigned: "signed",
-          },
+          type: typeNode,
           value: () => [`i32.const ${expression.value}`],
           address: () => null,
           staticValue: expression.value,
