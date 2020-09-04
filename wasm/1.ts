@@ -20,14 +20,24 @@ async function main() {
 
   console.info(instance.exports);
 
-  const savingadd = instance.exports.savingadd as (n: number) => number;
-  console.info(savingadd(1));
-  console.info(savingadd(1));
-  console.info(savingadd(1));
-  console.info(savingadd(1));
+  const mymodule = instance.exports as {
+    savingadd: (n: number) => number;
+    test_nested_br: () => number;
+    test_stack_values: () => number;
+  };
+
+  /*
+  console.info(exports.savingadd(1));
+  console.info(exports.savingadd(1));
+  console.info(exports.savingadd(1));
+  console.info(exports.savingadd(1));
 
   console.info("loop1()=", (instance.exports as any).loop1());
   console.info("loop2()=", (instance.exports as any).loop2());
+  */
+
+  console.info(`test_nested_br = ${mymodule.test_nested_br()}`);
+  console.info(`test_stack_values = ${mymodule.test_stack_values()}`);
 }
 
 main().catch((e) => {

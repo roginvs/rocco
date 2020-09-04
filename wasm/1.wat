@@ -1,7 +1,7 @@
 (module
 ;; asdasd
 (; comment ;)
-  (global $g (import "js" "global") (mut i32))
+  ;; (global $g (import "js" "global") (mut i32))
 
   (memory 127)
 
@@ -113,5 +113,29 @@
 
   (start $init)
 
-   (export "savingadd" (func $savingadd2))
+  (func $test_nested_br (export "test_nested_br") (result i32)
+    (block (result i32)
+      (block (result i32)
+        (block (result i32) ;; Every block must have return type
+        i32.const 88
+        br 2
+        )
+      )
+    )
+
+    drop
+    i32.const 89
+  )
+
+    (func $test_stack_values (export "test_stack_values") (result i32)
+      ;; i32.const 3
+      ;; i64.extend_i32_u
+      i64.const 2 ;; 
+      i32.wrap_i64 ;; Return type must be i32
+      ;; Just testing extend/wrap
+      i64.extend_i32_u
+      i32.wrap_i64
+    )
+
+  (export "savingadd" (func $savingadd2))
 )
