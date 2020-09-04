@@ -18,7 +18,7 @@ import { type } from "os";
 import { stat, write } from "fs";
 import { assert } from "console";
 import { WAInstuction } from "./emitter.definitions";
-import { typenameToRegister, storeScalarType } from "./emitter.utils";
+import { typenameToRegister } from "./emitter.utils";
 import { createHelpers } from "./emitter.helpers";
 import { createExpressionAndTypes } from "./emitter.expressionsandtypes";
 

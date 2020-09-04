@@ -2,11 +2,8 @@ import { ExpressionNode, Typename, Node } from "./parser.definitions";
 import { ExpressionInfo, WAInstuction } from "./emitter.definitions";
 import { assertNever } from "./assertNever";
 import { EmitterHelpers } from "./emitter.helpers";
-import {
-  typenameToRegister,
-  storeScalarType,
-  readArithmetic,
-} from "./emitter.utils";
+import { typenameToRegister } from "./emitter.utils";
+import { storeScalar, loadScalar } from "./emitter.scalar.storeload";
 
 export function createExpressionAndTypes(helpers: EmitterHelpers) {
   const { warn, cloneLocation, getDeclaration } = helpers;
@@ -101,9 +98,6 @@ export function createExpressionAndTypes(helpers: EmitterHelpers) {
           declaration.typename.arithmeticType === "char" ||
           declaration.typename.arithmeticType === "int"
         ) {
-          const isChar = declaration.typename.arithmeticType === "char";
-          const isSigned = declaration.typename.signedUnsigned === "signed";
-
           let staticValue: number | null = null;
           if (
             declaration.typename.const /** todo: check volatile */ &&
@@ -124,14 +118,15 @@ export function createExpressionAndTypes(helpers: EmitterHelpers) {
               declaration.memoryIsGlobal
                 ? [
                     `i32.const ${declaration.memoryOffset}`,
-                    readArithmetic(declaration.typename),
+                    loadScalar(declaration.typename, "i32"),
                   ]
                 : [
                     `local.get $ebp`,
-                    readArithmetic(
+                    loadScalar(
                       declaration.typename,
-                      2,
-                      declaration.memoryOffset
+                      "i32",
+                      declaration.memoryOffset,
+                      2
                     ),
                   ],
             address: () =>
@@ -169,8 +164,19 @@ export function createExpressionAndTypes(helpers: EmitterHelpers) {
           staticValue: null,
           value: () =>
             declaration.memoryIsGlobal
-              ? [`i32.const ${declaration.memoryOffset}`, `i32.load 2 0`]
-              : [`local.get $ebp`, `i32.load 2 ${declaration.memoryOffset}`],
+              ? [
+                  `i32.const ${declaration.memoryOffset}`,
+                  loadScalar(declaration.typename, "i32", 0, 2),
+                ]
+              : [
+                  `local.get $ebp`,
+                  loadScalar(
+                    declaration.typename,
+                    "i32",
+                    declaration.memoryOffset,
+                    2
+                  ),
+                ],
           address: () =>
             declaration.memoryIsGlobal
               ? [`i32.const ${declaration.memoryOffset}`]
@@ -260,7 +266,7 @@ export function createExpressionAndTypes(helpers: EmitterHelpers) {
           }
           return [
             ...address,
-            readArithmetic(targetInfo.type.elementsTypename, 0, 0),
+            loadScalar(targetInfo.type.elementsTypename, "i32", 0, 0),
           ];
         },
         address: () => getArrayElementAddress(),
@@ -401,7 +407,7 @@ export function createExpressionAndTypes(helpers: EmitterHelpers) {
         return [
           ...lvalueAddress,
           ...rvalueValue,
-          storeScalarType(lvalueInfo.type, lvalueIsInRegister),
+          storeScalar(lvalueInfo.type, lvalueIsInRegister),
         ];
       };
 
