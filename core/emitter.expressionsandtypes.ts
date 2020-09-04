@@ -2,7 +2,11 @@ import { ExpressionNode, Typename, Node } from "./parser.definitions";
 import { ExpressionInfo, WAInstuction } from "./emitter.definitions";
 import { assertNever } from "./assertNever";
 import { EmitterHelpers } from "./emitter.helpers";
-import { typenameToRegister, storeScalarType } from "./emitter.utils";
+import {
+  typenameToRegister,
+  storeScalarType,
+  readArithmetic,
+} from "./emitter.utils";
 
 export function createExpressionAndTypes(helpers: EmitterHelpers) {
   const { warn, cloneLocation, getDeclaration } = helpers;
@@ -74,26 +78,6 @@ export function createExpressionAndTypes(helpers: EmitterHelpers) {
   };
 
   const getExpressionInfo = (expression: ExpressionNode): ExpressionInfo => {
-    const readArithmetic = (
-      t: Typename,
-      alignment = 2,
-      offset = 0
-    ): WAInstuction => {
-      if (t.type !== "arithmetic") {
-        throw new Error("Internal error");
-      }
-      if (t.arithmeticType === "int") {
-        return `i32.load offset=${offset} align=${alignment} ;; readArithmetic int`;
-      } else if (t.arithmeticType === "char") {
-        if (t.signedUnsigned === "signed") {
-          return `i32.load8_s offset=${offset} align=${alignment}`;
-        } else {
-          return `i32.load8_u offset=${offset} align=${alignment} `;
-        }
-      }
-      throw new Error("Internal error or not suppored yet");
-    };
-
     if (expression.type === "const") {
       if (expression.subtype === "int" || expression.subtype === "char") {
         return {

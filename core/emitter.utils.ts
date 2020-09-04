@@ -83,3 +83,23 @@ export function storeScalarType(
     `Wrong usage, expecting only scalar types but got type=${typename.type}`
   );
 }
+
+export function readArithmetic(
+  t: Typename,
+  alignment = 2,
+  offset = 0
+): WAInstuction {
+  if (t.type !== "arithmetic") {
+    throw new Error("Internal error");
+  }
+  if (t.arithmeticType === "int") {
+    return `i32.load offset=${offset} align=${alignment} ;; readArithmetic int`;
+  } else if (t.arithmeticType === "char") {
+    if (t.signedUnsigned === "signed") {
+      return `i32.load8_s offset=${offset} align=${alignment}`;
+    } else {
+      return `i32.load8_u offset=${offset} align=${alignment} `;
+    }
+  }
+  throw new Error("Internal error or not suppored yet");
+}
