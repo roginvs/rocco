@@ -525,6 +525,32 @@ export function createExpressionAndTypes(
       // Get address of lvalue
       // Get value of rvalue (must be because in register)
       // Place value in memory using lvalue type (char, short, int, etc)
+    } else if (expression.type === "unary-operator") {
+      if (expression.operator === "&") {
+        const target = expression.target;
+        const targetInfo = getExpressionInfo(target);
+        const returnType: Typename = {
+          type: "pointer",
+          // Returned value is not an lvalue
+          const: true,
+          pointsTo: targetInfo.type,
+        };
+        cloneLocation(expression, returnType);
+        return {
+          type: returnType,
+          address: () => null,
+          staticValue: null,
+          value: () => {
+            const targetAddress = targetInfo.address();
+            return targetAddress;
+          },
+        };
+      } else {
+        error(
+          expression,
+          `TODO: This unary operator ${expression.operator} is not supported yet`
+        );
+      }
     }
 
     error(expression, `TODO other expressionInfo for type=${expression.type}`);
