@@ -92,7 +92,27 @@ export function createExpressionAndTypes(
 
   const getExpressionInfo = (expression: ExpressionNode): ExpressionInfo => {
     if (expression.type === "const") {
-      if (expression.subtype === "int" || expression.subtype === "char") {
+      if (expression.subtype === "char") {
+        if (expression.value > 255) {
+          throw new Error("Assertion failed: char > 255");
+        }
+        if (expression.value < -128) {
+          throw new Error("Assertion failed: char < -128");
+        }
+        const typeNode: Typename = {
+          type: "arithmetic",
+          arithmeticType: "char",
+          const: true,
+          signedUnsigned: expression.value >= 0 ? null : "signed",
+        };
+        cloneLocation(expression, typeNode);
+        return {
+          type: typeNode,
+          value: () => [`i32.const ${expression.value}`],
+          address: () => null,
+          staticValue: expression.value,
+        };
+      } else if (expression.subtype === "int") {
         const typeNode: Typename = {
           type: "arithmetic",
           arithmeticType: expression.subtype,
