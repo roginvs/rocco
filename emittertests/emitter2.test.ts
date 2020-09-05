@@ -25,6 +25,8 @@ describe(`Emits and compiles`, () => {
     for (const x of [0, 99, 113, 600]) {
       expect(d.compiled.int_identity(x)).toBe(x);
     }
+
+    expect(d.compiled.int_sum(2, 15)).toBe(17);
     //asd
   });
 });

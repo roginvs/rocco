@@ -191,6 +191,7 @@ export function createFunctionCodeGenerator(
         // Parameter value
         `local.get $P${param.declaratorId} ;; Param ${param.identifier} value`,
         // storeScalar(param.typename, paramRegisterType, param.memoryOffset, 2)
+        // TODO: WHy offset is not working?
         storeScalar(param.typename, paramRegisterType, param.memoryOffset, 0)
       );
     }
