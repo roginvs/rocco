@@ -332,6 +332,7 @@ export function createExpressionAndTypes(helpers: EmitterHelpers) {
         }
 
         // Todo: other operators here too
+        // todo: pay attention for operands type
         const staticValue =
           leftInfo.staticValue && rightInfo.staticValue
             ? op === "+"
