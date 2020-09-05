@@ -350,7 +350,17 @@ int test29()
 
   return s;
 }
+int test30(int x, int y)
+{
+  // array x of array y of char
+  // size = x*y*char
+  // arr[n] = &arr + n*(sizeof(char[y]))
+  char arr[x][y];
 
+  arr[2][3] = 44;
+
+  return 2;
+}
 //int my_len = 10;
 //char my_array[];
 

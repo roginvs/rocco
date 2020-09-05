@@ -291,6 +291,14 @@ export function createExpressionAndTypes(
         error(target, "Must be array type");
       }
 
+      const elementsSize = getTypeSize(targetInfo.type.elementsTypename);
+      if (typeof elementsSize !== "number") {
+        error(
+          targetInfo.type.elementsTypename,
+          "Dynamic arrays are not supported yet"
+        );
+      }
+
       const getArrayElementAddress = () => {
         const arrayAddress = targetInfo.address();
         if (!arrayAddress) {
@@ -303,7 +311,13 @@ export function createExpressionAndTypes(
         if (1 + 1 === 2) {
           throw new Error("TODO: Multiply by element size");
         }
-        return [...arrayAddress, ...indexValue, `i32.add`];
+
+        const indexOffset: WAInstuction[] = [
+          ...indexValue,
+          `i32.const ${elementsSize}`,
+          `i32.mul`,
+        ];
+        return [...arrayAddress, ...indexOffset, `i32.add`];
 
         return null;
       };
