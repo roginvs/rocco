@@ -15,10 +15,13 @@ int func(int x)
 int main()
 {
   unsigned char c;
-  // No casting needed
+  // No casting needed, and no warning here!
   c = i;
   float f = i;
   i = f;
+  i = (2.3 + 0.1);
+  // i = 2.3; <- this shows warning
+  i = 5 / 2;
 
   // Without casting it shows warning:
   //   incompatible pointer types assigning to 'int *' from 'unsigned char *'
