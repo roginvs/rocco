@@ -5,16 +5,29 @@ import { EmitterHelpers } from "./emitter.helpers";
 import { typenameToRegister } from "./emitter.utils";
 import { storeScalar, loadScalar } from "./emitter.scalar.storeload";
 
-export function createExpressionAndTypes(helpers: EmitterHelpers) {
+export type TypeSizeGetter = (
+  typename: Typename
+) => ExpressionNode | undefined | number;
+
+export type ExpressionInfoGetter = (
+  expression: ExpressionNode
+) => ExpressionInfo;
+
+export interface ExpressionAndTypes {
+  getTypeSize: TypeSizeGetter;
+  getExpressionInfo: ExpressionInfoGetter;
+}
+
+export function createExpressionAndTypes(
+  helpers: EmitterHelpers
+): ExpressionAndTypes {
   const { warn, cloneLocation, getDeclaration } = helpers;
 
   function error(node: Node, msg: string): never {
     helpers.error(node, msg);
   }
 
-  const getTypeSize = (
-    typename: Typename
-  ): ExpressionNode | undefined | number => {
+  const getTypeSize: TypeSizeGetter = (typename) => {
     // Fixed size = number
     // Depended size = expression
     // Incomplete = undefined
@@ -448,7 +461,7 @@ export function createExpressionAndTypes(helpers: EmitterHelpers) {
 
   return {
     getTypeSize,
-    isArrayStaticSize,
+
     getExpressionInfo,
   };
 }

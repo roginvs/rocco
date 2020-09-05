@@ -26,3 +26,13 @@ export function typenameToRegister(typename: Typename): RegisterType | null {
     return null;
   }
 }
+
+export const readEspCode: WAInstuction[] = [
+  `i32.const 4 ;; Read $esp`,
+  "i32.load offset=0 align=2 ;; Read $esp",
+];
+export const writeEspCode = (value: WAInstuction[]) => [
+  `i32.const 4 ;; Prepare $esp write - address`,
+  ...value,
+  `i32.store offset=0 align=2 ;; Write $esp`,
+];
