@@ -607,6 +607,16 @@ export function createExpressionAndTypes(
       if (targetRegister !== typenameToRegister(expression.typename)) {
         error(expression.typename, "TODO: Register change for casting");
       }
+      if (
+        expression.typename.type === "arithmetic" &&
+        expression.typename.arithmeticType !== "int"
+      ) {
+        error(
+          expression.typename,
+          "TODO: downncasting/upcasting is not supported yet"
+        );
+      }
+
       return {
         type: expression.typename,
         staticValue: targetInfo.staticValue,
