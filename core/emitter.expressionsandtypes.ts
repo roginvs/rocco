@@ -4,6 +4,8 @@ import { assertNever } from "./assertNever";
 import { EmitterHelpers } from "./emitter.helpers";
 import { typenameToRegister } from "./emitter.utils";
 import { storeScalar, loadScalar } from "./emitter.scalar.storeload";
+import { isScalar } from "./emitter.scalar";
+import { timeLog } from "console";
 
 export type TypeSize =
   | {
@@ -133,7 +135,7 @@ export function createExpressionAndTypes(
         return {
           type: typeNode,
           value: () => [`i32.const ${expression.value}`],
-          address: () => null,
+          address: null,
           staticValue: expression.value,
         };
       } else if (expression.subtype === "int") {
@@ -151,7 +153,7 @@ export function createExpressionAndTypes(
           return {
             type: typeNode,
             value: () => [`i32.const ${expression.value}`],
-            address: () => null,
+            address: null,
             staticValue: expression.value,
           };
         } else {
@@ -165,7 +167,7 @@ export function createExpressionAndTypes(
           return {
             type: typeNode,
             value: () => [`i64.const ${expression.value}`],
-            address: () => null,
+            address: null,
             staticValue: expression.value,
           };
         }
@@ -236,7 +238,7 @@ export function createExpressionAndTypes(
         return {
           type: declaration.typename,
           staticValue: null,
-          value: () => null,
+          value: null,
           address: () => [`i32.const ${declaration.memoryOffset}`],
         };
       } else if (declaration.typename.type === "pointer") {
@@ -268,14 +270,15 @@ export function createExpressionAndTypes(
                 ],
         };
       } else if (declaration.typename.type === "array") {
+        if (!isArrayStaticSize(declaration.typename)) {
+          error(declaration, "TODO: Dynamic arrays are not supported yet");
+        }
+
         return {
           type: declaration.typename,
           staticValue: null,
-          value: () => null,
+          value: null,
           address: () => {
-            if (!isArrayStaticSize(declaration.typename)) {
-              error(declaration, "TODO: Dynamic arrays are not supported yet");
-            }
             return declaration.memoryIsGlobal
               ? [`i32.const ${declaration.memoryOffset}`]
               : [
@@ -322,44 +325,39 @@ export function createExpressionAndTypes(
         );
       }
 
-      const getArrayElementAddress = () => {
-        const arrayAddress = targetInfo.address();
-        if (!arrayAddress) {
-          return null;
-        }
-        const indexValue = indexInfo.value();
-        if (!indexValue) {
-          error(index, "Internal error: must have value");
-        }
+      if (!targetInfo.address) {
+        error(target, "Array must have address");
+      }
+      const getArrayAddress = targetInfo.address;
 
+      if (!indexInfo.value) {
+        error(index, "Must be a value here");
+      }
+
+      const getIndexValue = indexInfo.value;
+
+      const getArrayElementAddress = () => {
         const indexOffset: WAInstuction[] = [
-          ...indexValue,
+          ...getIndexValue(),
           `i32.const ${elementsSize.value}`,
           `i32.mul`,
         ];
-        return [...arrayAddress, ...indexOffset, `i32.add`];
+        return [...getArrayAddress(), ...indexOffset, `i32.add`];
       };
+
+      const elementsTypename = targetInfo.type.elementsTypename;
+      const getArrayElementValue = isScalar(elementsTypename)
+        ? () => [
+            ...getArrayElementAddress(),
+            loadScalar(elementsTypename, "i32", 0, 0),
+          ]
+        : null;
+
       return {
         type: targetInfo.type.elementsTypename,
         staticValue: null,
-        value: () => {
-          const address = getArrayElementAddress();
-          if (!address) {
-            return null;
-          }
-          if (targetInfo.type.type !== "array") {
-            // Additinal check for TS
-            return null;
-          }
-          if (targetInfo.type.elementsTypename.type !== "arithmetic") {
-            return null;
-          }
-          return [
-            ...address,
-            loadScalar(targetInfo.type.elementsTypename, "i32", 0, 0),
-          ];
-        },
-        address: () => getArrayElementAddress(),
+        value: getArrayElementValue,
+        address: getArrayElementAddress,
       };
     } else if (expression.type === "binary operator") {
       const leftInfo = getExpressionInfo(expression.left);
@@ -429,29 +427,30 @@ export function createExpressionAndTypes(
               ? leftInfo.staticValue - rightInfo.staticValue
               : null
             : null;
+
+        const getLeftValue = leftInfo.value;
+        if (!getLeftValue) {
+          error(expression.left, "Must have a value");
+        }
+        const getRightValue = rightInfo.value;
+        if (!getRightValue) {
+          error(expression.right, "Must have a value");
+        }
+
         return {
           type: finalType,
           staticValue: staticValue,
-          address: () => null,
+          address: null,
           value: () => {
-            const leftVal = leftInfo.value();
-            const rightVal = rightInfo.value();
-            if (!leftVal) {
-              return null;
-            }
-            if (!rightVal) {
-              return null;
-            }
             return [
-              ...leftVal,
+              ...getLeftValue(),
               ...prepareInstructions,
-              ...rightVal,
+              ...getRightValue(),
               ...prepareInstructions,
               operatorInstruction,
             ];
           },
         };
-        //
       } else {
         error(
           expression,
@@ -482,18 +481,28 @@ export function createExpressionAndTypes(
         error(expression.lvalue, "Have const modifier, unable to change");
       }
 
+      const getLvalueAddress = lvalueInfo.address;
+      if (!getLvalueAddress) {
+        error(expression.lvalue, "Lvalue must have an address");
+      }
+
+      const getLvalueValue = lvalueInfo.value;
+      if (!getLvalueValue) {
+        error(
+          expression.lvalue,
+          "Lvalue must also have a value, at least for now"
+        );
+      }
+
+      const getRvalueValue = rvalueInfo.value;
+      if (!getRvalueValue) {
+        error(expression.rvalue, "rvalue must have a value, at least for now");
+      }
+
       const sideEffect = () => {
-        const lvalueAddress = lvalueInfo.address();
-        if (!lvalueAddress) {
-          error(expression.lvalue, "Not an lvalue");
-        }
-        const rvalueValue = rvalueInfo.value();
-        if (!rvalueValue) {
-          error(expression.rvalue, "Internal error: no value for rvalue");
-        }
         return [
-          ...lvalueAddress,
-          ...rvalueValue,
+          ...getLvalueAddress(),
+          ...getRvalueValue(),
           storeScalar(lvalueInfo.type, lvalueIsInRegister),
         ];
       };
@@ -504,20 +513,12 @@ export function createExpressionAndTypes(
 
       return {
         address: () => {
-          const lvalueAddress = lvalueInfo.address();
-          if (!lvalueAddress) {
-            error(expression.lvalue, "lvalue have no address");
-          }
           // This should be never used because we add "const" modifier
-          // And we now support only i32 values, so everything have value
-          return [...sideEffect(), ...lvalueAddress];
+          // And we now support only scalar values, so everything have value
+          return [...sideEffect(), ...getLvalueAddress()];
         },
         value: () => {
-          const lvalueValue = lvalueInfo.value();
-          if (!lvalueValue) {
-            error(expression.lvalue, "lvalue have no value");
-          }
-          return [...sideEffect(), ...lvalueValue];
+          return [...sideEffect(), ...getLvalueValue()];
         },
         staticValue: null,
         type: newTypeNode,
@@ -529,6 +530,10 @@ export function createExpressionAndTypes(
       if (expression.operator === "&") {
         const target = expression.target;
         const targetInfo = getExpressionInfo(target);
+        const getTargetAddress = targetInfo.address;
+        if (!getTargetAddress) {
+          error(expression.target, "Must be something with address");
+        }
         const returnType: Typename = {
           type: "pointer",
           // Returned value is not an lvalue
@@ -538,12 +543,9 @@ export function createExpressionAndTypes(
         cloneLocation(expression, returnType);
         return {
           type: returnType,
-          address: () => null,
+          address: null,
           staticValue: null,
-          value: () => {
-            const targetAddress = targetInfo.address();
-            return targetAddress;
-          },
+          value: getTargetAddress,
         };
       } else {
         error(

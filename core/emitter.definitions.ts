@@ -5,6 +5,7 @@ export type WAInstuction = string;
 
 export type RegisterType = "i32" | "i64" | "f32" | "f64";
 
+export type WAInstuctionWhenMemoryIsReady = () => WAInstuction[];
 export interface ExpressionInfo {
   type: Typename;
 
@@ -13,9 +14,9 @@ export interface ExpressionInfo {
    * I.e. "scalar types"
    * It is like "get value to register"
    */
-  value: () => WAInstuction[] | null;
+  value: null | WAInstuctionWhenMemoryIsReady;
 
-  address: () => WAInstuction[] | null;
+  address: null | WAInstuctionWhenMemoryIsReady;
 
   staticValue: number | null;
 }

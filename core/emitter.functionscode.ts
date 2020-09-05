@@ -75,8 +75,8 @@ export function createFunctionCodeGenerator(
               const initializerInfo = getExpressionInfo(
                 statement.initializer.expression
               );
-              const initializerValueCode = initializerInfo.value();
-              if (!initializerValueCode) {
+
+              if (!initializerInfo.value) {
                 error(statement.initializer.expression, "Must return a value");
               }
               code.push(
@@ -85,7 +85,7 @@ export function createFunctionCodeGenerator(
                 // For declarators we do not have "address" function we duplicate code here
                 `local.get $ebp ;;  address, first part`,
 
-                ...initializerValueCode,
+                ...initializerInfo.value(),
                 // Everything have 4-bytes alignment, so it is ok to load 8 bytes as i32
                 `i32.store offset=${statement.memoryOffset} align=2 `
               );
@@ -110,7 +110,6 @@ export function createFunctionCodeGenerator(
             const returnExpressionInfo = getExpressionInfo(
               statement.expression
             );
-            const returnExpressionValueCode = returnExpressionInfo.value();
 
             const expressionRegisterType = typenameToRegister(
               returnExpressionInfo.type
@@ -120,13 +119,13 @@ export function createFunctionCodeGenerator(
               expressionRegisterType &&
               expressionRegisterType === functionReturnsInRegister
             ) {
-              if (!returnExpressionValueCode) {
+              if (!returnExpressionInfo.value) {
                 error(
                   statement.expression,
                   `Internal error: Type ${returnExpressionInfo.type.type} must have value`
                 );
               }
-              code.push(...returnExpressionValueCode);
+              code.push(...returnExpressionInfo.value());
               code.push(`local.set ${returnValueLocalName}`);
             } else {
               error(
@@ -141,12 +140,10 @@ export function createFunctionCodeGenerator(
         } else if (statement.type === "expression") {
           const info = getExpressionInfo(statement.expression);
           // Here we need only side effects
-          const value = info.value();
-          const address = info.address();
-          if (value) {
-            code.push(...value);
-          } else if (address) {
-            code.push(...address);
+          if (info.value) {
+            code.push(...info.value());
+          } else if (info.address) {
+            code.push(...info.address());
           } else {
             error(
               statement.expression,
