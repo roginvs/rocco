@@ -11,6 +11,7 @@ import {
   ExpressionInfoGetter,
 } from "./emitter.expressionsandtypes";
 import { assertNever } from "./assertNever";
+import { storeScalar } from "./emitter.scalar.storeload";
 
 export function createFunctionCodeGenerator(
   helpers: EmitterHelpers,
@@ -166,17 +167,45 @@ export function createFunctionCodeGenerator(
       ? [`local.get ${returnValueLocalName}`]
       : [];
 
+    const functionParamsDeclarations: WAInstuction[] = [];
+    const functionParamsInitializers: WAInstuction[] = [];
+    for (const param of func.declaration.typename.parameters) {
+      if (param.type !== "declarator") {
+        error(
+          param,
+          `Internal error: function must have declarator parameters`
+        );
+      }
+      const paramRegisterType = typenameToRegister(param.typename);
+      if (!paramRegisterType) {
+        error(param, "TODO: Currently this type of parameter is not supported");
+      }
+      functionParamsDeclarations.push(
+        `  (param $P${param.declaratorId} ${paramRegisterType}) `
+      );
+
+      functionParamsInitializers.push(
+        // Parameter address. They are always on stack
+        // Load ebp here and add it to memoryoffset
+        `local.get $ebp ;; Param ${param.identifier} ebp`,
+        // Parameter value
+        `local.get $P${param.declaratorId} ;; Param ${param.identifier} value`,
+        // storeScalar(param.typename, paramRegisterType, param.memoryOffset, 2)
+        storeScalar(param.typename, paramRegisterType, param.memoryOffset, 0)
+      );
+    }
+
     return [
       `;; Function ${func.declaration.identifier} localSize=${inFuncAddress}`,
-      `(func $F${func.declaration.declaratorId} ` +
-        `${
-          functionReturnsInRegister
-            ? `(result ${functionReturnsInRegister})`
-            : ""
-        }` +
-        `(local $ebp i32)` +
+      `(func $F${func.declaration.declaratorId} `,
+      ...functionParamsDeclarations,
+      functionReturnsInRegister
+        ? `  (result ${functionReturnsInRegister})`
+        : "",
+
+      `  (local $ebp i32)` +
         (functionReturnsInRegister
-          ? `(local ${returnValueLocalName} ${functionReturnsInRegister})`
+          ? `  (local ${returnValueLocalName} ${functionReturnsInRegister})`
           : ""),
 
       ...readEspCode,
@@ -187,6 +216,8 @@ export function createFunctionCodeGenerator(
         `i32.const ${inFuncAddress}`,
         `i32.add ;; Add all locals to esp`,
       ]),
+      `;; Initialize params`,
+      ...functionParamsInitializers,
       `;; Function body`,
       `block ;; main function block `,
       ...funcCode,

@@ -22,7 +22,9 @@ describe(`Emits and compiles`, () => {
 
     expect(d.compiled.get_hacky_esp()).toBe(d.compiled._debug_get_esp());
 
-    expect(d.compiled.int_identity(112)).toBe(112);
+    for (const x of [0, 99, 113, 600]) {
+      expect(d.compiled.int_identity(x)).toBe(x);
+    }
     //asd
   });
 });
