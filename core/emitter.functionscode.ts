@@ -28,12 +28,12 @@ export function createFunctionCodeGenerator(
     for (const declarationId of func.declaredVariables) {
       const declaration = getDeclaration(declarationId);
       const size = getTypeSize(declaration.typename);
-      if (typeof size !== "number") {
+      if (size.type !== "static") {
         error(declaration, "Dynamic or incomplete size is not supported yet");
       }
       declaration.memoryOffset = inFuncAddress;
       declaration.memoryIsGlobal = false;
-      inFuncAddress += size;
+      inFuncAddress += size.value;
     }
 
     const functionReturnsInRegister = typenameToRegister(

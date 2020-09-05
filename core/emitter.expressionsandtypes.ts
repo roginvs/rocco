@@ -5,9 +5,20 @@ import { EmitterHelpers } from "./emitter.helpers";
 import { typenameToRegister } from "./emitter.utils";
 import { storeScalar, loadScalar } from "./emitter.scalar.storeload";
 
-export type TypeSizeGetter = (
-  typename: Typename
-) => ExpressionNode | undefined | number;
+export type TypeSize =
+  | {
+      type: "static";
+      value: number;
+    }
+  | {
+      type: "incomplete";
+    }
+  | {
+      type: "expression";
+      expression: ExpressionNode;
+    };
+
+export type TypeSizeGetter = (typename: Typename) => TypeSize;
 
 export type ExpressionInfoGetter = (
   expression: ExpressionNode
@@ -31,11 +42,23 @@ export function createExpressionAndTypes(
     // Fixed size = number
     // Depended size = expression
     // Incomplete = undefined
+    const staticSize = (value: number): TypeSize => ({
+      type: "static",
+      value: value,
+    });
+    const incomleteSize: TypeSize = {
+      type: "incomplete",
+    };
+    const expressionSize = (expression: ExpressionNode): TypeSize => ({
+      type: "expression",
+      expression: expression,
+    });
+
     if (typename.type === "arithmetic") {
       if (typename.arithmeticType === "char") {
-        return 1;
+        return staticSize(1);
       } else if (typename.arithmeticType === "int") {
-        return 4;
+        return staticSize(4);
       } else {
         error(typename, "Not supported yet");
       }
@@ -43,7 +66,7 @@ export function createExpressionAndTypes(
       const elementSize = getTypeSize(typename.elementsTypename);
 
       if (typename.size === null) {
-        return undefined;
+        return incomleteSize;
       }
       if (typename.size === "*") {
         error(typename, "Star in array is not supported");
@@ -51,8 +74,8 @@ export function createExpressionAndTypes(
 
       const size = getExpressionInfo(typename.size);
 
-      if (typeof elementSize === "number" && size.staticValue) {
-        return elementSize * size.staticValue;
+      if (elementSize.type === "static" && size.staticValue) {
+        return staticSize(elementSize.value * size.staticValue);
       } else {
         error(
           typename,
@@ -70,7 +93,7 @@ export function createExpressionAndTypes(
         "6.5.3.4: The sizeof operator shall not be applied to an expression that has function type"
       );
     } else if (typename.type === "pointer") {
-      return 4;
+      return staticSize(4);
     } else if (typename.type === "void") {
       error(typename, "Void have no size");
     } else {
@@ -83,7 +106,7 @@ export function createExpressionAndTypes(
       throw new Error("Internal error: isArrayStaticSize called for non-array");
     }
     const size = getTypeSize(node);
-    if (typeof size === "number") {
+    if (size.type === "static") {
       return true;
     } else {
       return false;
@@ -292,7 +315,7 @@ export function createExpressionAndTypes(
       }
 
       const elementsSize = getTypeSize(targetInfo.type.elementsTypename);
-      if (typeof elementsSize !== "number") {
+      if (elementsSize.type !== "static") {
         error(
           targetInfo.type.elementsTypename,
           "Dynamic arrays are not supported yet"
@@ -314,12 +337,10 @@ export function createExpressionAndTypes(
 
         const indexOffset: WAInstuction[] = [
           ...indexValue,
-          `i32.const ${elementsSize}`,
+          `i32.const ${elementsSize.value}`,
           `i32.mul`,
         ];
         return [...arrayAddress, ...indexOffset, `i32.add`];
-
-        return null;
       };
       return {
         type: targetInfo.type.elementsTypename,

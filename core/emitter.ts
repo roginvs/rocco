@@ -60,7 +60,7 @@ export function emit(unit: TranslationUnit) {
       error(declaration, "Void for variable is not allowed");
     }
     const size = getTypeSize(declaration.typename);
-    if (typeof size !== "number") {
+    if (size.type !== "static") {
       error(declaration, `Globals must have known size`);
     }
     if (memoryOffsetForGlobals % 4 !== 0) {
@@ -68,7 +68,7 @@ export function emit(unit: TranslationUnit) {
     }
     declaration.memoryOffset = memoryOffsetForGlobals;
     declaration.memoryIsGlobal = true;
-    memoryOffsetForGlobals += size;
+    memoryOffsetForGlobals += size.value;
     const alignment = memoryOffsetForGlobals % 4;
     if (alignment !== 0) {
       memoryOffsetForGlobals += 4 - alignment;
