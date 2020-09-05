@@ -33,6 +33,13 @@ describe(`Emits and compiles`, () => {
     d.mem32[2] = 0;
     d.compiled.change_chars_array(0, 10);
     expect(d.mem32[2]).toBe(10);
-    //asd
+    d.compiled.change_chars_array(1, 44);
+    expect(d.mem32[2]).toBe(44 * 256 + 10);
+    d.compiled.change_chars_array(2, 33);
+    expect(d.mem32[2]).toBe(33 * 256 * 256 + 44 * 256 + 10);
+    d.compiled.change_chars_array(3, 255);
+    expect(d.mem32[2]).toBe(
+      255 * 256 * 256 * 256 + 33 * 256 * 256 + 44 * 256 + 10
+    );
   });
 });
