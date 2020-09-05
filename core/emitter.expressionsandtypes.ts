@@ -331,9 +331,6 @@ export function createExpressionAndTypes(
         if (!indexValue) {
           error(index, "Internal error: must have value");
         }
-        if (1 + 1 === 2) {
-          throw new Error("TODO: Multiply by element size");
-        }
 
         const indexOffset: WAInstuction[] = [
           ...indexValue,
