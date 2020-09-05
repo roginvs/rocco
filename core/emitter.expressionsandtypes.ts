@@ -65,7 +65,10 @@ export function createExpressionAndTypes(
       typename.type === "function" ||
       typename.type === "function-knr"
     ) {
-      error(typename, "Internal error: functions have no size");
+      error(
+        typename,
+        "6.5.3.4: The sizeof operator shall not be applied to an expression that has function type"
+      );
     } else if (typename.type === "pointer") {
       return 4;
     } else if (typename.type === "void") {

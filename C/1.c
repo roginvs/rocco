@@ -344,6 +344,12 @@ int test28()
   int a;
   int b;
 }
+int test29()
+{
+  int s = sizeof test28;
+
+  return s;
+}
 
 //int my_len = 10;
 //char my_array[];
