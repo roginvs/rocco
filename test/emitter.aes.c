@@ -1,14 +1,24 @@
+/*
 
+A copy-paste from https://github.com/roginvs/test_crypto/ 
+  - types changed into "unsigned char"
+  - typedefs removed
+  - macroses removed
+  - all files are concatenated manually into one file
 
-const char BIT_LEN = 8;
+*/
+
+// ==================== galois.c =================================
+
+const unsigned char BIT_LEN = 8;
 
 /** Table of bytes with bits in inverse order */
-char _inverse_bits[256];
+unsigned char _inverse_bits[0x100];
 
-char _inverse_bits_for_byte(char a)
+unsigned char _inverse_bits_for_byte(unsigned char a)
 {
-  char r = 0;
-  for (char i = 0; i < 8; i++)
+  unsigned char r = 0;
+  for (unsigned char i = 0; i < 8; i++)
   {
     if ((a >> i) & 1)
     {
@@ -31,15 +41,15 @@ char poly = 0b00011011;
 char poly_inversed = 0b11011000;
 
 /** Multiplication of two charnoms in GF2, bits are inversed */
-char char_multiple_inversed(char a, char b)
+unsigned char char_multiple_inversed(unsigned char a, unsigned char b)
 {
 
-  char window = 0;
+  unsigned char window = 0;
 
   // Go through highest degree to lowest
-  for (char i = 0; i < BIT_LEN; i++)
+  for (unsigned char i = 0; i < BIT_LEN; i++)
   {
-    char bit_value = (b >> i) & 1;
+    unsigned char bit_value = (b >> i) & 1;
 
     // printf("Bit as pos %i value=%i\n", i, bit_value);
     if (bit_value == 1)
@@ -63,7 +73,7 @@ char char_multiple_inversed(char a, char b)
     if (i != BIT_LEN - 1)
     {
       // Now prepare for shift
-      char window_highest_degree_bit = window & 1;
+      unsigned char window_highest_degree_bit = window & 1;
       // printf("  window=0x%08x shiftedWindow=0x%08x shiftedBit=%i\n", window, window >> 1, window_highest_degree_bit);
       window = window >> 1;
       if (window_highest_degree_bit == 1)
@@ -78,15 +88,15 @@ char char_multiple_inversed(char a, char b)
 };
 
 /** Multiplication of two charnoms in GF2 */
-char char_multiple(char a, char b)
+unsigned char char_multiple(unsigned char a, unsigned char b)
 {
 
-  char window = 0;
+  unsigned char window = 0;
 
   // Go through highest degree to lowest
-  for (char i = BIT_LEN - 1; i >= 0; i--)
+  for (unsigned char i = BIT_LEN - 1; i >= 0; i--)
   {
-    char bit_value = (b >> i) & 1;
+    unsigned char bit_value = (b >> i) & 1;
 
     // printf("Bit as pos %i value=%i\n", i, bit_value);
     if (bit_value == 1)
@@ -110,7 +120,7 @@ char char_multiple(char a, char b)
     if (i != 0)
     {
       // Now prepare for shift
-      char window_highest_degree_bit = (window >> (BIT_LEN - 1)) & 1;
+      unsigned char window_highest_degree_bit = (window >> (BIT_LEN - 1)) & 1;
       // printf("  window=0x%08x shiftedWindow=0x%08x shiftedBit=%i\n", window, window >> 1, window_highest_degree_bit);
       window = window << 1;
       if (window_highest_degree_bit == 1)
@@ -133,7 +143,7 @@ char char_multiple(char a, char b)
 //        };
 // };
 
-char char_divide(char a, char b, char a_have_highest_bit, char *q, char *r)
+unsigned char char_divide(unsigned char a, unsigned char b, unsigned char a_have_highest_bit, unsigned char *q, unsigned char *r)
 {
   // printf("\nDivide ");
   // printf(a_have_highest_bit ? "1." : "0.");
@@ -142,17 +152,17 @@ char char_divide(char a, char b, char a_have_highest_bit, char *q, char *r)
   // print_bits(b);
   // printf("\n");
 
-  char local_q;
-  char local_r;
+  unsigned char local_q;
+  unsigned char local_r;
 
-  char next_q;
-  char next_r;
+  unsigned char next_q;
+  unsigned char next_r;
 
-  for (char i = BIT_LEN; i >= 0; i--)
+  for (unsigned char i = BIT_LEN; i >= 0; i--)
   {
     if ((i == BIT_LEN && a_have_highest_bit) || ((a >> i) & 1))
     {
-      for (char ii = (i == BIT_LEN ? i - 1 : i); ii >= 0; ii--)
+      for (unsigned char ii = (i == BIT_LEN ? i - 1 : i); ii >= 0; ii--)
       {
         if ((b >> ii) & 1)
         {
@@ -203,7 +213,7 @@ char char_divide(char a, char b, char a_have_highest_bit, char *q, char *r)
 /** 
  * Assume that deg(a) is always bigger than deg(b)
  * */
-char _get_bezout_identity(char a, char b, char a_have_highest_bit, char *x, char *y)
+unsigned char _get_bezout_identity(unsigned char a, unsigned char b, unsigned char a_have_highest_bit, unsigned char *x, unsigned char *y)
 {
   if (b == 0b1)
   {
@@ -211,8 +221,8 @@ char _get_bezout_identity(char a, char b, char a_have_highest_bit, char *x, char
     *y = 1;
     return 0;
   }
-  char q;
-  char r;
+  unsigned char q;
+  unsigned char r;
   if (char_divide(a, b, a_have_highest_bit, &q, &r))
   {
     *x = 0;
@@ -243,10 +253,10 @@ char _get_bezout_identity(char a, char b, char a_have_highest_bit, char *x, char
     return 3;
   };
 
-  char xx;
-  char yy;
+  unsigned char xx;
+  unsigned char yy;
 
-  char err = _get_bezout_identity(b, r, 0, &xx, &yy);
+  unsigned char err = _get_bezout_identity(b, r, 0, &xx, &yy);
   if (err)
   {
     return err;
@@ -258,12 +268,12 @@ char _get_bezout_identity(char a, char b, char a_have_highest_bit, char *x, char
   return 0;
 };
 
-char get_inverse_element(char b)
+unsigned char get_inverse_element(unsigned char b)
 {
-  char x;
-  char y;
+  unsigned char x;
+  unsigned char y;
 
-  char err = _get_bezout_identity(poly, b, 1, &x, &y);
+  unsigned char err = _get_bezout_identity(poly, b, 1, &x, &y);
   if (err)
   {
     return 0;
