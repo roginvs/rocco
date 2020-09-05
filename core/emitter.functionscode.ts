@@ -191,9 +191,8 @@ export function createFunctionCodeGenerator(
         // Parameter value
         `local.get $P${param.declaratorId} ;; Param ${param.identifier} value`,
 
-        // TODO: Alignment is not working here because if we call i32.store8,
-        //  then max alignment is zero
-        storeScalar(param.typename, paramRegisterType, param.memoryOffset, 0)
+        // Parameters are aligned because they are on stack
+        storeScalar(param.typename, paramRegisterType, param.memoryOffset, 2)
       );
     }
 

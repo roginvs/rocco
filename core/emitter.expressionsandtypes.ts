@@ -5,7 +5,6 @@ import { EmitterHelpers } from "./emitter.helpers";
 import { typenameToRegister } from "./emitter.utils";
 import { storeScalar, loadScalar } from "./emitter.scalar.storeload";
 import { isScalar } from "./emitter.scalar";
-import { timeLog } from "console";
 
 export type TypeSize =
   | {
@@ -201,7 +200,7 @@ export function createExpressionAndTypes(
               declaration.memoryIsGlobal
                 ? [
                     `i32.const ${declaration.memoryOffset}`,
-                    loadScalar(declaration.typename, "i32"),
+                    loadScalar(declaration.typename, "i32", 0, 2),
                   ]
                 : [
                     `local.get $ebp`,
@@ -349,6 +348,8 @@ export function createExpressionAndTypes(
       const getArrayElementValue = isScalar(elementsTypename)
         ? () => [
             ...getArrayElementAddress(),
+            // We might know alignment if we know array size
+            // For example, if elements size >= 4, then alignment could be equal 2
             loadScalar(elementsTypename, "i32", 0, 0),
           ]
         : null;
@@ -503,7 +504,9 @@ export function createExpressionAndTypes(
         return [
           ...getLvalueAddress(),
           ...getRvalueValue(),
-          storeScalar(lvalueInfo.type, lvalueIsInRegister),
+          // We have no idea about alignment here - our lvalue address can be anything
+          // In the future we can pass "is aligned" via getExpressionInfo
+          storeScalar(lvalueInfo.type, lvalueIsInRegister, 0, 0),
         ];
       };
 
