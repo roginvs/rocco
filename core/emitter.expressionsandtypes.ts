@@ -92,6 +92,7 @@ export function createExpressionAndTypes(
 
   const getExpressionInfo = (expression: ExpressionNode): ExpressionInfo => {
     if (expression.type === "const") {
+      // TODO: Change ExperssionNode type to hold stringified value instead of number
       if (expression.subtype === "char") {
         if (expression.value > 255) {
           throw new Error("Assertion failed: char > 255");
@@ -113,19 +114,38 @@ export function createExpressionAndTypes(
           staticValue: expression.value,
         };
       } else if (expression.subtype === "int") {
-        const typeNode: Typename = {
-          type: "arithmetic",
-          arithmeticType: expression.subtype,
-          const: true,
-          signedUnsigned: "signed",
-        };
-        cloneLocation(expression, typeNode);
-        return {
-          type: typeNode,
-          value: () => [`i32.const ${expression.value}`],
-          address: () => null,
-          staticValue: expression.value,
-        };
+        const INT_MIN = -(2 ** 31);
+        const UINT_MAX = 2 ** 32 - 1;
+        if (expression.value <= UINT_MAX && expression.value >= INT_MIN) {
+          // Always store as 4 bytes because our registers are 4 bytes
+          const typeNode: Typename = {
+            type: "arithmetic",
+            arithmeticType: "int",
+            const: true,
+            signedUnsigned: expression.value >= 0 ? null : "signed",
+          };
+          cloneLocation(expression, typeNode);
+          return {
+            type: typeNode,
+            value: () => [`i32.const ${expression.value}`],
+            address: () => null,
+            staticValue: expression.value,
+          };
+        } else {
+          const typeNode: Typename = {
+            type: "arithmetic",
+            arithmeticType: "long long",
+            const: true,
+            signedUnsigned: expression.value >= 0 ? null : "signed",
+          };
+          cloneLocation(expression, typeNode);
+          return {
+            type: typeNode,
+            value: () => [`i64.const ${expression.value}`],
+            address: () => null,
+            staticValue: expression.value,
+          };
+        }
       } else if (expression.subtype === "float") {
         error(expression, "Floats are not supported yet");
       }
