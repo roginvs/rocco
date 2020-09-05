@@ -3,14 +3,14 @@
 //
 // 
 //
-//    at Object.testSnapshot (/Users/vasilii/demo_compiler/testsnapshot.ts:44:10)
-//    at Object.<anonymous> (/Users/vasilii/demo_compiler/parser.test.ts:17:5)
+//    at Object.testSnapshot (/Users/vasilii/demo_compiler/core/testsnapshot.ts:44:10)
+//    at Object.<anonymous> (/Users/vasilii/demo_compiler/core/parser.test.ts:17:5)
 //    at Object.asyncJestTest (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:100:37)
-//    at resolve (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:47:12)
+//    at /Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:47:12
 //    at new Promise (<anonymous>)
 //    at mapper (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:30:19)
-//    at promise.then (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:77:41)
-//    at process._tickCallback (internal/process/next_tick.js:68:7)
+//    at /Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:77:41
+//    at processTicksAndRejections (internal/process/task_queues.js:97:5)
 
 {
   "type": "translation-unit",
@@ -202,6 +202,58 @@
             "operator": "=",
             "lvalue": {
               "type": "identifier",
+              "value": "i",
+              "declaratorNodeId": "0001"
+            },
+            "rvalue": {
+              "type": "binary operator",
+              "operator": "+",
+              "left": {
+                "type": "const",
+                "subtype": "float",
+                "value": 2.3
+              },
+              "right": {
+                "type": "const",
+                "subtype": "float",
+                "value": 0.1
+              }
+            }
+          }
+        },
+        {
+          "type": "expression",
+          "expression": {
+            "type": "assignment",
+            "operator": "=",
+            "lvalue": {
+              "type": "identifier",
+              "value": "i",
+              "declaratorNodeId": "0001"
+            },
+            "rvalue": {
+              "type": "binary operator",
+              "operator": "/",
+              "left": {
+                "type": "const",
+                "subtype": "int",
+                "value": 5
+              },
+              "right": {
+                "type": "const",
+                "subtype": "int",
+                "value": 2
+              }
+            }
+          }
+        },
+        {
+          "type": "expression",
+          "expression": {
+            "type": "assignment",
+            "operator": "=",
+            "lvalue": {
+              "type": "identifier",
               "value": "p",
               "declaratorNodeId": "0002"
             },
@@ -213,6 +265,23 @@
                 "value": "c",
                 "declaratorNodeId": "0006"
               }
+            }
+          }
+        },
+        {
+          "type": "expression",
+          "expression": {
+            "type": "assignment",
+            "operator": "=",
+            "lvalue": {
+              "type": "identifier",
+              "value": "p",
+              "declaratorNodeId": "0002"
+            },
+            "rvalue": {
+              "type": "identifier",
+              "value": "i",
+              "declaratorNodeId": "0001"
             }
           }
         },
