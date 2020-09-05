@@ -21,3 +21,14 @@ int get_arr_ints_address()
 {
   return &arr_ints;
 }
+
+int get_esp()
+{
+  int x;
+  return (int)&x - sizeof(x);
+}
+
+int array_on_stack()
+{
+  char arr1[13];
+}

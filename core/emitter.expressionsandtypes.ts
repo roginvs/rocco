@@ -594,6 +594,22 @@ export function createExpressionAndTypes(
       } else {
         assertNever(size);
       }
+    } else if (expression.type === "cast") {
+      const targetInfo = getExpressionInfo(expression.target);
+      // TODO: Other casts, change register if needed
+      const targetRegister = typenameToRegister(targetInfo.type);
+      if (targetRegister !== "i32") {
+        error(expression.target, "TODO: Such casts are not supported yet");
+      }
+      if (targetRegister !== typenameToRegister(expression.typename)) {
+        error(expression.typename, "TODO: Register change for casting");
+      }
+      return {
+        type: expression.typename,
+        staticValue: targetInfo.staticValue,
+        value: targetInfo.value,
+        address: targetInfo.address,
+      };
     }
 
     error(expression, `TODO other expressionInfo for type=${expression.type}`);
