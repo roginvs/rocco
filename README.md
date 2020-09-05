@@ -6,8 +6,7 @@ Rogin C Compiler
 
 todo:
 
-- Add assignment typecheking 6.5.16.1 Simple assignmen
+- Add assignment typecheking 6.5.16.1 Simple assignment
 - Add binary operators
-- Add promotion rules for binary operators
-
-- alignment for loadScalar/storeScalar : if byte(char) is saved/loaded, then no alignment
+  - Add promotion rules for binary operators
+- if/for/while loops
