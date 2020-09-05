@@ -10,6 +10,7 @@ describe(`Emits and compiles`, () => {
       get_hacky_esp(): number;
       int_identity(x: number): number;
       int_sum(x: number, y: number): number;
+      change_chars_array(idx: number, value: number): void;
     }>("emitter2.c");
 
     expect(d.compiled.get_arr_chars_size()).toBe(9);
@@ -27,6 +28,11 @@ describe(`Emits and compiles`, () => {
     }
 
     expect(d.compiled.int_sum(2, 15)).toBe(17);
+
+    // Bytes 8-11
+    d.mem32[2] = 0;
+    d.compiled.change_chars_array(0, 10);
+    expect(d.mem32[2]).toBe(10);
     //asd
   });
 });
