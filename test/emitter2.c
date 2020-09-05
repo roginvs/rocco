@@ -30,6 +30,23 @@ int get_hacky_esp()
   return (int)&x;
 }
 
+int int_identity(int x)
+{
+  return x;
+}
+int int_sum(int x, int y)
+{
+  return x + y;
+}
+
+void change_chars_array(int idx, char value)
+{
+  arr_chars[0] = 1;
+  arr_chars[1] = 2;
+  arr_chars[2] = 3;
+  arr_chars[3] = 4;
+}
+
 int array_on_stack()
 {
   char arr1[13];

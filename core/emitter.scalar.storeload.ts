@@ -80,7 +80,7 @@ export function loadScalar(
     throw new Error("Internal error");
   }
   if (t.arithmeticType === "int") {
-    return `i32.load offset=${offset} ${offsetAlign} ;; readArithmetic int`;
+    return `i32.load ${offsetAlign} ;; readArithmetic int`;
   } else if (t.arithmeticType === "char") {
     if (t.signedUnsigned === "signed") {
       return `i32.load8_s ${offsetAlign}`;
