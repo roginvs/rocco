@@ -478,10 +478,6 @@ export function createExpressionAndTypes(
         );
       }
 
-      if (lvalueIsInRegister !== "i32") {
-        error(expression.lvalue, "Not supported yet");
-      }
-
       if (lvalueInfo.type.const) {
         error(expression.lvalue, "Have const modifier, unable to change");
       }

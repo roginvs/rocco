@@ -27,6 +27,9 @@ int main()
   //   incompatible pointer types assigning to 'int *' from 'unsigned char *'
   p = &c;
 
+  // A warning here in gcc
+  p = i;
+
   // Casting example
   p = (int *)i;
 
