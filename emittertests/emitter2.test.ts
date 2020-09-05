@@ -7,6 +7,7 @@ describe(`Emits and compiles`, () => {
       get_arr_ints_size(): number;
       get_arr_chars_address(): number;
       get_arr_ints_address(): number;
+      get_hacky_esp(): number;
     }>("emitter2.c");
 
     expect(d.compiled.get_arr_chars_size()).toBe(9);
@@ -16,6 +17,8 @@ describe(`Emits and compiles`, () => {
     expect(d.compiled.get_arr_ints_address()).toBe(8 + 9 + /* padding */ 3);
 
     expect(d.compiled._debug_get_esp()).toBe(20 + 11 * 4);
+
+    expect(d.compiled.get_hacky_esp()).toBe(d.compiled._debug_get_esp());
     //asd
   });
 });
