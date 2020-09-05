@@ -44,6 +44,11 @@ void change_chars_array(int idx, char value)
   arr_chars[idx] = value;
 }
 
+void change_ints_array(int idx, int value)
+{
+  arr_ints[idx] = value;
+}
+
 int array_on_stack()
 {
   char arr1[13];

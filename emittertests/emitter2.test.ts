@@ -11,6 +11,7 @@ describe(`Emits and compiles`, () => {
       int_identity(x: number): number;
       int_sum(x: number, y: number): number;
       change_chars_array(idx: number, value: number): void;
+      change_ints_array(idx: number, value: number): void;
     }>("emitter2.c");
 
     expect(d.compiled.get_arr_chars_size()).toBe(9);
@@ -41,5 +42,13 @@ describe(`Emits and compiles`, () => {
     expect(d.mem32[2]).toBe(
       255 * 256 * 256 * 256 + 33 * 256 * 256 + 44 * 256 + 10
     );
+
+    // Bytes 20-23
+    d.mem32[5] = 0;
+    d.mem32[6] = 0;
+    d.compiled.change_ints_array(0, 44);
+    d.compiled.change_ints_array(1, 0xffffffff);
+    expect(d.mem32[5]).toBe(44);
+    expect(d.mem32[6]).toBe(0xffffffff);
   });
 });
