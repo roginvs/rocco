@@ -553,6 +553,47 @@ export function createExpressionAndTypes(
           `TODO: This unary operator ${expression.operator} is not supported yet`
         );
       }
+    } else if (expression.type === "sizeof expression") {
+      const typename: Typename = {
+        type: "arithmetic",
+        arithmeticType: "int",
+        signedUnsigned: null,
+        const: true,
+      };
+      cloneLocation(expression, typename);
+      const info = getExpressionInfo(expression.expression);
+      const size = getTypeSize(info.type);
+      if (size.type === "incomplete") {
+        error(
+          expression.expression,
+          "Unable to get size of expression with incomplete type"
+        );
+      } else if (size.type === "static") {
+        return {
+          address: null,
+          staticValue: size.value,
+          type: typename,
+
+          value: () => [`i32.const ${size.value}`],
+        };
+      } else if (size.type === "expression") {
+        const sizeExpressionInfo = getExpressionInfo(size.expression);
+        const sizeExpressionValue = sizeExpressionInfo.value;
+        if (!sizeExpressionValue) {
+          error(
+            size.expression,
+            "Internal error: unable to get expression value"
+          );
+        }
+        return {
+          address: null,
+          staticValue: null,
+          type: typename,
+          value: sizeExpressionValue,
+        };
+      } else {
+        assertNever(size);
+      }
     }
 
     error(expression, `TODO other expressionInfo for type=${expression.type}`);
