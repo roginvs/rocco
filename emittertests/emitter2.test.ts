@@ -15,6 +15,7 @@ describe(`Emits and compiles`, () => {
     expect(d.compiled.get_arr_chars_address()).toBe(8);
     expect(d.compiled.get_arr_ints_address()).toBe(8 + 9 + /* padding */ 3);
 
+    expect(d.compiled._debug_get_esp()).toBe(20 + 11 * 4);
     //asd
   });
 });
