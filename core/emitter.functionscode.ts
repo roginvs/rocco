@@ -190,8 +190,9 @@ export function createFunctionCodeGenerator(
         `local.get $ebp ;; Param ${param.identifier} ebp`,
         // Parameter value
         `local.get $P${param.declaratorId} ;; Param ${param.identifier} value`,
-        // storeScalar(param.typename, paramRegisterType, param.memoryOffset, 2)
-        // TODO: WHy offset is not working?
+
+        // TODO: Alignment is not working here because if we call i32.store8,
+        //  then max alignment is zero. Probably this is the reason
         storeScalar(param.typename, paramRegisterType, param.memoryOffset, 0)
       );
     }

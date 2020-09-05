@@ -60,6 +60,8 @@ export async function compile<E extends WebAssembly.Exports>(fname: string) {
 
     // console.info("======== running ==== ");
 
+    //console.info(wasmdata.log);
+
     const module = await WebAssembly.compile(wasmdata.buffer);
 
     // const esp = new WebAssembly.Global({ value: "i32", mutable: true }, 0);
