@@ -256,6 +256,13 @@ export function createScannerFunc(str: string) {
       char !== undefined && char.length === 1 && "0123456789".indexOf(char) > -1
     );
   }
+  function isHexDigit(char: string | undefined) {
+    return (
+      char !== undefined &&
+      char.length === 1 &&
+      "0123456789abcdefABCDEF".indexOf(char) > -1
+    );
+  }
 
   function isLetter(char: string | undefined) {
     return (
@@ -292,6 +299,21 @@ export function createScannerFunc(str: string) {
 
   function scanNumber(): Token {
     saveLocation();
+
+    if (current() === "0" && next() === "x") {
+      incPos(2);
+      while (isHexDigit(current())) {
+        incPos();
+      }
+      const value = sliceFromSavedPoint().slice(2);
+      return {
+        type: "const-expression",
+        ...savedLocation(),
+        subtype: "int",
+        value: parseInt(value, 16),
+      };
+    }
+
     let dotSeen = false;
     while (true) {
       if (current() === ".") {

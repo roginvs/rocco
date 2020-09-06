@@ -28,11 +28,17 @@ int main(int argc, char **argv)
   int z[x];
   return 0;
 }
+
+int kek = 0x5F2;
+int lol;
+
 `;
 
 describe("Scanner", () => {
   it(`Scans`, () => {
     const scanner = createScannerFunc(fdata);
+
+    let checksCounts = 0;
 
     while (true) {
       const token = scanner();
@@ -43,8 +49,15 @@ describe("Scanner", () => {
         expect(token.length).toStrictEqual(6);
         expect(token.line).toStrictEqual(27);
         expect(token.pos).toStrictEqual(3);
+        checksCounts++;
+      } else if (token.type === "const-expression") {
+        if (token.value === 0x5f2) {
+          checksCounts++;
+        }
       }
     }
+
+    expect(checksCounts).toBe(2);
   });
   it(`Scans simple 123`, () => {
     const scanner = createScannerFunc("123");
@@ -55,6 +68,15 @@ describe("Scanner", () => {
     });
   });
 
+  it(`Scans simple 0x1F34`, () => {
+    const scanner = createScannerFunc("0x1F34");
+    expect(scanner()).toMatchObject({
+      type: "const-expression",
+      subtype: "int",
+      value: 0x1f34,
+    });
+  });
+
   it(`Scans with ellipsis`, () => {
     const scanner = createScannerFunc("int printf( const char* format, ... );");
     while (true) {
@@ -62,6 +84,7 @@ describe("Scanner", () => {
       if (token.type === "end") {
         break;
       } else if (token.type === "return") {
+        // LOL: This is unused!
         expect(token.length).toStrictEqual(6);
         expect(token.line).toStrictEqual(27);
         expect(token.pos).toStrictEqual(3);
