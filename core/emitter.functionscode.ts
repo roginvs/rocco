@@ -255,8 +255,20 @@ export function createFunctionCodeGenerator(
             "end ;; while loop, first end ",
             "end ;; while loop, second end"
           );
+        } else if (statement.type === "dowhile") {
+          error(statement, "TODO: Do-while is not implemented yet");
+        } else if (statement.type === "break") {
+          if (breakBrDepth === null) {
+            error(statement, "Unable to break - no loop");
+          }
+          code.push(`br ${breakBrDepth}`);
+        } else if (statement.type === "continue") {
+          if (continueBrDepth === null) {
+            error(statement, "Unable to continue - no loop");
+          }
+          code.push(`br ${continueBrDepth}`);
         } else {
-          error(statement, `TODO statement type=${statement.type}`);
+          assertNever(statement);
         }
       }
 
