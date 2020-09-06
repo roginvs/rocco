@@ -167,6 +167,8 @@ export function createFunctionCodeGenerator(
             )
           );
           code.push("end");
+        } else if (statement.type === "if") {
+          throw new Error("TODO TODO");
         } else {
           error(statement, "TODO statement");
         }
@@ -215,18 +217,20 @@ export function createFunctionCodeGenerator(
       );
     }
 
+    const functionHeader =
+      `(func $F${func.declaration.declaratorId} ` +
+      functionParamsDeclarations.join(" ") +
+      (functionReturnsInRegister
+        ? ` (result ${functionReturnsInRegister})`
+        : "") +
+      `  (local $ebp i32)` +
+      (functionReturnsInRegister
+        ? `  (local ${returnValueLocalName} ${functionReturnsInRegister})`
+        : "");
+
     return [
       `;; Function ${func.declaration.identifier} localSize=${inFuncAddress}`,
-      `(func $F${func.declaration.declaratorId} `,
-      ...functionParamsDeclarations,
-      functionReturnsInRegister
-        ? `  (result ${functionReturnsInRegister})`
-        : "",
-
-      `  (local $ebp i32)` +
-        (functionReturnsInRegister
-          ? `  (local ${returnValueLocalName} ${functionReturnsInRegister})`
-          : ""),
+      functionHeader,
 
       ...readEspCode,
       `local.set $ebp ;; Save esp -> ebp`,
