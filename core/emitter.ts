@@ -114,11 +114,13 @@ export function emit(unit: TranslationUnit) {
     }
   }
 
+  /*
   console.info(
     `Globals size = ${
       memoryOffsetForGlobals - 4
     }, usable memory from ${memoryOffsetForGlobals}`
   );
+  */
 
   const functionsCode: WAInstuction[] = [];
   // Now create functions
