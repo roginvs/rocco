@@ -245,7 +245,8 @@ export function createFunctionCodeGenerator(
             ...createFunctionCodeForBlock(
               statementToCompoundStatementBody(statement.body),
               returnBrDepth + 2,
-              continueBrDepth ? continueBrDepth + 1 : null
+              // A new loop is here
+              0
             )
           );
 
