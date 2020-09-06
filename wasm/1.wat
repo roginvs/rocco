@@ -168,6 +168,13 @@
 
     local.get $value_to_return
 
+
+    block
+    loop
+    nop
+    nop
+    end
+    end
   )
   
   (func $blocks_and_ifs2 (export "blocks_and_ifs2")  (param $x i32) (result i32) (local $value_to_return i32)

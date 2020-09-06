@@ -8,6 +8,7 @@ describe(`Emits and compiles`, () => {
       is_value_eleven_1(x: number): number;
       is_value_eleven_2(x: number): number;
       is_value_eleven_3(x: number): number;
+      for_loop_1(): number;
     }>("emitter3.c");
 
     expect(d.compiled.compound_expression(8)).toBe(20);
@@ -26,5 +27,7 @@ describe(`Emits and compiles`, () => {
     expect(d.compiled.is_value_eleven_3(11)).toBe(222);
     expect(d.compiled.is_value_eleven_3(12)).toBe(111);
     expect(d.compiled.is_value_eleven_3(10)).toBe(111);
+
+    expect(d.compiled.for_loop_1()).toBe((10 * 9) / 2 + 100);
   });
 });

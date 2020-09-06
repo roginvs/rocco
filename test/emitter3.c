@@ -59,3 +59,14 @@ int is_value_eleven_3(int i)
   j = j + 1;
   return j;
 }
+
+int for_loop_1()
+{
+  int s = 100;
+  // (10 - i)  is the same as  !(i == 10)
+  for (int i = 0; 10 - i; i = i + 1)
+  {
+    s = s + i;
+  };
+  return s;
+}

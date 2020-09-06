@@ -7,7 +7,7 @@ import {
 } from "./parser.definitions";
 import { WAInstuction } from "./emitter.definitions";
 import {
-  typenameToRegister as getTypenameRegister,
+  typenameToRegister as getRegisterFromTypename,
   writeEspCode,
   readEspCode,
 } from "./emitter.utils";
@@ -55,7 +55,7 @@ export function createFunctionCodeGenerator(
       inFuncAddress += size.value;
     }
 
-    const functionReturnsInRegister = getTypenameRegister(
+    const functionReturnsInRegister = getRegisterFromTypename(
       func.declaration.typename.returnType
     );
     if (
@@ -136,7 +136,7 @@ export function createFunctionCodeGenerator(
               statement.expression
             );
 
-            const expressionRegisterType = getTypenameRegister(
+            const expressionRegisterType = getRegisterFromTypename(
               returnExpressionInfo.type
             );
 
@@ -178,7 +178,7 @@ export function createFunctionCodeGenerator(
           code.push("drop");
         } else if (statement.type === "compound-statement") {
           // Here is no need to create a block, but we do this just for simplicity
-          code.push("block");
+          code.push("block ;; compound-statement");
           code.push(
             ...createFunctionCodeForBlock(
               statement.body,
@@ -186,18 +186,18 @@ export function createFunctionCodeGenerator(
               continueBrDepth ? continueBrDepth + 1 : null
             )
           );
-          code.push("end");
+          code.push("end ;; compound-statement");
         } else if (statement.type === "if") {
           const conditionInfo = getExpressionInfo(statement.condition);
-          const conditionRegister = getTypenameRegister(conditionInfo.type);
+          const conditionRegister = getRegisterFromTypename(conditionInfo.type);
+          if (!conditionInfo.value) {
+            error(statement.condition, "Condition must have a value");
+          }
           if (conditionRegister !== "i32") {
             error(
               statement.condition,
               "TODO: register change is not supported yet"
             );
-          }
-          if (!conditionInfo.value) {
-            error(statement.condition, "Condition must have a value");
           }
 
           code.push(
@@ -220,6 +220,40 @@ export function createFunctionCodeGenerator(
             );
           }
           code.push("end");
+        } else if (statement.type === "while") {
+          const conditionInfo = getExpressionInfo(statement.condition);
+          const conditionRegister = getRegisterFromTypename(conditionInfo.type);
+          if (!conditionInfo.value) {
+            error(statement.condition, "Condition must have a value");
+          }
+          if (conditionRegister !== "i32") {
+            error(
+              statement.condition,
+              "TODO: This register type is not supported yet"
+            );
+          }
+          code.push("block ;; while loop 1", "loop ;; while loop 2 ");
+
+          code.push(";; Check while condition");
+          code.push(...conditionInfo.value());
+          // zero is false, non-zero is true
+          // We should break if condition was falsy, so invert it
+          code.push("i32.eqz ;; Revert boolean");
+          code.push(`br_if 1 ;; Breaking outer block`);
+
+          code.push(
+            ...createFunctionCodeForBlock(
+              statementToCompoundStatementBody(statement.body),
+              returnBrDepth + 2,
+              continueBrDepth ? continueBrDepth + 1 : null
+            )
+          );
+
+          code.push(
+            "br 0 ;; while loop, go to beginning",
+            "end ;; while loop, first end ",
+            "end ;; while loop, second end"
+          );
         } else {
           error(statement, `TODO statement type=${statement.type}`);
         }
@@ -248,7 +282,7 @@ export function createFunctionCodeGenerator(
           `Internal error: function must have declarator parameters`
         );
       }
-      const paramRegisterType = getTypenameRegister(param.typename);
+      const paramRegisterType = getRegisterFromTypename(param.typename);
       if (!paramRegisterType) {
         error(param, "TODO: Currently this type of parameter is not supported");
       }
