@@ -70,3 +70,25 @@ int for_loop_1()
   };
   return s;
 }
+
+int for_loop_2()
+{
+  int s = 100;
+
+  int i = 0;
+  while (1)
+  {
+    if (10 - i)
+    {
+      // do nothing
+    }
+    else
+    {
+      break;
+    }
+    s = s + i;
+
+    i = i + 1;
+  }
+  return s;
+}

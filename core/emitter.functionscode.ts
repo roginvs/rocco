@@ -183,7 +183,7 @@ export function createFunctionCodeGenerator(
             ...createFunctionCodeForBlock(
               statement.body,
               returnBrDepth + 1,
-              continueBrDepth ? continueBrDepth + 1 : null
+              continueBrDepth !== null ? continueBrDepth + 1 : null
             )
           );
           code.push("end ;; compound-statement");
@@ -206,7 +206,7 @@ export function createFunctionCodeGenerator(
             ...createFunctionCodeForBlock(
               statementToCompoundStatementBody(statement.iftrue),
               returnBrDepth + 1,
-              continueBrDepth ? continueBrDepth + 1 : null
+              continueBrDepth !== null ? continueBrDepth + 1 : null
             )
           );
           if (statement.iffalse) {
@@ -215,7 +215,7 @@ export function createFunctionCodeGenerator(
               ...createFunctionCodeForBlock(
                 statementToCompoundStatementBody(statement.iffalse),
                 returnBrDepth + 1,
-                continueBrDepth ? continueBrDepth + 1 : null
+                continueBrDepth !== null ? continueBrDepth + 1 : null
               )
             );
           }
@@ -259,7 +259,7 @@ export function createFunctionCodeGenerator(
           error(statement, "TODO: Do-while is not implemented yet");
         } else if (statement.type === "break") {
           if (breakBrDepth === null) {
-            error(statement, "Unable to break - no loop");
+            error(statement, `Unable to break - no loop`);
           }
           code.push(`br ${breakBrDepth}`);
         } else if (statement.type === "continue") {

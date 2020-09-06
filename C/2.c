@@ -1,6 +1,6 @@
 /*
 
-gcc -Wall -o 2.bin 2.c
+gcc -Wall -o 2.bin 2.c && ./2.bin
 
 clang -Xclang -ast-dump 2.c
 
@@ -14,21 +14,14 @@ void test_array(int x, int y, int z)
   // (myarr[1]) <- this is array of y elements of z chars each
 }
 
-int for_loop_1()
-{
-  int s = 100;
-  // (10 - i)  is the same as  !(i == 10)
-  for (int i = 0; 10 - i; i = i + 1)
-  {
-    s = s + i;
-  };
-  return s;
-}
 
+
+#include "../test/emitter3.c"
 #include <stdio.h>
 
 int main()
 {
   printf("for_loop_1 = %i\n", for_loop_1());
+  printf("for_loop_2 = %i\n", for_loop_2());
   return 0;
 }
