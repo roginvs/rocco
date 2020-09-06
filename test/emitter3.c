@@ -25,7 +25,7 @@ int compound_expression_return(int i)
   return 999;
 }
 
-int is_value_eleven(int i)
+int is_value_eleven_1(int i)
 {
   if (i - 11)
   {
@@ -36,4 +36,26 @@ int is_value_eleven(int i)
     // Value is eleven
     return 222;
   }
+}
+
+int is_value_eleven_2(int i)
+{
+  if (i - 11)
+  {
+    return 111;
+  };
+  // Value is eleven
+  return 222;
+}
+
+int is_value_eleven_3(int i)
+{
+  int j;
+  if (i - 11)
+    j = 110;
+  else
+    // Value is eleven
+    j = 221;
+  j = j + 1;
+  return j;
 }

@@ -85,7 +85,9 @@ export function createFunctionCodeGenerator(
           continue;
         }
 
-        if (statement.type === "declarator") {
+        if (statement.type === "noop") {
+          code.push("nop ;; noop statement");
+        } else if (statement.type === "declarator") {
           // TODO: Dynamic arrays case
 
           if (statement.initializer) {
@@ -219,7 +221,7 @@ export function createFunctionCodeGenerator(
           }
           code.push("end");
         } else {
-          error(statement, "TODO statement");
+          error(statement, `TODO statement type=${statement.type}`);
         }
       }
 
