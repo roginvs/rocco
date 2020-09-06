@@ -30,7 +30,7 @@ int main(int argc, char **argv)
 }
 
 int kek = 0x5F2;
-int lol;
+int lol = 0b11010011;
 
 `;
 
@@ -53,11 +53,13 @@ describe("Scanner", () => {
       } else if (token.type === "const-expression") {
         if (token.value === 0x5f2) {
           checksCounts++;
+        } else if (token.value === 0b11010011) {
+          checksCounts++;
         }
       }
     }
 
-    expect(checksCounts).toBe(2);
+    expect(checksCounts).toBe(3);
   });
   it(`Scans simple 123`, () => {
     const scanner = createScannerFunc("123");

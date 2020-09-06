@@ -301,6 +301,7 @@ export function createScannerFunc(str: string) {
     saveLocation();
 
     if (current() === "0" && next() === "x") {
+      // Hex value
       incPos(2);
       while (isHexDigit(current())) {
         incPos();
@@ -311,6 +312,22 @@ export function createScannerFunc(str: string) {
         ...savedLocation(),
         subtype: "int",
         value: parseInt(value, 16),
+      };
+    }
+
+    if (current() === "0" && next() === "b") {
+      // Binary value
+      // Not in C99 standart!
+      incPos(2);
+      while (current() === "0" || current() === "1") {
+        incPos();
+      }
+      const value = sliceFromSavedPoint().slice(2);
+      return {
+        type: "const-expression",
+        ...savedLocation(),
+        subtype: "int",
+        value: parseInt(value, 2),
       };
     }
 
