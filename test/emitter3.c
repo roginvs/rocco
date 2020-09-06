@@ -24,3 +24,16 @@ int compound_expression_return(int i)
   }
   return 999;
 }
+
+int is_value_eleven(int i)
+{
+  if (i - 11)
+  {
+    return 111;
+  }
+  else
+  {
+    // Value is eleven
+    return 222;
+  }
+}

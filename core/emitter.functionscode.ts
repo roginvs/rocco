@@ -3,6 +3,7 @@ import {
   Node,
   FunctionDefinition,
   CompoundStatementBody,
+  Statement,
 } from "./parser.definitions";
 import { WAInstuction } from "./emitter.definitions";
 import {
@@ -16,6 +17,19 @@ import {
 } from "./emitter.expressionsandtypes";
 import { assertNever } from "./assertNever";
 import { storeScalar } from "./emitter.scalar.storeload";
+
+/**
+ * Small helper to unwrap compound-statement
+ */
+function statementToCompoundStatementBody(
+  statement: Statement
+): CompoundStatementBody[] {
+  if (statement.type === "compound-statement") {
+    return statement.body;
+  } else {
+    return [statement];
+  }
+}
 
 export function createFunctionCodeGenerator(
   helpers: EmitterHelpers,
@@ -183,18 +197,27 @@ export function createFunctionCodeGenerator(
           if (!conditionInfo.value) {
             error(statement.condition, "Condition must have a value");
           }
-          /*
-          // TODO TODO
-            code.push(...conditionInfo.value(),
+
+          code.push(
+            ...conditionInfo.value(),
             "if",
             ...createFunctionCodeForBlock(
-              statement.iftrue,
+              statementToCompoundStatementBody(statement.iftrue),
               returnBrDepth + 1,
               continueBrDepth ? continueBrDepth + 1 : null
             )
+          );
+          if (statement.iffalse) {
+            code.push(
+              "else",
+              ...createFunctionCodeForBlock(
+                statementToCompoundStatementBody(statement.iffalse),
+                returnBrDepth + 1,
+                continueBrDepth ? continueBrDepth + 1 : null
+              )
             );
-          */
-          throw new Error("TODO");
+          }
+          code.push("end");
         } else {
           error(statement, "TODO statement");
         }
