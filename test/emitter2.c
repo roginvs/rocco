@@ -51,6 +51,7 @@ void change_ints_array(int idx, int value)
 
 int array_on_stack()
 {
+  // TODO
   char arr[13];
   arr[0] = 1;
 }

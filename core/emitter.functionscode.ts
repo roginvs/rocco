@@ -53,8 +53,12 @@ export function createFunctionCodeGenerator(
     const returnValueLocalName = "$return_value";
 
     function createFunctionCodeForBlock(
-      body: CompoundStatementBody[]
+      body: CompoundStatementBody[],
+      returnBrDepth: number,
+      continueBrDepth: number | null
     ): WAInstuction[] {
+      const breakBrDepth =
+        continueBrDepth !== null ? continueBrDepth + 1 : null;
       const code: WAInstuction[] = [];
       let returnFound = false;
       for (const statement of body) {
@@ -136,7 +140,7 @@ export function createFunctionCodeGenerator(
             }
           }
 
-          code.push("br 0 ;; TODO TODO use real depth here");
+          code.push(`br ${returnBrDepth} ;; Return`);
           returnFound = true;
         } else if (statement.type === "expression") {
           const info = getExpressionInfo(statement.expression);
@@ -152,6 +156,17 @@ export function createFunctionCodeGenerator(
             );
           }
           code.push("drop");
+        } else if (statement.type === "compound-statement") {
+          // Here is no need to create a block, but we do this just for simplicity
+          code.push("block");
+          code.push(
+            ...createFunctionCodeForBlock(
+              statement.body,
+              returnBrDepth + 1,
+              continueBrDepth ? continueBrDepth + 1 : null
+            )
+          );
+          code.push("end");
         } else {
           error(statement, "TODO statement");
         }
@@ -160,7 +175,11 @@ export function createFunctionCodeGenerator(
       return code;
     }
 
-    const funcCode: WAInstuction[] = createFunctionCodeForBlock(func.body);
+    const funcCode: WAInstuction[] = createFunctionCodeForBlock(
+      func.body,
+      0,
+      null
+    );
 
     const restoreEsp: WAInstuction[] = [...writeEspCode([`local.get $ebp`])];
     const returnValueInRegisterIfAny: WAInstuction[] = functionReturnsInRegister
