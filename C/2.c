@@ -14,8 +14,6 @@ void test_array(int x, int y, int z)
   // (myarr[1]) <- this is array of y elements of z chars each
 }
 
-
-
 #include "../test/emitter3.c"
 #include <stdio.h>
 
@@ -23,5 +21,6 @@ int main()
 {
   printf("for_loop_1 = %i\n", for_loop_1());
   printf("for_loop_2 = %i\n", for_loop_2());
+  printf("for_loop_3 = %i\n", for_loop_3());
   return 0;
 }
