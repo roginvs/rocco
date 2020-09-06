@@ -5,7 +5,11 @@ import {
   CompoundStatementBody,
 } from "./parser.definitions";
 import { WAInstuction } from "./emitter.definitions";
-import { typenameToRegister, writeEspCode, readEspCode } from "./emitter.utils";
+import {
+  typenameToRegister as getTypenameRegister,
+  writeEspCode,
+  readEspCode,
+} from "./emitter.utils";
 import {
   TypeSizeGetter,
   ExpressionInfoGetter,
@@ -37,7 +41,7 @@ export function createFunctionCodeGenerator(
       inFuncAddress += size.value;
     }
 
-    const functionReturnsInRegister = typenameToRegister(
+    const functionReturnsInRegister = getTypenameRegister(
       func.declaration.typename.returnType
     );
     if (
@@ -116,7 +120,7 @@ export function createFunctionCodeGenerator(
               statement.expression
             );
 
-            const expressionRegisterType = typenameToRegister(
+            const expressionRegisterType = getTypenameRegister(
               returnExpressionInfo.type
             );
 
@@ -168,7 +172,29 @@ export function createFunctionCodeGenerator(
           );
           code.push("end");
         } else if (statement.type === "if") {
-          throw new Error("TODO TODO");
+          const conditionInfo = getExpressionInfo(statement.condition);
+          const conditionRegister = getTypenameRegister(conditionInfo.type);
+          if (conditionRegister !== "i32") {
+            error(
+              statement.condition,
+              "TODO: register change is not supported yet"
+            );
+          }
+          if (!conditionInfo.value) {
+            error(statement.condition, "Condition must have a value");
+          }
+          /*
+          // TODO TODO
+            code.push(...conditionInfo.value(),
+            "if",
+            ...createFunctionCodeForBlock(
+              statement.iftrue,
+              returnBrDepth + 1,
+              continueBrDepth ? continueBrDepth + 1 : null
+            )
+            );
+          */
+          throw new Error("TODO");
         } else {
           error(statement, "TODO statement");
         }
@@ -197,7 +223,7 @@ export function createFunctionCodeGenerator(
           `Internal error: function must have declarator parameters`
         );
       }
-      const paramRegisterType = typenameToRegister(param.typename);
+      const paramRegisterType = getTypenameRegister(param.typename);
       if (!paramRegisterType) {
         error(param, "TODO: Currently this type of parameter is not supported");
       }
