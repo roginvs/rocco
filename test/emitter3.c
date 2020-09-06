@@ -14,3 +14,13 @@ int compound_expression(int i)
   }
   return j;
 }
+
+int compound_expression_return(int i)
+{
+  int j = i;
+  {
+    int k = j + 1;
+    return k;
+  }
+  return 999;
+}
