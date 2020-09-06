@@ -410,8 +410,8 @@ export function createExpressionAndTypes(
         const prepareInstructions =
           op === "&&" || op === "||"
             ? [
-                "ieqz ;; Return 1 if i is zero, 0 overwise",
-                "ieqz ;; Invert value",
+                "i32.eqz ;; Return 1 if i is zero, 0 overwise",
+                "i32.eqz ;; Invert value",
               ]
             : [];
         if (!operatorInstruction) {
