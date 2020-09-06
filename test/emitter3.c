@@ -76,7 +76,7 @@ int for_loop_2()
   int s = 100;
 
   int i = 0;
-  while (1)
+  while (19)
   {
     if (10 - i)
     {

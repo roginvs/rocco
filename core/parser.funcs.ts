@@ -1089,21 +1089,39 @@ export function createParser(
 
       symbolTable.leaveScope();
 
+      const secondExpressionConst = {
+        type: "const",
+        subtype: "char",
+        // 6.8.5.3  2
+        value: 1,
+      } as ExpressionNode;
+      if (!secondExpression) {
+        // TODO: not a perfect locator
+        locator.set(secondExpressionConst, {
+          ...token,
+          length: scanner.current().pos - token.pos,
+        });
+      }
+
+      const thirdExpressionStatementCompoundStatement: CompoundStatement | null = thirdExpressionStatement
+        ? {
+            type: "compound-statement",
+            body: [statement, thirdExpressionStatement],
+          }
+        : null;
+      if (thirdExpressionStatementCompoundStatement) {
+        // TODO: not a perfect locator
+        locator.set(thirdExpressionStatementCompoundStatement, {
+          ...token,
+          length: scanner.current().pos - token.pos,
+        });
+      }
+
       const innerNode: WhileStatement = {
         type: "while",
-        condition: secondExpression
-          ? secondExpression
-          : {
-              type: "const",
-              subtype: "char",
-              // 6.8.5.3  2
-              value: 1,
-            },
-        body: thirdExpressionStatement
-          ? {
-              type: "compound-statement",
-              body: [statement, thirdExpressionStatement],
-            }
+        condition: secondExpression ? secondExpression : secondExpressionConst,
+        body: thirdExpressionStatementCompoundStatement
+          ? thirdExpressionStatementCompoundStatement
           : statement,
       };
       locator.set(innerNode, {
