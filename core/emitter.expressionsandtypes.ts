@@ -312,54 +312,99 @@ export function createExpressionAndTypes(
       ) {
         error(index, "Only int/char are supported now");
       }
-      if (targetInfo.type.type !== "array") {
-        error(target, "Must be array type");
+      if (targetInfo.type.type === "array") {
+        const elementsSize = getTypeSize(targetInfo.type.elementsTypename);
+        if (elementsSize.type !== "static") {
+          error(
+            targetInfo.type.elementsTypename,
+            "Dynamic arrays are not supported yet"
+          );
+        }
+
+        if (!targetInfo.address) {
+          error(target, "Array must have address");
+        }
+        const getArrayAddress = targetInfo.address;
+
+        if (!indexInfo.value) {
+          error(index, "Must be a value here");
+        }
+
+        const getIndexValue = indexInfo.value;
+
+        const getArrayElementAddress = () => {
+          const indexOffset: WAInstuction[] = [
+            ...getIndexValue(),
+            `i32.const ${elementsSize.value}`,
+            `i32.mul`,
+          ];
+          return [...getArrayAddress(), ...indexOffset, `i32.add`];
+        };
+
+        const elementsTypename = targetInfo.type.elementsTypename;
+        const getArrayElementValue = isScalar(elementsTypename)
+          ? () => [
+              ...getArrayElementAddress(),
+              // We might know alignment if we know array size
+              // For example, if elements size >= 4, then alignment could be equal 2
+              loadScalar(elementsTypename, "i32", 0, 0),
+            ]
+          : null;
+
+        return {
+          type: targetInfo.type.elementsTypename,
+          staticValue: null,
+          value: getArrayElementValue,
+          address: getArrayElementAddress,
+        };
+      } else if (targetInfo.type.type === "pointer") {
+        const elementsSize = getTypeSize(targetInfo.type.pointsTo);
+        if (elementsSize.type === "incomplete") {
+          error(target, "subscript of pointer to incomplete type");
+        }
+        if (elementsSize.type === "expression") {
+          error(target, "Dynamic array types is not supported yet");
+        }
+
+        if (!targetInfo.value) {
+          error(target, "Pointter must have address");
+        }
+        const getPointerTargetAddress = targetInfo.value;
+
+        if (!indexInfo.value) {
+          error(index, "Must be a value here");
+        }
+
+        const getIndexValue = indexInfo.value;
+
+        const getArrayElementAddress = () => {
+          const indexOffset: WAInstuction[] = [
+            ...getIndexValue(),
+            `i32.const ${elementsSize.value}`,
+            `i32.mul`,
+          ];
+          return [...getPointerTargetAddress(), ...indexOffset, `i32.add`];
+        };
+
+        const elementsTypename = targetInfo.type.pointsTo;
+        const getArrayElementValue = isScalar(elementsTypename)
+          ? () => [
+              ...getArrayElementAddress(),
+              // We might know alignment if we know array size
+              // For example, if elements size >= 4, then alignment could be equal 2
+              loadScalar(elementsTypename, "i32", 0, 0),
+            ]
+          : null;
+
+        return {
+          type: targetInfo.type.pointsTo,
+          staticValue: null,
+          value: getArrayElementValue,
+          address: getArrayElementAddress,
+        };
+      } else {
+        error(target, "Must be array or pointer type");
       }
-
-      const elementsSize = getTypeSize(targetInfo.type.elementsTypename);
-      if (elementsSize.type !== "static") {
-        error(
-          targetInfo.type.elementsTypename,
-          "Dynamic arrays are not supported yet"
-        );
-      }
-
-      if (!targetInfo.address) {
-        error(target, "Array must have address");
-      }
-      const getArrayAddress = targetInfo.address;
-
-      if (!indexInfo.value) {
-        error(index, "Must be a value here");
-      }
-
-      const getIndexValue = indexInfo.value;
-
-      const getArrayElementAddress = () => {
-        const indexOffset: WAInstuction[] = [
-          ...getIndexValue(),
-          `i32.const ${elementsSize.value}`,
-          `i32.mul`,
-        ];
-        return [...getArrayAddress(), ...indexOffset, `i32.add`];
-      };
-
-      const elementsTypename = targetInfo.type.elementsTypename;
-      const getArrayElementValue = isScalar(elementsTypename)
-        ? () => [
-            ...getArrayElementAddress(),
-            // We might know alignment if we know array size
-            // For example, if elements size >= 4, then alignment could be equal 2
-            loadScalar(elementsTypename, "i32", 0, 0),
-          ]
-        : null;
-
-      return {
-        type: targetInfo.type.elementsTypename,
-        staticValue: null,
-        value: getArrayElementValue,
-        address: getArrayElementAddress,
-      };
     } else if (expression.type === "binary operator") {
       const leftInfo = getExpressionInfo(expression.left);
       const rightInfo = getExpressionInfo(expression.right);
