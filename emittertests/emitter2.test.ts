@@ -12,6 +12,9 @@ describe(`Emits and compiles`, () => {
       int_sum(x: number, y: number): number;
       change_chars_array(idx: number, value: number): void;
       change_ints_array(idx: number, value: number): void;
+
+      get_arr_ints_address_of_index(index: number): number;
+      get_arr_ints_value_of_index(index: number): number;
     }>("emitter2.c");
 
     expect(d.compiled.get_arr_chars_size()).toBe(9);
@@ -50,5 +53,18 @@ describe(`Emits and compiles`, () => {
     d.compiled.change_ints_array(1, 0xffffffff);
     expect(d.mem32[5]).toBe(44);
     expect(d.mem32[6]).toBe(0xffffffff);
+
+    expect(d.compiled.get_arr_ints_address()).toBe(
+      d.compiled.get_arr_ints_address_of_index(0)
+    );
+    expect(d.compiled.get_arr_ints_address() + 4 * 2).toBe(
+      d.compiled.get_arr_ints_address_of_index(2)
+    );
+
+    d.mem32[6] = 0x0fffffff;
+    d.mem32[7] = 0x0eadbeef;
+    expect(d.compiled.get_arr_ints_value_of_index(0)).toBe(44);
+    expect(d.compiled.get_arr_ints_value_of_index(1)).toBe(0x0fffffff);
+    expect(d.compiled.get_arr_ints_value_of_index(2)).toBe(0x0eadbeef);
   });
 });

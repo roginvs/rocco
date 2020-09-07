@@ -55,3 +55,14 @@ int array_on_stack()
   char arr[13];
   arr[0] = 1;
 }
+
+int *get_arr_ints_address_of_index(int i)
+{
+  int *p = &arr_ints;
+  return &(p[i]);
+}
+int get_arr_ints_value_of_index(int i)
+{
+  int *p = &arr_ints;
+  return p[i];
+}
