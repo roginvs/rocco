@@ -64,6 +64,8 @@ export function generateFunctionWaTypeName(func: FunctionTypename) {
 }
 
 export class FunctionSignatures {
+  constructor() {}
+
   /**
    * A map, something like this
    *

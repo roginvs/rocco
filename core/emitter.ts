@@ -5,6 +5,7 @@ import { writeEspCode, readEspCode } from "./emitter.utils";
 import { createHelpers } from "./emitter.helpers";
 import { createExpressionAndTypes } from "./emitter.expressionsandtypes";
 import { createFunctionCodeGenerator } from "./emitter.functionscode";
+import { getTrapFunctionCode } from "./emitter.helpers.trap";
 
 function cacheFunc<T, U>(func: (param1: T) => U): (param1: T) => U {
   const cache = new Map<T, U>();
@@ -141,6 +142,8 @@ export function emit(unit: TranslationUnit) {
     ")",
   ];
 
+  const trapFunctionCode = getTrapFunctionCode(helpers.functionSignatures);
+
   const functionTypes = helpers.functionSignatures.getTypesWAInstructions();
 
   const moduleCode: WAInstuction[] = [
@@ -151,13 +154,14 @@ export function emit(unit: TranslationUnit) {
     //'(global $esp (import "js" "esp") (mut i32))',
     //"(global $esp (mut i32))",
 
+    ...trapFunctionCode,
+    ...functionsCode,
+
     " (func $init  ",
     ...setupEsp,
     ...globalsInitializers,
     ")",
     " (start $init)",
-
-    ...functionsCode,
 
     ...debugHelpers,
     ")",
