@@ -63,7 +63,7 @@ export function storeScalar(
       assertNever(typename.arithmeticType);
     }
   } else if (typename.type === "pointer") {
-    return addOffsetAlign(`i64.store32`, offset, align, 2);
+    return addOffsetAlign(`i32.store`, offset, align, 2);
   }
   throw new Error(
     `Wrong usage, expecting only scalar types but got type=${typename.type}`

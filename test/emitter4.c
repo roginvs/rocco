@@ -19,9 +19,9 @@ int call_simple_2(int i, int j)
   return multiply_by_2_first_and_add_second(i, j);
 }
 
-void add_eleven(int *p)
+void add_eleven(int *p_to_int)
 {
-  (*p) = (*p) + 11;
+  (*p_to_int) = (*p_to_int) + 11;
 };
 
 int call_simple_3(int i)

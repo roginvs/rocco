@@ -667,6 +667,36 @@ export function createExpressionAndTypes(
           staticValue: null,
           value: getTargetAddress,
         };
+      } else if (expression.operator === "*") {
+        const target = expression.target;
+        const targetInfo = getExpressionInfo(target);
+        if (targetInfo.type.type !== "pointer") {
+          error(target, `Must be a pointer`);
+        }
+        const targetValue = targetInfo.value;
+        if (!targetValue) {
+          error(target, `Must have a value`);
+        }
+
+        const pointsToType = targetInfo.type.pointsTo;
+        const pointsToRegister = getRegisterForTypename(pointsToType);
+
+        const getValue =
+          pointsToType.type === "function"
+            ? /* A special case for functions */
+              () => targetValue()
+            : pointsToRegister
+            ? () => [
+                ...targetValue(),
+                loadScalar(pointsToType, pointsToRegister),
+              ]
+            : null;
+        return {
+          type: pointsToType,
+          value: getValue,
+          staticValue: null,
+          address: targetValue,
+        };
       } else {
         error(
           expression,

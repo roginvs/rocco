@@ -12,7 +12,7 @@ export class ScannerError extends Error {
 export class ParserError extends Error {
   constructor(str: string, public readonly location: TokenLocation) {
     super(str);
-    console.info(location);
+    // console.info(location);
   }
 }
 

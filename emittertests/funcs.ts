@@ -62,6 +62,15 @@ export async function compile<E extends WebAssembly.Exports>(fname: string) {
 
     //console.info(wasmdata.log);
 
+    const SHOW = false;
+    if (SHOW) {
+      console.info(
+        emitted.moduleCode
+          .map((line, id) => `${pad(4, `${id + 1}`, "0")}  ${line}`)
+          .join("\n")
+      );
+    }
+
     const module = await WebAssembly.compile(wasmdata.buffer);
 
     // const esp = new WebAssembly.Global({ value: "i32", mutable: true }, 0);

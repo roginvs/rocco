@@ -38,6 +38,17 @@ void test_func_address_add(int i)
   printf("pointer to array with dynamic size [1] = %lu\n", p3[1]);
 }
 
+void test_pointers()
+{
+  int i;
+  int j;
+  int *p1;
+  int *p2;
+
+  p1 = &i;
+  p2 = &(*p1);
+}
+
 int main()
 {
   printf("for_loop_1 = %i\n", for_loop_1());
