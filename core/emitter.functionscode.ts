@@ -46,7 +46,6 @@ export function createFunctionCodeGenerator(
     const functionTypename = helpers.functionSignatures.getFunctionTypeName(
       func.declaration.typename
     );
-    console.warn(`TODO TODO use functionTypename=${functionTypename}`);
 
     let inFuncAddress = 0;
     for (const declarationId of func.declaredVariables) {
@@ -320,8 +319,12 @@ export function createFunctionCodeGenerator(
       );
     }
 
+    // Why is this? It works without this too
+    const funcTypeHint = `(type ${functionTypename})`;
+
     const functionHeader =
       `(func $F${func.declaration.declaratorId} ` +
+      funcTypeHint +
       functionParamsDeclarations.join(" ") +
       (functionReturnsInRegister
         ? ` (result ${functionReturnsInRegister})`
