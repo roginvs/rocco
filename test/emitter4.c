@@ -32,7 +32,7 @@ int call_simple_3(int i)
 
 void add_twenty_to_pointer(int *p_to_int)
 {
-  (*p_to_int) = (*p_to_int) + 11;
+  (*p_to_int) = (*p_to_int) + 20;
 };
 
 int call_simple_4(int i, int j)
@@ -49,7 +49,7 @@ int call_simple_4(int i, int j)
     p = p2;
   }
 
-  (*p)(i);
+  (*p)(&i);
 
   return i;
 }
