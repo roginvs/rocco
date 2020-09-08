@@ -53,3 +53,14 @@ int call_simple_4(int i, int j)
 
   return i;
 }
+
+int trap()
+{
+  void (*p)() = (void *)0;
+  (*p)();
+  return 111;
+}
+
+int call_simple_5(int i, int j)
+{
+}

@@ -7,6 +7,7 @@ describe(`Emits and compiles`, () => {
       call_simple_2(x: number, y: number): number;
       call_simple_3(x: number): number;
       call_simple_4(value: number, funcSelector: number): number;
+      trap(): void;
     }>("emitter4.c");
 
     expect(d.compiled.call_simple_1(8)).toBe(17);
@@ -17,5 +18,7 @@ describe(`Emits and compiles`, () => {
 
     expect(d.compiled.call_simple_4(100, 0)).toBe(120);
     expect(d.compiled.call_simple_4(100, 1)).toBe(111);
+
+    expect(() => d.compiled.trap()).toThrow(/unreachable/);
   });
 });
