@@ -43,6 +43,11 @@ export function createFunctionCodeGenerator(
   }
 
   function createFunctionCode(func: FunctionDefinition): WAInstuction[] {
+    const functionTypename = helpers.functionSignatures.getFunctionTypeName(
+      func.declaration.typename
+    );
+    console.warn(`TODO TODO use functionTypename=${functionTypename}`);
+
     let inFuncAddress = 0;
     for (const declarationId of func.declaredVariables) {
       const declaration = getDeclaration(declarationId);

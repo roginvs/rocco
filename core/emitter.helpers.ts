@@ -7,6 +7,7 @@ import {
 } from "./parser.definitions";
 import { CheckerError } from "./error";
 import { CheckerWarning } from "./emitter.definitions";
+import { FunctionSignatures } from "./emitter.helpers.functionsignature";
 
 export interface EmitterHelpers {
   error(node: Node, msg: string): never;
@@ -14,6 +15,7 @@ export interface EmitterHelpers {
   cloneLocation(fromNode: Node, toNode: Node): void;
   getDeclaration(declaratorId: DeclaratorId): DeclaratorNode;
   warnings: CheckerWarning[];
+  functionSignatures: FunctionSignatures;
 }
 
 export function createHelpers(
@@ -70,11 +72,14 @@ export function createHelpers(
     }
   }
 
+  const functionSignatures = new FunctionSignatures();
+
   return {
     error,
     warn,
     cloneLocation,
     getDeclaration,
     warnings,
+    functionSignatures,
   };
 }

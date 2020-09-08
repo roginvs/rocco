@@ -1,6 +1,6 @@
 import { FunctionTypename } from "./parser.definitions";
 import { getRegisterForTypename } from "./emitter.utils";
-import { RegisterType } from "./emitter.definitions";
+import { RegisterType, WAInstuction } from "./emitter.definitions";
 import { type } from "os";
 
 function registerToShortname(register: RegisterType) {
@@ -63,17 +63,26 @@ export function generateFunctionWaTypeName(func: FunctionTypename) {
   return [waTypeName, waTypeDefinition];
 }
 
-export class FunctionSignature {
+export class FunctionSignatures {
   /**
    * A map, something like this
    *
    * $FUNCSIG$iij -> (func (param i32 i64) (result i32)))
    */
-  private seenFunctionTypes = new Map<string, string>();
+  private readonly seenFunctionTypes = new Map<string, string>();
 
   getFunctionTypeName(func: FunctionTypename) {
-    const waTypeName = generateFunctionWaTypeName(func);
+    const [waTypeName, waTypeDefinition] = generateFunctionWaTypeName(func);
+    if (!this.seenFunctionTypes.has(waTypeName)) {
+      this.seenFunctionTypes.set(waTypeName, waTypeDefinition);
+    }
+    return waTypeName;
+  }
 
-    // asdasd
+  getTypesWAInstructions(): WAInstuction[] {
+    return [...this.seenFunctionTypes.entries()].map(
+      ([waTypeName, waTypeDefinition]) =>
+        `(type ${waTypeName} ${waTypeDefinition})`
+    );
   }
 }

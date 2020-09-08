@@ -141,9 +141,11 @@ export function emit(unit: TranslationUnit) {
     ")",
   ];
 
+  const functionTypes = helpers.functionSignatures.getTypesWAInstructions();
+
   const moduleCode: WAInstuction[] = [
     "(module",
-
+    ...functionTypes,
     `(import "js" "memory" (memory 0))`,
 
     //'(global $esp (import "js" "esp") (mut i32))',
