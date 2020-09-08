@@ -179,7 +179,9 @@ export function createFunctionCodeGenerator(
               "Internal error: expression must have value or address"
             );
           }
-          code.push("drop");
+          if (info.type.type !== "void") {
+            code.push("drop");
+          }
         } else if (statement.type === "compound-statement") {
           // Here is no need to create a block, but we do this just for simplicity
           code.push("block ;; compound-statement");
