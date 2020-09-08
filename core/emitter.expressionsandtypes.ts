@@ -2,7 +2,7 @@ import { ExpressionNode, Typename, Node } from "./parser.definitions";
 import { ExpressionInfo, WAInstuction } from "./emitter.definitions";
 import { assertNever } from "./assertNever";
 import { EmitterHelpers } from "./emitter.helpers";
-import { typenameToRegister } from "./emitter.utils";
+import { getRegisterForTypename } from "./emitter.utils";
 import { storeScalar, loadScalar } from "./emitter.scalar.storeload";
 import { isScalar } from "./emitter.scalar";
 
@@ -507,7 +507,7 @@ export function createExpressionAndTypes(
       const lvalueInfo = getExpressionInfo(expression.lvalue);
       const rvalueInfo = getExpressionInfo(expression.rvalue);
 
-      const lvalueIsInRegister = typenameToRegister(lvalueInfo.type);
+      const lvalueIsInRegister = getRegisterForTypename(lvalueInfo.type);
       if (!lvalueIsInRegister) {
         error(
           expression.lvalue,
@@ -515,7 +515,7 @@ export function createExpressionAndTypes(
         );
       }
 
-      if (lvalueIsInRegister !== typenameToRegister(rvalueInfo.type)) {
+      if (lvalueIsInRegister !== getRegisterForTypename(rvalueInfo.type)) {
         // For example, i32 -> i64
         error(
           expression.rvalue,
@@ -645,11 +645,11 @@ export function createExpressionAndTypes(
     } else if (expression.type === "cast") {
       const targetInfo = getExpressionInfo(expression.target);
       // TODO: Other casts, change register if needed
-      const targetRegister = typenameToRegister(targetInfo.type);
+      const targetRegister = getRegisterForTypename(targetInfo.type);
       if (targetRegister !== "i32") {
         error(expression.target, "TODO: Such casts are not supported yet");
       }
-      if (targetRegister !== typenameToRegister(expression.typename)) {
+      if (targetRegister !== getRegisterForTypename(expression.typename)) {
         error(expression.typename, "TODO: Register change for casting");
       }
       if (

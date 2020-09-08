@@ -7,7 +7,7 @@ import {
 } from "./parser.definitions";
 import { WAInstuction } from "./emitter.definitions";
 import {
-  typenameToRegister as getRegisterFromTypename,
+  getRegisterForTypename as getRegisterFromTypename,
   writeEspCode,
   readEspCode,
 } from "./emitter.utils";

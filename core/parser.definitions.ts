@@ -148,7 +148,7 @@ export type ArithmeticType =
   | "float"
   | "double";
 
-type FunctionTypename = {
+export type FunctionTypename = {
   type: "function";
   parameters: (DeclaratorNode | Typename)[];
   haveEndingEllipsis: boolean;

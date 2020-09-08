@@ -2,7 +2,9 @@ import { Typename } from "./parser.definitions";
 import { assertNever } from "./assertNever";
 import { RegisterType, WAInstuction } from "./emitter.definitions";
 
-export function typenameToRegister(typename: Typename): RegisterType | null {
+export function getRegisterForTypename(
+  typename: Typename
+): RegisterType | null {
   if (typename.type === "arithmetic") {
     if (
       typename.arithmeticType === "char" ||
