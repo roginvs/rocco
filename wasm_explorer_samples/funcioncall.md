@@ -21,19 +21,23 @@ int lol(int x) {
   (*p2)(5555, 6666);
 
   struct kek (*p3)() = &get_kek;
+
+  kek1();
   return 33;
 }
+
+
+
 
 ```
 
 ```wat
-
 (module
  (type $FUNCSIG$iij (func (param i32 i64) (result i32)))
  (type $FUNCSIG$v (func))
  (type $FUNCSIG$i (func (result i32)))
  (type $FUNCSIG$vifd (func (param i32 f32 f64)))
- (table 4 4 anyfunc) ;; 4=4=min=max
+ (table 4 4 anyfunc)
  (elem (i32.const 0) $__wasm_nullptr $kek1 $kek2 $get_kek)
  (memory $0 1)
  (export "memory" (memory $0))
@@ -125,6 +129,9 @@ int lol(int x) {
    (get_local $1)
    (i32.const 3)
   )
+  (drop
+   (call $kek1)
+  )
   (i32.store offset=4
    (i32.const 0)
    (i32.add
@@ -138,6 +145,5 @@ int lol(int x) {
   (unreachable)
  )
 )
-
 
 ```
