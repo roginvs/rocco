@@ -236,8 +236,10 @@ export function createExpressionAndTypes(
       } else if (declaration.typename.type === "function") {
         return {
           type: declaration.typename,
-          staticValue: null,
-          value: null,
+          staticValue: declaration.memoryOffset
+            ? declaration.memoryOffset
+            : null,
+          value: () => [`i32.const ${declaration.memoryOffset}`],
           address: () => [`i32.const ${declaration.memoryOffset}`],
         };
       } else if (declaration.typename.type === "pointer") {
