@@ -24,6 +24,14 @@ int lol(int x) {
 
   kek1();
   return 33;
+};
+
+void forward_declaration(int i);
+void lol_call_forwarded() {
+  forward_declaration(33);
+};
+void forward_declaration(int i){
+  i = i +2;
 }
 
 
@@ -45,6 +53,8 @@ int lol(int x) {
  (export "kek2" (func $kek2))
  (export "get_kek" (func $get_kek))
  (export "lol" (func $lol))
+ (export "lol_call_forwarded" (func $lol_call_forwarded))
+ (export "forward_declaration" (func $forward_declaration))
  (func $kek1 (; 0 ;) (type $FUNCSIG$i) (result i32)
   (i32.const 22)
  )
@@ -141,9 +151,34 @@ int lol(int x) {
   )
   (i32.const 33)
  )
- (func $__wasm_nullptr (; 4 ;) (type $FUNCSIG$v)
+ (func $lol_call_forwarded (; 4 ;)
+  (call $forward_declaration
+   (i32.const 33)
+  )
+ )
+ (func $forward_declaration (; 5 ;) (param $0 i32)
+  (local $1 i32)
+  (i32.store offset=12
+   (tee_local $1
+    (i32.sub
+     (i32.load offset=4
+      (i32.const 0)
+     )
+     (i32.const 16)
+    )
+   )
+   (get_local $0)
+  )
+  (i32.store offset=12
+   (get_local $1)
+   (i32.add
+    (get_local $0)
+    (i32.const 2)
+   )
+  )
+ )
+ (func $__wasm_nullptr (; 6 ;) (type $FUNCSIG$v)
   (unreachable)
  )
 )
-
 ```
