@@ -123,12 +123,15 @@ export function emit(unit: TranslationUnit) {
   );
   */
 
+  // first function is trap function
+  let functionTableLength = 1;
   const functionsCode: WAInstuction[] = [];
   // Now create functions
   for (const statement of unit.body) {
     if (statement.type === "function-declaration") {
       const lines = createFunctionCode(statement);
       functionsCode.push(...lines);
+      functionTableLength++;
     }
   }
 
@@ -146,10 +149,27 @@ export function emit(unit: TranslationUnit) {
 
   const functionTypes = helpers.functionSignatures.getTypesWAInstructions();
 
+  const functionTable: WAInstuction[] = [
+    `(table ${functionTableLength} ${functionTableLength} anyfunc) ;; min and max length`,
+    `(elem (i32.const 0) $null ` +
+      unit.body
+        .map((statement) => {
+          if (statement.type !== "function-declaration") {
+            return "";
+          }
+          return ` $F${statement.declaration.declaratorId}`;
+        })
+        .join("") +
+      ")",
+  ];
+
   const moduleCode: WAInstuction[] = [
     "(module",
-    ...functionTypes,
     `(import "js" "memory" (memory 0))`,
+
+    ...functionTypes,
+
+    ...functionTable,
 
     //'(global $esp (import "js" "esp") (mut i32))',
     //"(global $esp (mut i32))",
