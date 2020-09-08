@@ -154,6 +154,7 @@ export function emit(unit: TranslationUnit) {
     //'(global $esp (import "js" "esp") (mut i32))',
     //"(global $esp (mut i32))",
 
+    // Functions are in order of definition (not declaration?)
     ...trapFunctionCode,
     ...functionsCode,
 
