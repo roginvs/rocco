@@ -30,12 +30,13 @@ int func2(int idx)
 }
 
 int j1 = 2, j2 = 4;
+
 int j3, j4 = 3;
 
 void func3()
 {
   int j5 = 2, j6 = j5 + 3;
-}
+}; // A ; symbol
 
 int main()
 {

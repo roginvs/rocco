@@ -16,6 +16,11 @@ export function readTranslationUnit(scanner: Scanner) {
 
   const body: ExternalDeclarations = [];
   while (scanner.current().type !== "end") {
+    if (scanner.current().type === ";") {
+      // This is not in standard
+      scanner.readNext();
+      continue;
+    }
     const nodes: ExternalDeclarations = parser.readExternalDeclaration();
     nodes.forEach((node) => body.push(node));
   }
