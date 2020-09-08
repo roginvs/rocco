@@ -76,4 +76,11 @@ describe("External declaration functions", () => {
   checkCompoundStatementBody("void f();  do f(); while(2);");
 
   checkCompoundStatementBody("for (;;) { continue; break; return; return 2;}");
+
+  checkExternalDeclaration(`
+  int add_eleven(int *p)
+  {
+    (*p) = (*p) + 11;
+  }
+  `);
 });

@@ -1,0 +1,101 @@
+// externaldeclaration
+// 
+//   int add_eleven(int *p)
+//   {
+//     (*p) = (*p) + 11;
+//   };
+//   
+//
+// 
+//
+//    at Object.testSnapshot (/Users/vasilii/demo_compiler/core/testsnapshot.ts:44:10)
+//    at Object.<anonymous> (/Users/vasilii/demo_compiler/core/parser.funcs.test.ts:16:5)
+//    at Object.asyncJestTest (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:100:37)
+//    at /Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:47:12
+//    at new Promise (<anonymous>)
+//    at mapper (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:30:19)
+//    at /Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:77:41
+//    at processTicksAndRejections (internal/process/task_queues.js:97:5)
+
+[
+  {
+    "type": "function-declaration",
+    "declaration": {
+      "type": "declarator",
+      "functionSpecifier": null,
+      "storageSpecifier": null,
+      "identifier": "add_eleven",
+      "typename": {
+        "type": "function",
+        "const": true,
+        "haveEndingEllipsis": false,
+        "parameters": [
+          {
+            "type": "declarator",
+            "functionSpecifier": null,
+            "storageSpecifier": null,
+            "identifier": "p",
+            "typename": {
+              "type": "pointer",
+              "const": false,
+              "pointsTo": {
+                "type": "arithmetic",
+                "arithmeticType": "int",
+                "const": false,
+                "signedUnsigned": null
+              }
+            },
+            "declaratorId": "0001"
+          }
+        ],
+        "returnType": {
+          "type": "arithmetic",
+          "arithmeticType": "int",
+          "const": false,
+          "signedUnsigned": null
+        }
+      },
+      "declaratorId": "0002",
+      "initializer": null
+    },
+    "body": [
+      {
+        "type": "expression",
+        "expression": {
+          "type": "assignment",
+          "operator": "=",
+          "lvalue": {
+            "type": "unary-operator",
+            "operator": "*",
+            "target": {
+              "type": "identifier",
+              "value": "p",
+              "declaratorNodeId": "0001"
+            }
+          },
+          "rvalue": {
+            "type": "binary operator",
+            "operator": "+",
+            "left": {
+              "type": "unary-operator",
+              "operator": "*",
+              "target": {
+                "type": "identifier",
+                "value": "p",
+                "declaratorNodeId": "0001"
+              }
+            },
+            "right": {
+              "type": "const",
+              "subtype": "int",
+              "value": 11
+            }
+          }
+        }
+      }
+    ],
+    "declaredVariables": [
+      "0001"
+    ]
+  }
+]
