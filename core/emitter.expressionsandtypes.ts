@@ -405,6 +405,76 @@ export function createExpressionAndTypes(
       } else {
         error(target, "Must be array or pointer type");
       }
+    } else if (expression.type === "function call") {
+      const targetInfo = getExpressionInfo(expression.target);
+      if (targetInfo.type.type !== "function") {
+        error(expression.target, "Must be a function");
+      }
+      const targetInfoValue = targetInfo.value;
+      if (!targetInfoValue) {
+        error(expression.target, `There must be a function value`);
+      }
+      const func = targetInfo.type;
+      if (func.parameters.length > expression.args.length) {
+        error(expression, `Not ennough parameters`);
+      }
+      if (func.parameters.length < expression.args.length) {
+        if (func.haveEndingEllipsis) {
+          error(expression, `Ellipsis is not implemented yet`);
+        } else {
+          error(expression, `Too many parameters for this function`);
+        }
+      }
+
+      const argsValueGetters: (() => WAInstuction[])[] = [];
+      for (let idx = 0; idx < expression.args.length; idx++) {
+        const arg = expression.args[idx];
+        const paramDefinition = func.parameters[idx];
+
+        const argInfo = getExpressionInfo(arg);
+        const funcArgRegister = getRegisterForTypename(argInfo.type);
+        if (!funcArgRegister) {
+          error(arg, `Non-register params are not supported yet`);
+        }
+
+        const paramDefinitionRegister = getRegisterForTypename(
+          paramDefinition.type === "declarator"
+            ? paramDefinition.typename
+            : paramDefinition
+        );
+        if (!paramDefinitionRegister) {
+          error(arg, `Non-register params are not supportetd yet1`);
+        }
+        if (paramDefinitionRegister !== funcArgRegister) {
+          error(arg, `Register promotion is not supported yet`);
+        }
+
+        const argValue = argInfo.value;
+        if (!argValue) {
+          error(arg, `Must have a value for register param`);
+        }
+        argsValueGetters.push(argValue);
+      }
+
+      const waTypeName = helpers.functionSignatures.getFunctionTypeName(func);
+
+      return {
+        type: func.returnType,
+        address: null,
+        staticValue: null,
+        value: () => {
+          const functionValueCode: WAInstuction[] = [];
+          argsValueGetters.forEach((f) => functionValueCode.push(...f()));
+
+          if (targetInfo.staticValue) {
+            functionValueCode.push(`call ${targetInfo.staticValue}`);
+          } else {
+            functionValueCode.push(...targetInfoValue());
+            functionValueCode.push(`call_indirect (type ${waTypeName})`);
+          }
+          return functionValueCode;
+        },
+      };
     } else if (expression.type === "binary operator") {
       const leftInfo = getExpressionInfo(expression.left);
       const rightInfo = getExpressionInfo(expression.right);
