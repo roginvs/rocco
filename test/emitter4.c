@@ -61,6 +61,29 @@ int trap()
   return 111;
 }
 
+int add_eleven(int i)
+{
+  return i + 11;
+};
+
+int add_twenty(int i)
+{
+  return i + 20;
+};
+
 int call_simple_5(int i, int j)
 {
+  int (*p1)(int) = &add_eleven;
+  int (*p2)(int) = &add_twenty;
+  int (*p)(int) = (void *)0;
+  if (j)
+  {
+    p = p1;
+  }
+  else
+  {
+    p = p2;
+  }
+
+  return (*p)(i);
 }
