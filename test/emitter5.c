@@ -18,3 +18,11 @@ int postfix_plusplus_array()
 
   return diff;
 }
+
+int postfix_minusminus(int i)
+{
+  int j = i--;
+  // j === i
+
+  return i + j;
+}
