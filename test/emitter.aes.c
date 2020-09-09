@@ -1,24 +1,40 @@
 /*
 
-A copy-paste from https://github.com/roginvs/test_crypto/ 
-  - types changed into "unsigned char"
-  - typedefs removed
+A copy-paste from 
+ - https://github.com/roginvs/test_crypto/blob/master/galois.c
+
+Changes:
   - macroses removed
+  - types changed into "unsigned char"
   - all files are concatenated manually into one file
 
 */
 
 // ==================== galois.c =================================
 
-const unsigned char BIT_LEN = 8;
+/*
+
+Helpfull link
+
+http://www.ee.unb.ca/cgi-bin/tervo/calc.pl
+ 
+
+ */
+
+typedef unsigned char uint8_t;
+typedef signed char int8_t;
+
+const uint8_t BIT_LEN = 8;
+
+typedef uint8_t Poly;
 
 /** Table of bytes with bits in inverse order */
-unsigned char _inverse_bits[0x100];
+uint8_t _inverse_bits[0x100];
 
-unsigned char _inverse_bits_for_byte(unsigned char a)
+uint8_t _inverse_bits_for_byte(uint8_t a)
 {
-  unsigned char r = 0;
-  for (unsigned char i = 0; i < 8; i++)
+  uint8_t r = 0;
+  for (uint8_t i = 0; i < 8; i++)
   {
     if ((a >> i) & 1)
     {
@@ -31,31 +47,31 @@ unsigned char _inverse_bits_for_byte(unsigned char a)
 void _init_inverse_bits_table()
 {
   _inverse_bits[0x00] = _inverse_bits_for_byte(0x00);
-  for (unsigned char i = 0xFF; i > 0; i--)
+  for (uint8_t i = 0xFF; i > 0; i--)
   {
     _inverse_bits[i] = _inverse_bits_for_byte(i);
   };
 };
 
-char poly = 0b00011011;
-char poly_inversed = 0b11011000;
+Poly poly = 0b00011011;
+Poly poly_inversed = 0b11011000;
 
-/** Multiplication of two charnoms in GF2, bits are inversed */
-unsigned char char_multiple_inversed(unsigned char a, unsigned char b)
+/** Multiplication of two polynoms in GF2, bits are inversed */
+Poly poly_multiple_inversed(Poly a, Poly b)
 {
 
-  unsigned char window = 0;
+  Poly window = 0;
 
   // Go through highest degree to lowest
-  for (unsigned char i = 0; i < BIT_LEN; i++)
+  for (uint8_t i = 0; i < BIT_LEN; i++)
   {
-    unsigned char bit_value = (b >> i) & 1;
+    uint8_t bit_value = (b >> i) & 1;
 
     // printf("Bit as pos %i value=%i\n", i, bit_value);
     if (bit_value == 1)
     {
       // Bit is set. This means that we should add
-      //  (a * x^(31-i)) % char
+      //  (a * x^(31-i)) % poly
       // into result
 
       // Our window is shifted left now for 31-i items
@@ -73,13 +89,13 @@ unsigned char char_multiple_inversed(unsigned char a, unsigned char b)
     if (i != BIT_LEN - 1)
     {
       // Now prepare for shift
-      unsigned char window_highest_degree_bit = window & 1;
+      uint8_t window_highest_degree_bit = window & 1;
       // printf("  window=0x%08x shiftedWindow=0x%08x shiftedBit=%i\n", window, window >> 1, window_highest_degree_bit);
       window = window >> 1;
       if (window_highest_degree_bit == 1)
       {
         window = window ^ poly_inversed;
-        // printf("  windowAftercharXor=0x%08x\n", window);
+        // printf("  windowAfterPolyXor=0x%08x\n", window);
       }
     }
   }
@@ -87,22 +103,22 @@ unsigned char char_multiple_inversed(unsigned char a, unsigned char b)
   return window;
 };
 
-/** Multiplication of two charnoms in GF2 */
-unsigned char char_multiple(unsigned char a, unsigned char b)
+/** Multiplication of two polynoms in GF2 */
+Poly poly_multiple(Poly a, Poly b)
 {
 
-  unsigned char window = 0;
+  Poly window = 0;
 
   // Go through highest degree to lowest
-  for (unsigned char i = BIT_LEN - 1; i >= 0; i--)
+  for (int8_t i = BIT_LEN - 1; i >= 0; i--)
   {
-    unsigned char bit_value = (b >> i) & 1;
+    uint8_t bit_value = (b >> i) & 1;
 
     // printf("Bit as pos %i value=%i\n", i, bit_value);
     if (bit_value == 1)
     {
       // Bit is set. This means that we should add
-      //  (a * x^(31-i)) % char
+      //  (a * x^(31-i)) % poly
       // into result
 
       // Our window is shifted left now for 31-i items
@@ -120,13 +136,13 @@ unsigned char char_multiple(unsigned char a, unsigned char b)
     if (i != 0)
     {
       // Now prepare for shift
-      unsigned char window_highest_degree_bit = (window >> (BIT_LEN - 1)) & 1;
+      uint8_t window_highest_degree_bit = (window >> (BIT_LEN - 1)) & 1;
       // printf("  window=0x%08x shiftedWindow=0x%08x shiftedBit=%i\n", window, window >> 1, window_highest_degree_bit);
       window = window << 1;
       if (window_highest_degree_bit == 1)
       {
         window = window ^ poly;
-        // printf("  windowAftercharXor=0x%08x\n", window);
+        // printf("  windowAfterPolyXor=0x%08x\n", window);
       }
     }
   }
@@ -135,15 +151,15 @@ unsigned char char_multiple(unsigned char a, unsigned char b)
 };
 
 // #include <stdio.h>
-// void print_bits(char a)
+// void print_bits(uint8_t a)
 // {
-//        for (char i = 0; i < 8; i++)
+//        for (uint8_t i = 0; i < 8; i++)
 //        {
 //               printf((a >> (7 - i)) & 1 ? "1" : "0");
 //        };
 // };
 
-unsigned char char_divide(unsigned char a, unsigned char b, unsigned char a_have_highest_bit, unsigned char *q, unsigned char *r)
+uint8_t poly_divide(Poly a, Poly b, uint8_t a_have_highest_bit, Poly *q, Poly *r)
 {
   // printf("\nDivide ");
   // printf(a_have_highest_bit ? "1." : "0.");
@@ -152,17 +168,17 @@ unsigned char char_divide(unsigned char a, unsigned char b, unsigned char a_have
   // print_bits(b);
   // printf("\n");
 
-  unsigned char local_q;
-  unsigned char local_r;
+  Poly local_q;
+  Poly local_r;
 
-  unsigned char next_q;
-  unsigned char next_r;
+  Poly next_q;
+  Poly next_r;
 
-  for (unsigned char i = BIT_LEN; i >= 0; i--)
+  for (int8_t i = BIT_LEN; i >= 0; i--)
   {
     if ((i == BIT_LEN && a_have_highest_bit) || ((a >> i) & 1))
     {
-      for (unsigned char ii = (i == BIT_LEN ? i - 1 : i); ii >= 0; ii--)
+      for (int8_t ii = (i == BIT_LEN ? i - 1 : i); ii >= 0; ii--)
       {
         if ((b >> ii) & 1)
         {
@@ -176,7 +192,7 @@ unsigned char char_divide(unsigned char a, unsigned char b, unsigned char a_have
           // print_bits(local_r);
           // printf("\n");
 
-          char_divide(local_r, b, 0, &next_q, &next_r);
+          poly_divide(local_r, b, 0, &next_q, &next_r);
           *q = local_q ^ next_q;
           *r = next_r;
           // printf("Return q = ");
@@ -213,7 +229,7 @@ unsigned char char_divide(unsigned char a, unsigned char b, unsigned char a_have
 /** 
  * Assume that deg(a) is always bigger than deg(b)
  * */
-unsigned char _get_bezout_identity(unsigned char a, unsigned char b, unsigned char a_have_highest_bit, unsigned char *x, unsigned char *y)
+uint8_t _get_bezout_identity(Poly a, Poly b, uint8_t a_have_highest_bit, Poly *x, Poly *y)
 {
   if (b == 0b1)
   {
@@ -221,9 +237,9 @@ unsigned char _get_bezout_identity(unsigned char a, unsigned char b, unsigned ch
     *y = 1;
     return 0;
   }
-  unsigned char q;
-  unsigned char r;
-  if (char_divide(a, b, a_have_highest_bit, &q, &r))
+  Poly q;
+  Poly r;
+  if (poly_divide(a, b, a_have_highest_bit, &q, &r))
   {
     *x = 0;
     *y = 0;
@@ -253,10 +269,10 @@ unsigned char _get_bezout_identity(unsigned char a, unsigned char b, unsigned ch
     return 3;
   };
 
-  unsigned char xx;
-  unsigned char yy;
+  Poly xx;
+  Poly yy;
 
-  unsigned char err = _get_bezout_identity(b, r, 0, &xx, &yy);
+  uint8_t err = _get_bezout_identity(b, r, 0, &xx, &yy);
   if (err)
   {
     return err;
@@ -264,16 +280,16 @@ unsigned char _get_bezout_identity(unsigned char a, unsigned char b, unsigned ch
 
   *x = yy;
   // Degree of multiplication show be less than deg(a)
-  *y = xx ^ char_multiple(q, yy);
+  *y = xx ^ poly_multiple(q, yy);
   return 0;
 };
 
-unsigned char get_inverse_element(unsigned char b)
+Poly get_inverse_element(Poly b)
 {
-  unsigned char x;
-  unsigned char y;
+  Poly x;
+  Poly y;
 
-  unsigned char err = _get_bezout_identity(poly, b, 1, &x, &y);
+  uint8_t err = _get_bezout_identity(poly, b, 1, &x, &y);
   if (err)
   {
     return 0;

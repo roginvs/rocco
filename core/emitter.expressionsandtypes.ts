@@ -539,7 +539,9 @@ export function createExpressionAndTypes(
         op === "&" ||
         op === "|" ||
         op === "<<" ||
-        op === ">>"
+        op === ">>" ||
+        op === "==" ||
+        op === "!="
       ) {
         const staticValue =
           leftInfo.staticValue && rightInfo.staticValue
@@ -558,40 +560,53 @@ export function createExpressionAndTypes(
               : op === "|"
               ? leftInfo.staticValue | rightInfo.staticValue
               : op === ">>"
-              ? leftInfo.staticValue >> rightInfo.staticValue
+              ? // TODO: signed or unsigned works differently
+                leftInfo.staticValue >> rightInfo.staticValue
               : op === "<<"
               ? leftInfo.staticValue << rightInfo.staticValue
+              : op === "=="
+              ? leftInfo.staticValue === rightInfo.staticValue
+                ? 1
+                : 0
+              : op === "!="
+              ? leftInfo.staticValue !== rightInfo.staticValue
+                ? 1
+                : 0
               : assertNever(op)
             : null;
 
-        const operatorInstruction =
+        const operatorInstructions: WAInstuction[] =
           op === "*"
-            ? "i32.mul"
+            ? ["i32.mul"]
             : op === "/"
             ? finalType.type === "arithmetic" &&
               finalType.signedUnsigned === "signed"
-              ? "i32.div_s"
-              : "i32.div_u"
+              ? ["i32.div_s"]
+              : ["i32.div_u"]
             : op === "%"
             ? finalType.type === "arithmetic" &&
               finalType.signedUnsigned === "signed"
-              ? "i32.rem_s"
-              : "i32.rem_u"
+              ? ["i32.rem_s"]
+              : ["i32.rem_u"]
             : op === "+"
-            ? "i32.add"
+            ? ["i32.add"]
             : op === "-"
-            ? "i32.sub"
+            ? ["i32.sub"]
             : op === "&"
-            ? "i32.and"
+            ? ["i32.and"]
             : op === "|"
-            ? "i32.or"
+            ? ["i32.or"]
             : op === "<<"
-            ? "i32.shl"
+            ? ["i32.shl"]
             : op === ">>"
             ? leftInfo.type.type === "arithmetic" &&
               leftInfo.type.signedUnsigned === "signed"
-              ? "i32.shr_s"
-              : "i32.shr_u"
+              ? ["i32.shr_s"]
+              : ["i32.shr_u"]
+            : op === "=="
+            ? ["i32.eq"]
+            : op === "!="
+            ? ["i32.ne"]
             : assertNever(op);
 
         let rightMultiplyForPointerAddOrSub: WAInstuction[] = [];
@@ -629,7 +644,7 @@ export function createExpressionAndTypes(
               ...getLeftValue(),
               ...getRightValue(),
               ...rightMultiplyForPointerAddOrSub,
-              operatorInstruction,
+              ...operatorInstructions,
             ];
           },
         };
