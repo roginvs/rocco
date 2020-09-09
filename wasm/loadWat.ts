@@ -15,8 +15,12 @@ export async function loadWat<T extends WebAssembly.Exports>(fname: string) {
 
   console.info(wasmdata.log);
 
+  // const memory = new WebAssembly.Memory({ initial: 100 });
+
   const module = await WebAssembly.compile(wasmdata.buffer);
-  const instance = await WebAssembly.instantiate(module);
+  const instance = await WebAssembly.instantiate(module, {
+    // memory: memory,
+  });
 
   console.info(instance.exports);
 

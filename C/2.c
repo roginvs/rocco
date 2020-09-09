@@ -49,11 +49,21 @@ void test_pointers()
   p2 = &(*p1);
 }
 
+void test_char_arithmetic()
+{
+  char c1 = 250;
+  char c2 = 100;
+  char c3 = c1 + c2;
+  int i = c1 + c2;
+  printf("Values are c3=%i int=%i\n", c3, i);
+}
+
 int main()
 {
   printf("for_loop_1 = %i\n", for_loop_1());
   printf("for_loop_2 = %i\n", for_loop_2());
   printf("for_loop_3 = %i\n", for_loop_3());
   test_func_address_add(10);
+  test_char_arithmetic();
   return 0;
 }
