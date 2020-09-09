@@ -16,7 +16,7 @@ describe(`Emits and compiles`, () => {
     expect(m.factor(3)).toBe(6);
     expect(m.factor(5)).toBe(2 * 3 * 4 * 5);
 
-    expect(m.op_u(7, 0, 0)).toBe(-1);
+    expect(m.op_u(9, 0, 0)).toBe(-1);
 
     expect(m.op_u(0, 1, 2)).toBe(0);
     expect(m.op_u(0, 2, 2)).toBe(0);
@@ -42,5 +42,15 @@ describe(`Emits and compiles`, () => {
 
     expect(m.op_u(0, 0xffffffff, 2)).toBe(1);
     expect(m.op_s(0, 0xffffffff, 2)).toBe(0);
+
+    expect(m.op_u(7, 1, 1)).toBe(1);
+    expect(m.op_u(7, 0, 1)).toBe(1);
+    expect(m.op_u(7, 1, 0)).toBe(1);
+    expect(m.op_u(7, 0, 0)).toBe(0);
+
+    expect(m.op_u(8, 1, 1)).toBe(1);
+    expect(m.op_u(8, 0, 1)).toBe(0);
+    expect(m.op_u(8, 1, 0)).toBe(0);
+    expect(m.op_u(8, 0, 0)).toBe(0);
   });
 });

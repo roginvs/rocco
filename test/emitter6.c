@@ -51,6 +51,10 @@ int op_u(int type, unsigned int x, unsigned int y)
     return x != y;
   else if (type == 6)
     return x ^ y;
+  else if (type == 7)
+    return x || y;
+  else if (type == 8)
+    return x && y;
 
   return -1;
 }

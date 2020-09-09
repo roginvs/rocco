@@ -698,11 +698,60 @@ export function createExpressionAndTypes(
             ];
           },
         };
+      } else if (op === "||") {
+        return {
+          type: finalType,
+          staticValue: null,
+          address: null,
+          value: () => {
+            return [
+              // Expesssions have no break/continue/return statements
+              `block (result i32) ;; OR block`,
+              "i32.const 1",
+
+              ...getLeftValue(),
+              "br_if 0",
+              ...getRightValue(),
+              "br_if 0",
+
+              // Not very optimal
+              // Better to have two blocks
+              "drop",
+              "i32.const 0",
+
+              "end",
+            ];
+          },
+        };
+      } else if (op === "&&") {
+        return {
+          type: finalType,
+          staticValue: null,
+          address: null,
+          value: () => {
+            return [
+              // Expesssions have no break/continue/return statements
+              `block (result i32) ;; AND block`,
+              "i32.const 0",
+
+              ...getLeftValue(),
+              "i32.eqz",
+              "br_if 0",
+              ...getRightValue(),
+              "i32.eqz",
+              "br_if 0",
+
+              // Not very optimal
+              // Better to have two blocks
+              "drop",
+              "i32.const 1",
+
+              "end",
+            ];
+          },
+        };
       } else {
-        error(
-          expression,
-          `Not supported yet. Todo: operator ${expression.operator} for binary operations`
-        );
+        assertNever(op);
       }
     } else if (expression.type === "assignment") {
       const lvalueInfo = getExpressionInfo(expression.lvalue);
