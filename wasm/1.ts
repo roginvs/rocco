@@ -1,31 +1,12 @@
-import * as fs from "fs";
+import { loadWat } from "./loadWat";
 
 async function main() {
-  const wabt = await import("wabt").then((wabt) => wabt.default());
-
-  const inputWat = __dirname + "/1.wat";
-
-  const inputData = fs.readFileSync(inputWat, "utf8");
-
-  const wasmModule = wabt.parseWat(inputWat, inputData);
-
-  const wasmdata = wasmModule.toBinary({
-    log: true,
-  });
-
-  console.info(wasmdata.log);
-
-  const module = await WebAssembly.compile(wasmdata.buffer);
-  const instance = await WebAssembly.instantiate(module);
-
-  console.info(instance.exports);
-
-  const mymodule = instance.exports as {
+  const mymodule = await loadWat<{
     savingadd: (n: number) => number;
     test_nested_br: () => number;
     test_stack_values: () => number;
     blocks_and_ifs: (n: number) => number;
-  };
+  }>("1.wat");
 
   /*
   console.info(exports.savingadd(1));
