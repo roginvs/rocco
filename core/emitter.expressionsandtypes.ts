@@ -483,76 +483,128 @@ export function createExpressionAndTypes(
 
       const op = expression.operator;
 
-      // Very hacky
+      const getLeftValue = leftInfo.value;
+      if (!getLeftValue) {
+        error(expression.left, "Must have a value");
+      }
+      const getRightValue = rightInfo.value;
+      if (!getRightValue) {
+        error(expression.right, "Must have a value");
+      }
+
+      const leftRegister = getRegisterForTypename(leftInfo.type);
+      const rightRegister = getRegisterForTypename(rightInfo.type);
+      if (!leftRegister) {
+        error(expression.left, "Must have a value");
+      }
+      if (!rightRegister) {
+        error(expression.right, "Must have a value");
+      }
+      if (leftRegister !== "i32") {
+        error(expression.left, "TODO: Not suppoertted yet");
+      }
+      if (rightRegister !== "i32") {
+        error(expression.right, "TODO: Not suppoertted yet");
+      }
+
+      const finalType = (() => {
+        if (leftInfo.type.type === "pointer") {
+          return leftInfo.type;
+        }
+        if (rightInfo.type.type === "pointer") {
+          return rightInfo.type;
+        }
+
+        const leftSize = getTypeSize(leftInfo.type);
+        const rightSize = getTypeSize(leftInfo.type);
+        if (leftSize.type !== "static") {
+          error(expression.left, "Inernal error final type left");
+        }
+        if (rightSize.type !== "static") {
+          error(expression.right, "Inernal error final type left");
+        }
+        if (leftSize.value >= rightSize.value) {
+          return leftInfo.type;
+        } else {
+          return rightInfo.type;
+        }
+      })();
+
       if (
-        leftInfo.type.type === "arithmetic" &&
-        (leftInfo.type.arithmeticType === "char" ||
-          leftInfo.type.arithmeticType === "int") &&
-        rightInfo.type.type === "arithmetic" &&
-        (rightInfo.type.arithmeticType === "char" ||
-          rightInfo.type.arithmeticType === "int")
+        op === "*" ||
+        op === "/" ||
+        op === "%" ||
+        op === "+" ||
+        op === "-" ||
+        op === "&" ||
+        op === "|"
       ) {
-        const finalType =
-          leftInfo.type.arithmeticType === "char" &&
-          rightInfo.type.arithmeticType === "char"
-            ? leftInfo.type
-            : leftInfo.type.arithmeticType === "int"
-            ? leftInfo.type
-            : rightInfo.type;
+        const staticValue =
+          leftInfo.staticValue && rightInfo.staticValue
+            ? op === "*"
+              ? leftInfo.staticValue * rightInfo.staticValue
+              : op === "/"
+              ? Math.floor(leftInfo.staticValue / rightInfo.staticValue)
+              : op === "%"
+              ? leftInfo.staticValue % rightInfo.staticValue
+              : op === "+"
+              ? leftInfo.staticValue + rightInfo.staticValue
+              : op === "-"
+              ? leftInfo.staticValue - rightInfo.staticValue
+              : op === "&"
+              ? leftInfo.staticValue & rightInfo.staticValue
+              : op === "|"
+              ? leftInfo.staticValue | rightInfo.staticValue
+              : assertNever(op)
+            : null;
 
         const operatorInstruction =
-          op === "+"
-            ? "i32.add"
-            : op === "-"
-            ? "i32.sub"
-            : op === "*"
+          op === "*"
             ? "i32.mul"
             : op === "/"
-            ? finalType.signedUnsigned === "signed"
+            ? finalType.type === "arithmetic" &&
+              finalType.signedUnsigned === "signed"
               ? "i32.div_s"
               : "i32.div_u"
             : op === "%"
-            ? finalType.signedUnsigned === "signed"
+            ? finalType.type === "arithmetic" &&
+              finalType.signedUnsigned === "signed"
               ? "i32.rem_s"
               : "i32.rem_u"
+            : op === "+"
+            ? "i32.add"
+            : op === "-"
+            ? "i32.sub"
             : op === "&"
             ? "i32.and"
             : op === "|"
             ? "i32.or"
-            : op === "&&"
-            ? "i32.and"
-            : op === "||"
-            ? "i32.or"
-            : undefined;
-        const prepareInstructions =
-          op === "&&" || op === "||"
-            ? [
-                "i32.eqz ;; Return 1 if i is zero, 0 overwise",
-                "i32.eqz ;; Invert value",
-              ]
-            : [];
-        if (!operatorInstruction) {
-          error(expression, `TODO: This operator ${op} is not implemented`);
-        }
+            : assertNever(op);
 
-        // Todo: other operators here too
-        // todo: pay attention for operands type
-        const staticValue =
-          leftInfo.staticValue && rightInfo.staticValue
-            ? op === "+"
-              ? leftInfo.staticValue + rightInfo.staticValue
-              : op === "-"
-              ? leftInfo.staticValue - rightInfo.staticValue
-              : null
-            : null;
-
-        const getLeftValue = leftInfo.value;
-        if (!getLeftValue) {
-          error(expression.left, "Must have a value");
+        let rightMultiplyForPointerAddOrSub: WAInstuction[] = [];
+        if (
+          (op === "+" || op === "-") &&
+          leftInfo.type.type === "pointer" &&
+          rightInfo.type.type === "arithmetic"
+        ) {
+          const leftSize = getTypeSize(leftInfo.type.pointsTo);
+          if (leftSize.type !== "static") {
+            error(
+              expression.left,
+              "DYnamic types are not supported yet, or incomplee is here"
+            );
+          }
+          rightMultiplyForPointerAddOrSub = [
+            `i32.const ${leftSize.value}`,
+            `i32.mul`,
+          ];
         }
-        const getRightValue = rightInfo.value;
-        if (!getRightValue) {
-          error(expression.right, "Must have a value");
+        if (
+          (op === "+" || op === "-") &&
+          leftInfo.type.type === "arithmetic" &&
+          rightInfo.type.type === "pointer"
+        ) {
+          error(expression, "Not supported yet - swap arguments");
         }
 
         return {
@@ -562,9 +614,8 @@ export function createExpressionAndTypes(
           value: () => {
             return [
               ...getLeftValue(),
-              ...prepareInstructions,
               ...getRightValue(),
-              ...prepareInstructions,
+              ...rightMultiplyForPointerAddOrSub,
               operatorInstruction,
             ];
           },
@@ -572,7 +623,7 @@ export function createExpressionAndTypes(
       } else {
         error(
           expression,
-          "Not supported yet. Todo: other types for binary operations"
+          `Not supported yet. Todo: operator ${expression.operator} for binary operations`
         );
       }
     } else if (expression.type === "assignment") {
