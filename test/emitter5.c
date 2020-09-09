@@ -31,3 +31,20 @@ int sizeof_typename()
 {
   return sizeof(int[5]);
 }
+
+int bitwise_reverse(int i)
+{
+  return ~i;
+}
+int not(int i)
+{
+  return !i;
+}
+int minus(int i)
+{
+  return -i;
+}
+int plus(int i)
+{
+  return +i;
+}

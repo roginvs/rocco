@@ -697,11 +697,54 @@ export function createExpressionAndTypes(
           staticValue: null,
           address: targetValue,
         };
+      } else if (
+        expression.operator === "~" ||
+        expression.operator === "!" ||
+        expression.operator === "+" ||
+        expression.operator === "-"
+      ) {
+        const targetInfo = getExpressionInfo(expression.target);
+        const targetRegister = getRegisterForTypename(targetInfo.type);
+        if (!targetRegister) {
+          error(expression.target, "Must be a value");
+        }
+        if (targetRegister !== "i32") {
+          error(
+            expression.target,
+            `Register ${targetRegister} is not supported yet`
+          );
+        }
+        const targetValue = targetInfo.value;
+        if (!targetValue) {
+          error(expression.target, "Must have a value");
+        }
+        const whatReallyToDo: WAInstuction[] =
+          expression.operator === "~"
+            ? [`i32.const 4294967295`, `i32.xor`]
+            : expression.operator === "!"
+            ? [`i32.eqz`]
+            : expression.operator === "+"
+            ? []
+            : expression.operator === "-"
+            ? [`i32.const 4294967295`, `i32.xor`, `i32.const 1`, `i32.add`]
+            : assertNever(expression.operator);
+
+        return {
+          // TODO: Add a "signed" if operator is "-"
+          type: targetInfo.type,
+          address: null,
+          // TODO
+          staticValue: null,
+          value: () => [...targetValue(), ...whatReallyToDo],
+        };
       } else {
+        assertNever(expression.operator);
+        /*
         error(
           expression,
           `TODO: This unary operator ${expression.operator} is not supported yet`
         );
+        */
       }
     } else if (expression.type === "sizeof expression") {
       const typename: Typename = {
