@@ -127,6 +127,25 @@
     i32.const 89
   )
 
+  (func $test_nested_br_2 (export "test_nested_br_2") (result i32)
+    (block (result i32) ;; Or like this
+      (block 
+        (block (result i32) 
+          i32.const 88
+          br 3
+          br 2
+          br 1
+          br 0
+        )
+        drop
+      )
+      i32.const  2
+    )
+
+    drop
+    i32.const 89
+  )
+
   (func $test_stack_values (export "test_stack_values") (result i32)
     ;; i32.const 3
     ;; i64.extend_i32_u
