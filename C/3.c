@@ -34,10 +34,17 @@ void test_postfix_op()
   int i = 2;
   int *p = &i;
   printf("\n");
-  printf("  p = %lu", p);
+  printf("  p = %lu\n", p);
   p++;
-  printf("  p = %lu", p);
+  printf("  p = %lu\n", p);
   // i++ = 2;
+}
+
+void test_shift()
+{
+  unsigned int i = 0xf0ff00f0;
+  int j = 8;
+  printf(" >> = %i\n", i >> j);
 }
 
 int main()
@@ -45,5 +52,6 @@ int main()
 
   test_char_arithmetic();
   test_postfix_op();
+  test_shift();
   return 0;
 }

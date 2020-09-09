@@ -12,6 +12,10 @@ describe(`Emits and compiles`, () => {
       not(x: number): number;
       minus(x: number): number;
       plus(x: number): number;
+
+      shl(i: number, j: number): number;
+      shr_s(i: number, j: number): number;
+      shr_u(i: number, j: number): number;
     }>("emitter5.c");
     const m = d.compiled;
 
@@ -36,5 +40,12 @@ describe(`Emits and compiles`, () => {
 
     expect(m.plus(0)).toBe(0);
     expect(m.plus(1)).toBe(1);
+
+    expect(m.shl(22, 3)).toBe(176);
+    expect(m.shr_u(176, 3)).toBe(22);
+    expect(m.shr_s(176, 3)).toBe(22);
+
+    expect(m.shr_s(0xf0ff00f0, 8)).toBe(0xf0ff00f0 >> 8);
+    expect(m.shr_u(0xf0ff00f0, 8)).toBe(15793920);
   });
 });

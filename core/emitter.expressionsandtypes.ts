@@ -537,7 +537,9 @@ export function createExpressionAndTypes(
         op === "+" ||
         op === "-" ||
         op === "&" ||
-        op === "|"
+        op === "|" ||
+        op === "<<" ||
+        op === ">>"
       ) {
         const staticValue =
           leftInfo.staticValue && rightInfo.staticValue
@@ -555,6 +557,10 @@ export function createExpressionAndTypes(
               ? leftInfo.staticValue & rightInfo.staticValue
               : op === "|"
               ? leftInfo.staticValue | rightInfo.staticValue
+              : op === ">>"
+              ? leftInfo.staticValue >> rightInfo.staticValue
+              : op === "<<"
+              ? leftInfo.staticValue << rightInfo.staticValue
               : assertNever(op)
             : null;
 
@@ -579,6 +585,13 @@ export function createExpressionAndTypes(
             ? "i32.and"
             : op === "|"
             ? "i32.or"
+            : op === "<<"
+            ? "i32.shl"
+            : op === ">>"
+            ? leftInfo.type.type === "arithmetic" &&
+              leftInfo.type.signedUnsigned === "signed"
+              ? "i32.shr_s"
+              : "i32.shr_u"
             : assertNever(op);
 
         let rightMultiplyForPointerAddOrSub: WAInstuction[] = [];

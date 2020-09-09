@@ -48,3 +48,16 @@ int plus(int i)
 {
   return +i;
 }
+
+int shl(int i, int j)
+{
+  return i << j;
+}
+int shr_s(signed int i, int j)
+{
+  return i >> j;
+}
+int shr_u(unsigned int i, int j)
+{
+  return i >> j;
+}
