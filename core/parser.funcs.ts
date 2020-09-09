@@ -849,9 +849,18 @@ export function createParser(
       throwError("Idenitifier is already declared (TODO: do linkage)");
     }
 
+    // Workaround for typescript
+    const functionDeclaration: DeclaratorNodeFunction = {
+      ...declaration,
+      typename: declaration.typename,
+      initializer: null,
+    };
+
     if (scanner.current().type !== "{") {
       throwError("Expected compount-statement");
     }
+
+    symbolTable.addEntry(functionDeclaration);
 
     symbolTable.enterFunctionScope();
     for (const param of declaration.typename.parameters) {
@@ -873,21 +882,12 @@ export function createParser(
     scanner.readNext();
     const declaredVariables = symbolTable.leaveFunctionScope();
 
-    // Workaround for typescript
-    const functionDeclaration: DeclaratorNodeFunction = {
-      ...declaration,
-      typename: declaration.typename,
-      initializer: null,
-    };
-
     const func: FunctionDefinition = {
       type: "function-declaration",
       declaration: functionDeclaration,
       body: body,
       declaredVariables,
     };
-
-    symbolTable.addEntry(functionDeclaration);
 
     locator.set(func, {
       ...tokenForLocator,

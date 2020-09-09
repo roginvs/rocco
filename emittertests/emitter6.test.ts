@@ -10,5 +10,8 @@ describe(`Emits and compiles`, () => {
 
     expect(m.compare_eq(2, 3)).toBe(0);
     expect(m.compare_eq(2, 2)).toBe(1);
+
+    expect(m.factor(3)).toBe(6);
+    expect(m.factor(5)).toBe(2 * 3 * 4 * 5);
   });
 });
