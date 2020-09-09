@@ -7,6 +7,7 @@ describe(`Emits and compiles`, () => {
       factor(x: number): number;
       op_u(type: number, x: number, y: number): number;
       op_s(type: number, x: number, y: number): number;
+      conditional(cond: number, left: number, right: number): number;
     }>("emitter6.c");
     const m = d.compiled;
 
@@ -52,5 +53,9 @@ describe(`Emits and compiles`, () => {
     expect(m.op_u(8, 0, 1)).toBe(0);
     expect(m.op_u(8, 1, 0)).toBe(0);
     expect(m.op_u(8, 0, 0)).toBe(0);
+
+    expect(m.conditional(1, 11, 33)).toBe(11);
+    expect(m.conditional(11, 11, 33)).toBe(11);
+    expect(m.conditional(0, 11, 33)).toBe(33);
   });
 });

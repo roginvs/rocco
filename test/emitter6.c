@@ -58,3 +58,8 @@ int op_u(int type, unsigned int x, unsigned int y)
 
   return -1;
 }
+
+int conditional(int cond, int left, int right)
+{
+  return cond ? left : right;
+}

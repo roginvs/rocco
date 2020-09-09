@@ -1072,6 +1072,67 @@ export function createExpressionAndTypes(
         ],
       };
     } else if (expression.type === "conditional expression") {
+      const conditionInfo = getExpressionInfo(expression.condition);
+      const iftrueInfo = getExpressionInfo(expression.iftrue);
+      const iffalseInfo = getExpressionInfo(expression.iffalse);
+
+      const conditionValue = conditionInfo.value;
+      if (!conditionValue) {
+        error(expression.condition, "Condition must have a value");
+      }
+
+      const iftrueValue = iftrueInfo.value;
+      if (!iftrueValue) {
+        error(expression.iftrue, "Iftrue part must have a value");
+      }
+
+      const iffalseValue = iffalseInfo.value;
+      if (!iffalseValue) {
+        error(expression.iftrue, "Iffalse part must have a value");
+      }
+
+      if (getRegisterForTypename(conditionInfo.type) !== "i32") {
+        error(expression.condition, "Register is not supported");
+      }
+      if (getRegisterForTypename(iftrueInfo.type) !== "i32") {
+        error(expression.condition, "Register is not supported");
+      }
+      if (getRegisterForTypename(iffalseInfo.type) !== "i32") {
+        error(expression.condition, "Register is not supported");
+      }
+
+      const finalType = (() => {
+        // todo: checks
+        const leftSize = getTypeSize(iftrueInfo.type);
+        const rightSize = getTypeSize(iffalseInfo.type);
+        if (leftSize.type !== "static") {
+          error(expression.iftrue, "Inernal error final type left");
+        }
+        if (rightSize.type !== "static") {
+          error(expression.iffalse, "Inernal error final type left");
+        }
+        if (leftSize.value >= rightSize.value) {
+          // TODO: Signed or unsigned!
+          return iftrueInfo.type;
+        } else {
+          return iffalseInfo.type;
+        }
+      })();
+
+      return {
+        type: finalType,
+        address: null,
+        staticValue: null,
+        value: () => [
+          ...conditionValue(),
+          `if (result i32)`,
+          ...iftrueValue(),
+          "else",
+          ...iffalseValue(),
+          "end",
+        ],
+      };
+      // asdasd
       error(expression, "TODO ME conditional expression");
     }
 
