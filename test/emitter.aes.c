@@ -44,6 +44,11 @@ uint8_t _inverse_bits_for_byte(uint8_t a)
   return r;
 };
 
+uint8_t *_inverse_bits_address()
+{
+  return &_inverse_bits;
+}
+
 void _init_inverse_bits_table()
 {
   _inverse_bits[0x00] = _inverse_bits_for_byte(0x00);

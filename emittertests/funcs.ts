@@ -84,11 +84,14 @@ export async function compile<E extends WebAssembly.Exports>(fname: string) {
 
     const mem32 = new Uint32Array(memory.buffer);
 
+    const mem8 = new Uint8Array(memory.buffer);
+
     return {
       warnings: emitted.warnings,
       compiled,
       memory,
-      mem32: mem32,
+      mem32,
+      mem8,
     };
   } catch (e) {
     writeErrorInfo(e);
