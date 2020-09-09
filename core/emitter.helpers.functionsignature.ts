@@ -39,8 +39,9 @@ export function generateFunctionWaTypeName(func: FunctionTypename) {
 
     const paramRegister = getRegisterForTypename(paramTypename);
     if (!paramRegister) {
+      console.info(paramTypename);
       throw new Error(
-        "Parameters with non-register values is not supported yet"
+        `Parameters with non-register values is not supported yet`
       );
     }
 

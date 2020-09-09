@@ -96,10 +96,13 @@ export function emit(unit: TranslationUnit) {
             "Initializer value must be known on compilation time"
           );
         }
-        if (initializerExpressionInfo.type.arithmeticType !== "int") {
+        if (
+          initializerExpressionInfo.type.arithmeticType !== "int" &&
+          initializerExpressionInfo.type.arithmeticType !== "char"
+        ) {
           error(
             declaration.initializer.expression,
-            "TODO: Only int is supported for initializers"
+            "TODO: Only int or char is supported for initializers"
           );
         }
 
