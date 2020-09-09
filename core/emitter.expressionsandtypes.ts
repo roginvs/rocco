@@ -524,6 +524,7 @@ export function createExpressionAndTypes(
           error(expression.right, "Inernal error final type left");
         }
         if (leftSize.value >= rightSize.value) {
+          // TODO: Signed or unsigned!
           return leftInfo.type;
         } else {
           return rightInfo.type;
@@ -541,7 +542,12 @@ export function createExpressionAndTypes(
         op === "<<" ||
         op === ">>" ||
         op === "==" ||
-        op === "!="
+        op === "!=" ||
+        op === "<" ||
+        op === "<=" ||
+        op === ">" ||
+        op === ">=" ||
+        op === "^"
       ) {
         const staticValue =
           leftInfo.staticValue && rightInfo.staticValue
@@ -572,20 +578,47 @@ export function createExpressionAndTypes(
               ? leftInfo.staticValue !== rightInfo.staticValue
                 ? 1
                 : 0
+              : op === "<"
+              ? leftInfo.staticValue < rightInfo.staticValue
+                ? 1
+                : 0
+              : op === "<="
+              ? leftInfo.staticValue <= rightInfo.staticValue
+                ? 1
+                : 0
+              : op === ">"
+              ? leftInfo.staticValue > rightInfo.staticValue
+                ? 1
+                : 0
+              : op === ">="
+              ? leftInfo.staticValue >= rightInfo.staticValue
+                ? 1
+                : 0
+              : op === "^"
+              ? leftInfo.staticValue ^ rightInfo.staticValue
               : assertNever(op)
             : null;
+
+        const leftSigned =
+          leftInfo.type.type === "arithmetic" &&
+          leftInfo.type.signedUnsigned === "signed";
+        const rightSigned =
+          rightInfo.type.type === "arithmetic" &&
+          rightInfo.type.signedUnsigned === "signed";
+        const anySigned = leftSigned || rightSigned;
+        const finalSigned =
+          finalType.type === "arithmetic" &&
+          finalType.signedUnsigned === "signed";
 
         const operatorInstructions: WAInstuction[] =
           op === "*"
             ? ["i32.mul"]
             : op === "/"
-            ? finalType.type === "arithmetic" &&
-              finalType.signedUnsigned === "signed"
+            ? finalSigned
               ? ["i32.div_s"]
               : ["i32.div_u"]
             : op === "%"
-            ? finalType.type === "arithmetic" &&
-              finalType.signedUnsigned === "signed"
+            ? finalSigned
               ? ["i32.rem_s"]
               : ["i32.rem_u"]
             : op === "+"
@@ -599,14 +632,31 @@ export function createExpressionAndTypes(
             : op === "<<"
             ? ["i32.shl"]
             : op === ">>"
-            ? leftInfo.type.type === "arithmetic" &&
-              leftInfo.type.signedUnsigned === "signed"
+            ? leftSigned
               ? ["i32.shr_s"]
               : ["i32.shr_u"]
             : op === "=="
             ? ["i32.eq"]
             : op === "!="
             ? ["i32.ne"]
+            : op === "<"
+            ? anySigned
+              ? ["i32.lt_s"]
+              : ["i32.lt_u"]
+            : op === "<="
+            ? anySigned
+              ? ["i32.le_s"]
+              : ["i32.le_u"]
+            : op === ">"
+            ? anySigned
+              ? ["i32.gt_s"]
+              : ["i32.gt_u"]
+            : op === ">="
+            ? anySigned
+              ? ["i32.ge_s"]
+              : ["i32.ge_u"]
+            : op === "^"
+            ? ["i32.xor"]
             : assertNever(op);
 
         let rightMultiplyForPointerAddOrSub: WAInstuction[] = [];
