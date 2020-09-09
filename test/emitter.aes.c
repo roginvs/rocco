@@ -9,7 +9,8 @@ Changes:
   - all files are concatenated manually into one file
 
   - switch is replaced if-else
-*/
+  - array in + changed to address of array
+  - array in function argument is transformed to pointer
 
 // ==================== galois.c =================================
 
