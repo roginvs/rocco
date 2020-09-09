@@ -770,6 +770,62 @@ export function createExpressionAndTypes(
         value: targetInfo.value,
         address: targetInfo.address,
       };
+    } else if (
+      expression.type === "postfix ++" ||
+      expression.type === "postfix --"
+    ) {
+      const isPlus = expression.type === "postfix ++";
+      const target = expression.target;
+      const targetInfo = getExpressionInfo(expression.target);
+      const targetRegister = getRegisterForTypename(targetInfo.type);
+      if (!targetRegister) {
+        error(target, "Must be a real type or pointer");
+      }
+      let howManyToAdd: number;
+      if (targetInfo.type.type === "pointer") {
+        const pointsToSize = getTypeSize(targetInfo.type.pointsTo);
+        if (pointsToSize.type !== "static") {
+          error(target, `TODO: Only compilation-time known size is supported`);
+        }
+        howManyToAdd = pointsToSize.value;
+      } else {
+        howManyToAdd = 1;
+      }
+      const targetValue = targetInfo.value;
+      if (!targetValue) {
+        error(target, "Must have a vakue");
+      }
+      const targetAddress = targetInfo.address;
+      if (!targetAddress) {
+        error(target, "Not an lvalue");
+      }
+      if (targetInfo.type.const) {
+        error(target, "A const modifier is here");
+      }
+      if (targetRegister !== "i32") {
+        error(target, "Such register is not supported yet");
+      }
+      return {
+        type: targetInfo.type,
+        address: null,
+        staticValue: null,
+        value: () => [
+          // First, we take a value
+          ...targetValue(),
+
+          // We will write back to this address
+          ...targetAddress(),
+
+          // And now we are reading from same address. TODO: How to "tee"?
+          ...targetAddress(),
+          // So, reading value from address above
+          loadScalar(targetInfo.type, targetRegister),
+          `i32.const ${howManyToAdd}`,
+          isPlus ? `i32.add` : "i32.sub",
+
+          storeScalar(targetInfo.type, targetRegister),
+        ],
+      };
     }
 
     error(expression, `TODO other expressionInfo for type=${expression.type}`);

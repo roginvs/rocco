@@ -24,12 +24,26 @@ void test_char_arithmetic()
   unsigned char c2 = 100;
   unsigned char c3 = c1 + c2;
   unsigned int i = c1 + c2;
-  printf("Values1 are c3=%i int=%i\n", c3, i);
+  // WasmExplorer does i32.and 0xFF ... to cast to char
+  unsigned int i2 = (unsigned char)(c1 + c2);
+  printf("Values1 are c3=%i int=%i int2=%i\n", c3, i, i2);
+}
+
+void test_postfix_op()
+{
+  int i = 2;
+  int *p = &i;
+  printf("\n");
+  printf("  p = %lu", p);
+  p++;
+  printf("  p = %lu", p);
+  // i++ = 2;
 }
 
 int main()
 {
 
   test_char_arithmetic();
+  test_postfix_op();
   return 0;
 }
