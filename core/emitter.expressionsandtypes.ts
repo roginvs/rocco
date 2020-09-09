@@ -1071,6 +1071,18 @@ export function createExpressionAndTypes(
           storeScalar(targetInfo.type, targetRegister),
         ],
       };
+    } else if (expression.type === "conditional expression") {
+      return {
+        address: null,
+        value: () => ["i32.const 2"],
+        type: {
+          type: "arithmetic",
+          arithmeticType: "int",
+          const: true,
+          signedUnsigned: null,
+        },
+        staticValue: null,
+      };
     }
 
     error(expression, `TODO other expressionInfo for type=${expression.type}`);
