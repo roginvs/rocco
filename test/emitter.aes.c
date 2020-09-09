@@ -10,8 +10,8 @@ Changes:
 
   - switch is replaced if-else
   - array in + changed to address of array
-  - array in function argument is transformed to pointer
-
+  - array in function argument is transformed to pointer to first array element (x -> &x[0])
+  
 */
 
 // ==================== galois.c =================================
@@ -41,7 +41,7 @@ uint8_t _inverse_bits_for_byte(uint8_t a)
 
 uint8_t *_inverse_bits_address()
 {
-  return &_inverse_bits;
+  return &_inverse_bits[0];
 }
 
 void _init_inverse_bits_table()
@@ -558,7 +558,7 @@ void init_tables()
 
 uint8_t *get_rcon_at(uint8_t i)
 {
-  return (&_rcon + (i - 1) * WORD_SIZE);
+  return (&_rcon[0] + (i - 1) * WORD_SIZE);
 };
 
 const uint8_t AES_128_KEY_SIZE = (4 * WORD_SIZE);
