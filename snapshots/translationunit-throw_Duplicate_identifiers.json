@@ -8,14 +8,14 @@
 // }
 // 
 //
-//    at Object.testSnapshot (/Users/vasilii/demo_compiler/testsnapshot.ts:44:10)
-//    at Object.<anonymous> (/Users/vasilii/demo_compiler/parser.throws.test.ts:32:7)
+//    at Object.testSnapshot (/Users/vasilii/demo_compiler/core/testsnapshot.ts:44:10)
+//    at Object.<anonymous> (/Users/vasilii/demo_compiler/core/parser.throws.test.ts:32:7)
 //    at Object.asyncJestTest (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:100:37)
-//    at resolve (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:47:12)
+//    at /Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:47:12
 //    at new Promise (<anonymous>)
 //    at mapper (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:30:19)
-//    at promise.then (/Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:77:41)
-//    at process._tickCallback (internal/process/next_tick.js:68:7)
+//    at /Users/vasilii/demo_compiler/node_modules/jest-jasmine2/build/queueRunner.js:77:41
+//    at processTicksAndRejections (internal/process/task_queues.js:97:5)
 
 {
   "name": "Error",
