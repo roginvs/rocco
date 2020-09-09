@@ -4,6 +4,16 @@ gcc -Wall -o 2.bin 2.c && ./2.bin
 
 clang -Xclang -ast-dump 2.c
 
+
+# compile with docker image
+docker run \
+  --rm \
+  -v $(pwd):/src \
+  -u $(id -u):$(id -g) \
+  emscripten/emsdk \
+  emcc 2.c -o out/1.html
+
+
 */
 
 void test_array(int x, int y, int z)
