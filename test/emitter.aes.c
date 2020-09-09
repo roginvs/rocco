@@ -12,16 +12,9 @@ Changes:
   - array in + changed to address of array
   - array in function argument is transformed to pointer
 
+*/
+
 // ==================== galois.c =================================
-
-/*
-
-Helpfull link
-
-http://www.ee.unb.ca/cgi-bin/tervo/calc.pl
- 
-
- */
 
 typedef unsigned char uint8_t;
 typedef signed char int8_t;
