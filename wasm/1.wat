@@ -132,14 +132,36 @@
       (block 
         (block (result i32) 
           i32.const 88
+          
           br 3
           br 2
           br 1
           br 0
+          ;; br 4 ;; Too many
         )
         drop
       )
       i32.const  2
+    )
+
+    drop
+    i32.const 89
+  )
+
+    (func $test_nested_br_3 (export "test_nested_br_3") (result i32)
+    (block (result i64) ;; Or like this
+      (block 
+        (block (result i32) 
+          i32.const 88
+          br 3
+          ;; br 2 ;; This dont work
+          br 1
+          br 0
+          ;; br 4 ;; Too many
+        )
+        drop
+      )
+      i64.const  2
     )
 
     drop

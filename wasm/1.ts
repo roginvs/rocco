@@ -6,6 +6,7 @@ async function main() {
     test_nested_br: () => number;
     test_stack_values: () => number;
     blocks_and_ifs: (n: number) => number;
+    test_nested_br_3(): number;
   }>("1.wat");
 
   /*
@@ -24,6 +25,9 @@ async function main() {
   for (const v of [9, 11]) {
     console.info(`blocks_and_ifs(${v}) = ${mymodule.blocks_and_ifs(v)}`);
   }
+
+  console.info("===");
+  console.info(mymodule.test_nested_br_3());
 }
 
 main().catch((e) => {
