@@ -6,6 +6,7 @@ describe(`Emits and compiles`, () => {
       _inverse_bits_address(): number;
       _init_inverse_bits_table(): void;
       poly_multiple_inversed(a: number, b: number): number;
+      poly_multiple(a: number, b: number): number;
     }>("emitter.aes.c");
 
     d.compiled._init_inverse_bits_table();
@@ -25,5 +26,7 @@ describe(`Emits and compiles`, () => {
         inverse_bits(0b1100001)
       )
     ).toBe(inverse_bits(0b10111010));
+
+    expect(d.compiled.poly_multiple(0x57, 0x13)).toBe(0xfe);
   });
 });
