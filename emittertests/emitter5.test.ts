@@ -16,6 +16,8 @@ describe(`Emits and compiles`, () => {
       shl(i: number, j: number): number;
       shr_s(i: number, j: number): number;
       shr_u(i: number, j: number): number;
+
+      test_typedef(): number;
     }>("emitter5.c");
     const m = d.compiled;
 
@@ -47,5 +49,7 @@ describe(`Emits and compiles`, () => {
 
     expect(m.shr_s(0xf0ff00f0, 8)).toBe(0xf0ff00f0 >> 8);
     expect(m.shr_u(0xf0ff00f0, 8)).toBe(15793920);
+
+    expect(m.test_typedef()).toBe(333);
   });
 });

@@ -61,3 +61,11 @@ int shr_u(unsigned int i, int j)
 {
   return i >> j;
 }
+
+int test_typedef()
+{
+  typedef int kek;
+
+  kek lol = 333;
+  return lol;
+}
