@@ -6,6 +6,7 @@ describe(`Emits and compiles`, () => {
       postfix_plusplus(x: number): number;
       postfix_minusminus(x: number): number;
       postfix_plusplus_array(): number;
+      sizeof_typename(): number;
     }>("emitter5.c");
     const m = d.compiled;
 
@@ -13,5 +14,7 @@ describe(`Emits and compiles`, () => {
     expect(m.postfix_minusminus(10)).toBe(19);
 
     expect(m.postfix_plusplus_array()).toBe(20);
+
+    expect(m.sizeof_typename()).toBe(20);
   });
 });

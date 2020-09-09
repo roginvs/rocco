@@ -26,3 +26,8 @@ int postfix_minusminus(int i)
 
   return i + j;
 }
+
+int sizeof_typename()
+{
+  return sizeof(int[5]);
+}

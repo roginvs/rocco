@@ -744,6 +744,30 @@ export function createExpressionAndTypes(
       } else {
         assertNever(size);
       }
+    } else if (expression.type === "sizeof typename") {
+      const typenameSize = getTypeSize(expression.typename);
+      if (typenameSize.type !== "static") {
+        error(
+          expression.typename,
+          "TODO: Not supported yet or incomplete type"
+        );
+      }
+
+      const sizeValue = typenameSize.value;
+
+      const typename: Typename = {
+        type: "arithmetic",
+        arithmeticType: "int",
+        signedUnsigned: null,
+        const: true,
+      };
+      cloneLocation(expression, typename);
+      return {
+        type: typename,
+        staticValue: sizeValue,
+        address: null,
+        value: () => [`i32.const ${sizeValue}`],
+      };
     } else if (expression.type === "cast") {
       const targetInfo = getExpressionInfo(expression.target);
       // TODO: Other casts, change register if needed
