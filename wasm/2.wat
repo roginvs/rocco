@@ -2,9 +2,9 @@
 
 int test_char_arithmetic()
 {
-  char c1 = 250;
-  char c2 = 100;
-  char c3 = c1 + c2;
+  unsigned char c1 = 250;
+  unsigned char c2 = 100;
+  unsigned char c3 = c1 + c2;
   int i = c1 + c2;
   return i;
 }
@@ -12,10 +12,9 @@ int test_char_arithmetic()
 
 ;)
 
-
 (module
  (table 0 anyfunc)
- (memory $0 100)
+ (memory $0 1)
  (export "memory" (memory $0))
  (export "test_char_arithmetic" (func $test_char_arithmetic))
  (func $test_char_arithmetic (; 0 ;) (result i32)
@@ -42,7 +41,7 @@ int test_char_arithmetic()
     (i32.load8_u offset=15
      (get_local $1)
     )
-    (i32.load8_s offset=14
+    (i32.load8_u offset=14
      (get_local $1)
     )
    )
@@ -51,10 +50,10 @@ int test_char_arithmetic()
    (get_local $1)
    (tee_local $0
     (i32.add
-     (i32.load8_s offset=15
+     (i32.load8_u offset=15
       (get_local $1)
      )
-     (i32.load8_s offset=14
+     (i32.load8_u offset=14
       (get_local $1)
      )
     )

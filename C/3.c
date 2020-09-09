@@ -20,11 +20,11 @@ docker run \
 
 void test_char_arithmetic()
 {
-  char c1 = 250;
-  char c2 = 100;
-  char c3 = c1 + c2;
-  int i = c1 + c2;
-  printf("Values are c3=%i int=%i\n", c3, i);
+  unsigned char c1 = 250;
+  unsigned char c2 = 100;
+  unsigned char c3 = c1 + c2;
+  unsigned int i = c1 + c2;
+  printf("Values1 are c3=%i int=%i\n", c3, i);
 }
 
 int main()
