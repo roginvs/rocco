@@ -41,11 +41,13 @@ export function testSnapshot(
           .map((l) => `// ${l}\n`)
           .join("") +
         "//\n" +
+        /*
         (new Error().stack as string)
           .split("\n")
           .slice(1)
           .map((x) => `//${x}\n`)
           .join("") +
+          */
         "\n" +
         JSON.stringify(node, null, 2)
     );

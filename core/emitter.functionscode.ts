@@ -50,6 +50,9 @@ export function createFunctionCodeGenerator(
     let inFuncAddress = 0;
     for (const declarationId of func.declaredVariables) {
       const declaration = getDeclaration(declarationId);
+      if (declaration.storageSpecifier === "typedef") {
+        continue;
+      }
       const size = getTypeSize(declaration.typename);
       if (size.type !== "static") {
         error(declaration, "Dynamic or incomplete size is not supported yet");
