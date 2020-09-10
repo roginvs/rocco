@@ -22,8 +22,12 @@ interface DebugHelpersExports {
   _debug_get_esp: () => number;
 }
 
-export async function compile<E extends WebAssembly.Exports>(fname: string) {
-  const fdata = fs.readFileSync(__dirname + "/../test/" + fname).toString();
+export async function compile<E extends WebAssembly.Exports>(
+  ...fnames: string[]
+) {
+  const fdata = fnames
+    .map((fname) => fs.readFileSync(__dirname + "/../test/" + fname).toString())
+    .join("\n");
 
   try {
     const scanner = new Scanner(createScannerFunc(fdata));
@@ -35,7 +39,7 @@ export async function compile<E extends WebAssembly.Exports>(fname: string) {
     const wabt = await import("wabt").then((wabt1) => wabt1.default());
 
     // This file name is only for debug purposes
-    const inputWat = fname;
+    const inputWat = "main";
     const inputData = emitted.moduleCode.join("\n");
 
     const wasmModule = (() => {
