@@ -2,15 +2,23 @@
 
 Rogin C Compiler
 
-## Notes
+## What is this
 
-todo:
+A compiler from subset of C language into webassembly
 
-- Add assignment typecheking 6.5.16.1 Simple assignment
-- Add binary operators
-  - Add promotion rules for binary operators
+## What is supported
 
-## What to do with gotos?
+TODO to add
+
+## What is not supported yet
+
+- proper type checking
+- "long long", float, double, short types
+- switch and goto statements
+- unions and structs
+- dynamic arrays
+
+## Why no goto/switch
 
 https://en.wikipedia.org/wiki/Structured_program_theorem
 https://github.com/kripken/emscripten/raw/master/docs/paper.pdf
@@ -21,5 +29,4 @@ https://medium.com/leaningtech/solving-the-structured-control-flow-problem-once-
 https://www.w3.org/TR/wasm-core-1/
 https://webassembly.github.io/spec/core/appendix/index-instructions.html
 C99 specification
-
 https://developer.mozilla.org/ru/docs/WebAssembly/Understanding_the_text_format

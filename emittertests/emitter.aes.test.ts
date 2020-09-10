@@ -27,7 +27,7 @@ describe(`Emits and compiles`, () => {
 
     // aes 256
     const AES_256_KEY_SIZE = 8 * 4;
-    const AES_256_EXPANDED_KEY_SIZE = 240;
+    // const AES_256_EXPANDED_KEY_SIZE = 240;
 
     const memcpyTo = (what: number[], addr: number) => {
       for (let i = 0; i < what.length; i++) {
