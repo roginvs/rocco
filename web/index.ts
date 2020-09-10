@@ -11,6 +11,9 @@ const aesCode = readFileSync(__dirname + "/../test/emitter.aes.c").toString();
 const crc32Code = readFileSync(
   __dirname + "/../test/emitter.crc32.c"
 ).toString();
+const simpleExampleCode = readFileSync(
+  __dirname + "/simple_example.c"
+).toString();
 
 const textArea = document.getElementById("src") as HTMLTextAreaElement;
 
@@ -26,10 +29,27 @@ function write(msg: string) {
   logDiv.appendChild(el);
 }
 
+(document.getElementById("back") as HTMLButtonElement).onclick = () => {
+  logDiv.innerHTML = "";
+
+  main1.style.display = "";
+
+  main2.style.display = "none";
+};
+
+(document.getElementById("load_simple") as HTMLButtonElement).onclick = () => {
+  textArea.value = simpleExampleCode;
+};
+(document.getElementById("load_aes") as HTMLButtonElement).onclick = () => {
+  textArea.value = aesCode;
+};
+(document.getElementById("load_crc32") as HTMLButtonElement).onclick = () => {
+  textArea.value = crc32Code;
+};
+
 function go() {
   const input = textArea.value;
 
-  logDiv.innerHTML = "";
   main1.style.display = "none";
 
   main2.style.display = "";
@@ -62,7 +82,6 @@ function go() {
     write("=== WebAssembly text ===");
     emitted.moduleCode.forEach((line) => write(line));
   } catch (e) {
-    console.info(e);
     const err = {
       name: e.name,
       message: e.message,
@@ -70,19 +89,15 @@ function go() {
       pos: e.location.pos,
       length: e.location.length,
     };
-    write("ERROR:");
     write(
       `${err.name} ${err.message} at ${err.line}:${err.pos} len=${err.length}`
     );
+    write("");
+    write(e.stack);
   }
 }
 
-textArea.value = `
-int func1(int i){
-  return i + 1;
-}
-
-`;
+textArea.value = simpleExampleCode;
 
 // Demoing
-setTimeout(() => go(), 1);
+// setTimeout(() => go(), 1);
