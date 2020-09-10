@@ -40,7 +40,7 @@ function writeNode(node: any): [string, string[]] {
   }
   let header = `${node.type}`;
   header = header.slice(0, 1).toUpperCase() + header.slice(1);
-  header = header.replace(/ /g, "_");
+  header = header.replace(/ /g, "_").replace(/-/g, "_");
 
   const keys = Object.keys(node).filter((x) => x !== "type");
 
