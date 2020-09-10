@@ -1054,6 +1054,11 @@ export function createExpressionAndTypes(
         type: targetInfo.type,
         address: null,
         staticValue: null,
+        /* 
+          NOTE: We are using target value and twice target address
+          If they have side-effects, then this side effect will run 3 times
+          Can we have something with side-effect as lvalue? Todo: check it
+        */
         value: () => [
           // First, we take a value
           ...targetValue(),
