@@ -49,11 +49,16 @@ export function emit(unit: TranslationUnit) {
   const globalsInitializers: WAInstuction[] = [];
   for (const declarationId of unit.declarations) {
     const declaration = getDeclaration(declarationId);
+    if (declaration.storageSpecifier === "typedef") {
+      continue;
+    }
+
     if (declaration.typename.type === "function") {
       declaration.memoryOffset = functionIdAddress;
       functionIdAddress++;
       continue;
     }
+
     if (declaration.typename.type === "function-knr") {
       throw new Error("No K&R here");
     }
