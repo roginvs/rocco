@@ -1,7 +1,15 @@
 int postfix_plusplus(int i)
 {
   int j = i++;
-  // j === i
+  // j === i; i = i + 1;
+
+  return i + j;
+}
+
+int prefix_plusplus(int i)
+{
+  int j = ++i;
+  // i = i + 1; j = i;
 
   return i + j;
 }

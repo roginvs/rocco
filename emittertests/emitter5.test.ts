@@ -4,6 +4,7 @@ describe(`Emits and compiles`, () => {
   it(`Postfix ++ and --`, async () => {
     const d = await compile<{
       postfix_plusplus(x: number): number;
+      prefix_plusplus(x: number): number;
       postfix_minusminus(x: number): number;
       postfix_plusplus_array(): number;
       sizeof_typename(): number;
@@ -25,6 +26,8 @@ describe(`Emits and compiles`, () => {
     expect(m.postfix_minusminus(10)).toBe(19);
 
     expect(m.postfix_plusplus_array()).toBe(20);
+
+    expect(m.prefix_plusplus(10)).toBe(22);
 
     expect(m.sizeof_typename()).toBe(20);
 
