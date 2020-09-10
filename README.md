@@ -19,6 +19,7 @@ TODO to add
 - switch and goto statements
 - unions and structs
 - dynamic arrays
+- array initializers
 
 ## Why no goto/switch
 
