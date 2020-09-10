@@ -6,6 +6,8 @@ Rogin C Compiler
 
 A compiler from subset of C language into webassembly
 
+Demo is here <https://roginvs.github.io/rocco>
+
 ## What is supported
 
 TODO to add
@@ -32,6 +34,6 @@ https://www.w3.org/TR/wasm-core-1/
 
 https://webassembly.github.io/spec/core/appendix/index-instructions.html
 
-<C99 specification>
+C99 specification
 
 https://developer.mozilla.org/ru/docs/WebAssembly/Understanding_the_text_format
