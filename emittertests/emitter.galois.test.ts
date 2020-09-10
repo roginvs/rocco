@@ -15,7 +15,7 @@ describe(`Emits and compiles`, () => {
         y_addr: number
       ): number;
       get_inverse_element(a: number): number;
-    }>("emitter.galois.c");
+    }>("emitter.aes.c");
 
     d.compiled._init_inverse_bits_table();
 

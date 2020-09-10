@@ -21,3 +21,5 @@ https://medium.com/leaningtech/solving-the-structured-control-flow-problem-once-
 https://www.w3.org/TR/wasm-core-1/
 https://webassembly.github.io/spec/core/appendix/index-instructions.html
 C99 specification
+
+https://developer.mozilla.org/ru/docs/WebAssembly/Understanding_the_text_format
