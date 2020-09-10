@@ -5,6 +5,7 @@ import { readTranslationUnit } from "../core/parser";
 import { emit } from "../core/emitter";
 import { writeEspCode } from "../core/emitter.utils";
 import pad from "pad";
+import { writeAst } from "./ast";
 
 const aesCode = readFileSync(__dirname + "/../test/emitter.aes.c").toString();
 const crc32Code = readFileSync(
@@ -53,11 +54,15 @@ function go() {
     }
 
     //TODO: Write ast
+    write(" ");
+    write("=== ast ===");
+    writeAst(unit, write);
 
     write(" ");
     write("=== WebAssembly text ===");
     emitted.moduleCode.forEach((line) => write(line));
   } catch (e) {
+    console.info(e);
     const err = {
       name: e.name,
       message: e.message,
