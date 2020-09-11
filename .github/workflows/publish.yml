@@ -3,7 +3,7 @@ name: CI
 on: [push]
 
 jobs:
-  build:
+  pages:
     runs-on: ubuntu-16.04
 
     steps:
