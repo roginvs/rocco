@@ -1,4 +1,9 @@
-int func1(int i)
+int func1(int i, int j)
 {
-  return i + 1;
+  int k = i + j;
+  if (i > 10)
+  {
+    k << 1;
+  }
+  return k;
 }
