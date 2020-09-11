@@ -20,6 +20,7 @@ TODO to add
 - unions and structs
 - dynamic arrays
 - array initializers
+- ints are unsigned by default (simple to fix)
 
 ## Why no goto/switch
 
