@@ -7,7 +7,7 @@
     "test": "jest",
     "cleantest": "rm snapshots/*",
     "start": "parcel serve --port 5002 web/*.html",
-    "build": "parcel build --out-dir docs --public-url ./ web/*.html"
+    "build": "parcel build --public-url ./ web/*.html"
   },
   "author": "",
   "license": "ISC",
