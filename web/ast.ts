@@ -51,7 +51,12 @@ function writeNode(node: any): [string, string[]] {
     if (v === null || t === "undefined") {
       // nothing here
     } else if (t === "string" || t === "number" || t === "boolean") {
-      header += ` ${k}=${v}`;
+      // Or, maybe, to add "" if value have symbols other than a-z0-9 ?
+      if (k !== "operator") {
+        header += ` ${k}=${v}`;
+      } else {
+        header += ` ${k}="${v}"`;
+      }
     } else if (t === "object") {
       lines.push(`  ${k}:`);
       const [childHeader, childText] = writeNode(v);
