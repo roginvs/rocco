@@ -334,11 +334,15 @@ export function createExpressionAndTypes(
 
         const getIndexValue = indexInfo.value;
 
+        const elementSizeMultiply: WAInstuction[] =
+          elementsSize.value !== 1
+            ? [`i32.const ${elementsSize.value}`, `i32.mul`]
+            : [];
+
         const getArrayElementAddress = () => {
           const indexOffset: WAInstuction[] = [
             ...getIndexValue(),
-            `i32.const ${elementsSize.value}`,
-            `i32.mul`,
+            ...elementSizeMultiply,
           ];
           return [...getArrayAddress(), ...indexOffset, `i32.add`];
         };
@@ -379,11 +383,15 @@ export function createExpressionAndTypes(
 
         const getIndexValue = indexInfo.value;
 
+        const elementSizeMultiply: WAInstuction[] =
+          elementsSize.value !== 1
+            ? [`i32.const ${elementsSize.value}`, `i32.mul`]
+            : [];
+
         const getArrayElementAddress = () => {
           const indexOffset: WAInstuction[] = [
             ...getIndexValue(),
-            `i32.const ${elementsSize.value}`,
-            `i32.mul`,
+            ...elementSizeMultiply,
           ];
           return [...getPointerTargetAddress(), ...indexOffset, `i32.add`];
         };
@@ -672,10 +680,12 @@ export function createExpressionAndTypes(
               "DYnamic types are not supported yet, or incomplee is here"
             );
           }
-          rightMultiplyForPointerAddOrSub = [
-            `i32.const ${leftSize.value}`,
-            `i32.mul`,
-          ];
+          if (leftSize.value !== 1) {
+            rightMultiplyForPointerAddOrSub = [
+              `i32.const ${leftSize.value}`,
+              `i32.mul`,
+            ];
+          }
         }
         if (
           (op === "+" || op === "-") &&
