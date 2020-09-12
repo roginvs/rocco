@@ -1,15 +1,42 @@
-int func1(int i, int j)
+
+
+// This code does nothing usefull
+// It is just a demo of compiler features
+
+// Simple summ
+int summ(int i, int j)
 {
-  int k = i + j;
+  return i + j;
+}
+
+// Multiplication which adds distortion
+// Static variables are supported too
+int multiply(int i, int j)
+{
+  static int distortion = 0;
+  int result = i * j + distortion;
+  distortion++;
+  return result;
+}
+
+void arrays_and_pointers(int i)
+{
+  // Array of array of pointers to function
+  char (*(array[10][20]))(int, int);
+
   if (i < 10)
   {
-    k << 1;
+    array[i][0] = (void *)0;
   }
   else if (i > 100)
   {
-    char (*(scary_array_of_array_of_pointers_to_function[10][20]))(int, char);
-    scary_array_of_array_of_pointers_to_function[2][4] = (void *)0;
+    return;
   }
 
-  return k;
+  // Address of functions
+  array[0][0] = &multiply;
+  array[0][1] = &summ;
+
+  // Call function by address
+  int r = (*(i % 2 == 0 ? array[0][0] : array[0][1]))(7, 9);
 }
