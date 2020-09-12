@@ -68,6 +68,45 @@ void test_char_arithmetic()
   printf("Values are c3=%i int=%i\n", c3, i);
 }
 
+void test_dynamic_arrays_sizes(int i, int j)
+{
+  // Element size is saved somewhere
+  char arr1[i][j];
+  i = 1000;
+  j = 10000;
+  printf("Address of [0] = %lu\n", &arr1[0]);
+  printf("Address of [1] = %lu\n", &arr1[1]);
+  printf("  Diff = %lu\n", (long int)&arr1[1] - (long int)&arr1[0]);
+
+  // Elements size is also calculated during cast
+  printf("Casted [0] = %lu\n",
+         &(*(
+             (char(*)[i * 2][j * 2]) & arr1))[0]);
+  printf("Casted [1] = %lu\n",
+         &(*(
+             (char(*)[i * 2][j * 2]) & arr1))[1]);
+  printf("  casted diff = %lu\n",
+         (long int)(&(*(
+             (char(*)[i * 2][j * 2]) & arr1))[1]) -
+             (long int)(&(*(
+                 (char(*)[i * 2][j * 2]) & arr1))[0]));
+
+  // And elements size is saved during declaration of pointer to array of arrays
+  char(*arr2)[i * 3][j * 3] = (void *)0;
+  i = 1;
+  j = 2;
+
+  printf("Declared [0] = %lu\n",
+         &((*arr2)[0]));
+  printf("Declared [1] = %lu\n",
+         &((*arr2)[0]));
+  printf("  diff Declared = %lu\n",
+         (long int)&((*arr2)[1]) -
+             (long int)&((*arr2)[0])
+
+  );
+}
+
 int main()
 {
   printf("for_loop_1 = %i\n", for_loop_1());
@@ -75,5 +114,7 @@ int main()
   printf("for_loop_3 = %i\n", for_loop_3());
   test_func_address_add(10);
   test_char_arithmetic();
+
+  test_dynamic_arrays_sizes(10, 100);
   return 0;
 }
