@@ -4,7 +4,7 @@ Rogin C Compiler
 
 ## What is this
 
-A compiler from subset of C language into webassembly
+A compiler from subset of C99 language into webassembly
 
 Demo is here <https://roginvs.github.io/rocco>
 
