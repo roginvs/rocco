@@ -22,6 +22,7 @@ TODO to add
 - array initializers
 - ints are unsigned by default (simple to fix)
 - linkage (also not possible to declare function and define it later)
+- "" strings
 
 ## Why no goto/switch
 
