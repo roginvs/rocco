@@ -12,6 +12,8 @@ Demo is here <https://roginvs.github.io/rocco>
 
 TODO to add
 
+(maybe some subset of misra rules)
+
 ## What is not supported yet
 
 - proper type checking
