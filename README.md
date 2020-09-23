@@ -20,7 +20,7 @@ TODO to add
 - "long long", float, double, short types
 - switch and goto statements
 - unions and structs
-- dynamic arrays
+- variable-length arrays
 - array initializers
 - ints are unsigned by default (simple to fix)
 - linkage (also not possible to declare function and define it later)
