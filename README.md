@@ -23,6 +23,7 @@ TODO to add
 - ints are unsigned by default (simple to fix)
 - linkage (also not possible to declare function and define it later)
 - "" strings
+- memory is initialized via $init function instead of WA (data) 
 
 ## Why no goto/switch
 
