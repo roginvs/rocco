@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --verbose",
     "cleantest": "rm snapshots/*",
     "start": "parcel serve --port 5002 web/*.html",
     "build": "parcel build --public-url ./ web/*.html"
