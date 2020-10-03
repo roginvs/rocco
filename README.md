@@ -12,15 +12,20 @@ Demo is here <https://roginvs.github.io/rocco>
 
 TODO to add
 
+(maybe some subset of misra rules)
+
 ## What is not supported yet
 
 - proper type checking
 - "long long", float, double, short types
 - switch and goto statements
 - unions and structs
-- dynamic arrays
+- variable-length arrays
 - array initializers
 - ints are unsigned by default (simple to fix)
+- linkage (also not possible to declare function and define it later)
+- "" strings
+- memory is initialized via $init function instead of WA (data) 
 
 ## Why no goto/switch
 
