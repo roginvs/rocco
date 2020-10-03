@@ -12,11 +12,19 @@
         width: 300px;
         margin-right: 0px;
       }
-      .buttons {
+      .controls {
         display: flex;
+        font-family: monospace;
+        align-items: center;
       }
-      .buttons button {
+      .controls button {
         margin-right: 10px;
+        font-family: monospace;
+      }
+      .controls #built_time {
+        margin-left: 30px;
+        color: gray;
+        font-size: smaller;
       }
 
       #log {
@@ -32,10 +40,11 @@
 
     <div id="main1">
       <textarea id="src"></textarea>
-      <div class="buttons">
+      <div class="controls">
         <button id="load_simple">Load simple example</button>
         <button id="load_aes">Load aes example</button>
         <button id="load_crc32">Load crc32 example</button>
+        <span id="built_time">asdad</span>
         <button id="compile">Compile!</button>
       </div>
     </div>

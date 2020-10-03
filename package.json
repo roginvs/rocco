@@ -6,8 +6,8 @@
   "scripts": {
     "test": "jest",
     "cleantest": "rm snapshots/*",
-    "start": "parcel serve --port 5002 web/*.html",
-    "build": "parcel build --public-url ./ web/*.html"
+    "start": "BUILD_TIME='liveserver' parcel serve --port 5002 web/*.html",
+    "build": "BUILD_TIME=$(date) parcel build --public-url ./ web/*.html"
   },
   "author": "",
   "license": "ISC",

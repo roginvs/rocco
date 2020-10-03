@@ -101,3 +101,5 @@ textArea.value = simpleExampleCode;
 
 // Demoing
 // setTimeout(() => go(), 1);
+
+document.getElementById("built_time")!.innerText = process.env.BUILD_TIME || "";
