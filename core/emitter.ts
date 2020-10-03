@@ -51,7 +51,7 @@ export function emit(unit: TranslationUnit) {
   let memoryOffsetForGlobals = 8; // 4 for move from 0 address, and 0x4 for esp
 
   let functionIdAddress = 1;
-  const globalsInitializers: WAInstuction[] = [];
+  const globalDataInitializers: WAInstuction[] = [];
   for (const declarationId of unit.declarations) {
     const declaration = getDeclaration(declarationId);
     if (declaration.storageSpecifier === "typedef") {
@@ -116,13 +116,11 @@ export function emit(unit: TranslationUnit) {
           );
         }
 
-        globalsInitializers.push(
+        globalDataInitializers.push(
           `;; Initializer for global ${declaration.identifier} id=${declaration.declaratorId}`,
-          // For declarators we do not have "address" function we duplicate code here
-          `i32.const ${declaration.memoryOffset} ;; global address`,
-          `i32.const ${initializerExpressionInfo.staticValue} ;; value`,
-          // Everything have 4-bytes alignment, so it is ok to load 8 bytes as i32
-          `i32.store offset=0 align=2 `
+          `(data (i32.const ${declaration.memoryOffset}) "${dataString.int4(
+            initializerExpressionInfo.staticValue
+          )}")`
         );
       }
     }
@@ -192,11 +190,9 @@ export function emit(unit: TranslationUnit) {
     ...trapFunctionCode,
     ...functionsCode,
 
-    " (func $init  ",
-    ...globalsInitializers,
-    ")",
-    " (start $init)",
     ...setupEspData,
+    ...globalDataInitializers,
+
     ...debugHelpers,
     ")",
   ];
