@@ -31,7 +31,7 @@ try {
 
   console.info(" ");
 
-  const outData = emitted.moduleCode.join("\n");
+  const outData = emitted.moduleCode.join("\n") + "\n";
 
   if (fs.existsSync(outFileName)) {
     console.error(`Outfile '${outFileName} exists`);
