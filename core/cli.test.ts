@@ -1,7 +1,11 @@
 import child_process from "child_process";
 import fs from "fs";
 describe("Testing cli", () => {
+  // Better to use mktmp or something similar
   const tmpFileName = ".cache/testrun";
+  if (!fs.existsSync(".cache")) {
+    fs.mkdirSync(".cache");
+  }
 
   it(`Compiles test file`, () => {
     if (fs.existsSync(tmpFileName)) {
