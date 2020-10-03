@@ -29,12 +29,32 @@ export function getRegisterForTypename(
   }
 }
 
+export const ESP_ADDRESS = 4;
+
 export const readEspCode: WAInstuction[] = [
-  `i32.const 4 ;; Read $esp`,
+  `i32.const ${ESP_ADDRESS} ;; Read $esp`,
   "i32.load offset=0 align=2 ;; Read $esp",
 ];
 export const writeEspCode = (value: WAInstuction[]) => [
-  `i32.const 4 ;; Prepare $esp write - address`,
+  `i32.const ${ESP_ADDRESS} ;; Prepare $esp write - address`,
   ...value,
   `i32.store offset=0 align=2 ;; Write $esp`,
 ];
+
+/**
+ * Returns values like \0a or \ff from number
+ * number must be in 0-255 range
+ */
+function paddedHex(i: number) {
+  const s = i.toString(16);
+  return "\\" + (s.length === 2 ? s : "0" + s);
+}
+export const dataString = {
+  int4(i: number) {
+    const a = i & 0xff;
+    const b = (i >> 8) & 0xff;
+    const c = (i >> 16) & 0xff;
+    const d = (i >> 24) & 0xff;
+    return [a, b, c, d].map((i) => paddedHex(i)).join("");
+  },
+};

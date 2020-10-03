@@ -1,7 +1,12 @@
 import { TranslationUnit, Node } from "./parser.definitions";
 
 import { WAInstuction } from "./emitter.definitions";
-import { writeEspCode, readEspCode } from "./emitter.utils";
+import {
+  writeEspCode,
+  readEspCode,
+  ESP_ADDRESS,
+  dataString,
+} from "./emitter.utils";
 import { createHelpers } from "./emitter.helpers";
 import { createExpressionAndTypes } from "./emitter.expressionsandtypes";
 import { createFunctionCodeGenerator } from "./emitter.functionscode";
@@ -142,8 +147,10 @@ export function emit(unit: TranslationUnit) {
     }
   }
 
-  const setupEsp: WAInstuction[] = [
-    ...writeEspCode([`i32.const ${memoryOffsetForGlobals} ;; Prepare esp`]),
+  const setupEspData: WAInstuction[] = [
+    `(data (i32.const ${ESP_ADDRESS}) "${dataString.int4(
+      memoryOffsetForGlobals
+    )}")`,
   ];
 
   const debugHelpers: WAInstuction[] = [
@@ -186,11 +193,10 @@ export function emit(unit: TranslationUnit) {
     ...functionsCode,
 
     " (func $init  ",
-    ...setupEsp,
     ...globalsInitializers,
     ")",
     " (start $init)",
-
+    ...setupEspData,
     ...debugHelpers,
     ")",
   ];
