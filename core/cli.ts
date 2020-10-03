@@ -45,9 +45,9 @@ try {
   const err = {
     name: e.name,
     message: e.message,
-    line: e.location.line,
-    pos: e.location.pos,
-    length: e.location.length,
+    line: e.location?.line,
+    pos: e.location?.pos,
+    length: e.location?.length,
   };
   console.info(
     `${err.name} ${err.message} at ${err.line}:${err.pos} len=${err.length}`
