@@ -146,6 +146,7 @@ export function emit(unit: TranslationUnit) {
   }
 
   const setupEspData: WAInstuction[] = [
+    `;; Initializer for ESP`,
     `(data (i32.const ${ESP_ADDRESS}) "${dataString.int4(
       memoryOffsetForGlobals
     )}")`,
