@@ -102,4 +102,6 @@ textArea.value = simpleExampleCode;
 // Demoing
 // setTimeout(() => go(), 1);
 
-document.getElementById("built_time")!.innerText = process.env.BUILD_TIME || "";
+document.getElementById("built_time")!.innerText =
+  "Built at " +
+  new Date(parseInt(process.env.BUILD_TIME || "") * 1000).toLocaleString();
