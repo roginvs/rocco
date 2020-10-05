@@ -47,7 +47,7 @@ export function createFunctionCodeGenerator(
       func.declaration.typename
     );
 
-    let inFuncAddress = 0;
+    let functionDataStackOffset = 0;
     for (const declarationId of func.declaredVariables) {
       const declaration = getDeclaration(declarationId);
       if (declaration.storageSpecifier === "typedef") {
@@ -57,9 +57,19 @@ export function createFunctionCodeGenerator(
       if (size.type !== "static") {
         error(declaration, "Dynamic or incomplete size is not supported yet");
       }
-      declaration.memoryOffset = inFuncAddress;
+      declaration.memoryOffset = functionDataStackOffset;
       declaration.memoryIsGlobal = false;
-      inFuncAddress += size.value;
+
+      const sizeValue = size.value;
+      if (sizeValue === 0) {
+        throw new Error(`Internal error: zero size`);
+      }
+      const alignedFunctionStackOffset =
+        sizeValue % 4 !== 0 ? sizeValue + (4 - (sizeValue % 4)) : sizeValue;
+      if (alignedFunctionStackOffset % 4 !== 0) {
+        throw new Error("Internal error: alignment failed");
+      }
+      functionDataStackOffset += alignedFunctionStackOffset;
     }
 
     const functionReturnsInRegister = getRegisterFromTypename(
@@ -298,7 +308,7 @@ export function createFunctionCodeGenerator(
 
     const addLocalsSizeToEsp = writeEspCode([
       `local.get $ebp`,
-      `i32.const ${inFuncAddress}`,
+      `i32.const ${functionDataStackOffset}`,
       `i32.add ;; Add all locals to esp`,
     ]);
 
@@ -352,7 +362,7 @@ export function createFunctionCodeGenerator(
     const mainFunctionBlockEnd = "end ;; main function block end";
 
     return [
-      `;; Function ${func.declaration.identifier} localSize=${inFuncAddress}`,
+      `;; Function ${func.declaration.identifier} localSize=${functionDataStackOffset}`,
       functionHeader,
 
       ...saveEsp,
