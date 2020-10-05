@@ -1,5 +1,22 @@
 <html>
   <body>
+    <div id="main0">Loading code...</div>
+    <div id="main1" style="display: none">
+      <textarea id="src"></textarea>
+      <div class="controls">
+        <button id="load_simple">Load simple example</button>
+        <button id="load_aes">Load aes example</button>
+        <button id="load_crc32">Load crc32 example</button>
+        <span id="built_time">...</span>
+        <button id="compile">Compile!</button>
+      </div>
+    </div>
+    <div id="main2" style="display: none">
+      <div id="log"></div>
+
+      <button id="back">Back</button>
+    </div>
+
     <style>
       #main1 {
         display: flex;
@@ -47,23 +64,10 @@
         width: 100%;
         margin-bottom: 10px;
       }
+      #main0 {
+        font-family: monospace;
+      }
     </style>
-
-    <div id="main1">
-      <textarea id="src"></textarea>
-      <div class="controls">
-        <button id="load_simple">Load simple example</button>
-        <button id="load_aes">Load aes example</button>
-        <button id="load_crc32">Load crc32 example</button>
-        <span id="built_time">...</span>
-        <button id="compile">Compile!</button>
-      </div>
-    </div>
-    <div id="main2" style="display: none">
-      <div id="log"></div>
-
-      <button id="back">Back</button>
-    </div>
 
     <script defer src="./index.ts"></script>
   </body>

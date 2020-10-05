@@ -105,3 +105,6 @@ textArea.value = simpleExampleCode;
 document.getElementById("built_time")!.innerText =
   "Built at " +
   new Date(parseInt(process.env.BUILD_TIME || "") * 1000).toLocaleString();
+
+document.getElementById("main0")!.style.display = "none";
+main1.style.display = "";
