@@ -8,6 +8,8 @@
         <button id="load_aes">Load aes example</button>
         <button id="load_crc32">Load crc32 example</button>
         <span id="built_time">...</span>
+        <a id="test_coverage"> </a>
+
         <button id="compile">Compile!</button>
       </div>
     </div>
@@ -53,6 +55,19 @@
         color: gray;
         font-size: smaller;
         align-self: center;
+      }
+      .controls #test_coverage {
+        margin-left: 30px;
+        margin-right: 10px;
+        color: gray;
+        font-size: smaller;
+        align-self: center;
+      }
+      a {
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
       }
 
       #log {

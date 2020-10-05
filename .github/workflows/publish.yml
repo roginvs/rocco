@@ -22,6 +22,8 @@ jobs:
         run: npm run test
       - name: Build
         run: npm run build
+      - name: Move test coverage
+        run: mv coverage dist
       - name: Deploy to github pages
         env:
           SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}

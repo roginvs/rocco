@@ -108,3 +108,9 @@ document.getElementById("built_time")!.innerText =
 
 document.getElementById("main0")!.style.display = "none";
 main1.style.display = "";
+
+const testCoverageLink = document.getElementById(
+  "test_coverage"
+) as HTMLAnchorElement;
+testCoverageLink.href = "coverage/lcov-report/core/index.html";
+testCoverageLink.innerText = "Test coverage";
