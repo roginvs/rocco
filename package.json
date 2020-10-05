@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --coverage=true",
+    "test": "jest --coverage=true --runInBand",
     "cleantest": "rm snapshots/*",
     "start": "BUILD_TIME=$(date +%s) parcel serve --port 5002 web/*.html",
     "build": "BUILD_TIME=$(date +%s) parcel build --public-url ./ web/*.html"
