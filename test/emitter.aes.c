@@ -6,7 +6,7 @@ This is AES encryption implemenation
 A copy-paste from (here you can find details)
  - https://github.com/roginvs/test_crypto/blob/master/galois.c
  - https://github.com/roginvs/test_crypto/blob/master/aes.c
-
+ 
 Changes:
   - macroses removed
   - all files manually concatenated to one file

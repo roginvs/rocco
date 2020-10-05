@@ -94,12 +94,12 @@ export function loadScalar(
     if (t.signedUnsigned === "signed") {
       return (
         addOffsetAlign(`i32.load8_s`, offset, alignment, 0) +
-        `;; readArithmetic signed chat`
+        `;; readArithmetic signed char`
       );
     } else {
       return (
         addOffsetAlign(`i32.load8_u`, offset, alignment, 0) +
-        `;; readArithmetic signed chat`
+        `;; readArithmetic signed char`
       );
     }
   }
