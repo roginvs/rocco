@@ -75,8 +75,6 @@ export function createFunctionCodeGenerator(
       );
     }
 
-    const returnValueLocalName = "$return_value";
-
     function createFunctionCodeForBlock(
       body: CompoundStatementBody[],
       returnBrDepth: number,
@@ -158,7 +156,6 @@ export function createFunctionCodeGenerator(
                 );
               }
               code.push(...returnExpressionInfo.value());
-              code.push(`local.set ${returnValueLocalName}`);
             } else {
               error(
                 statement.expression,
@@ -290,13 +287,23 @@ export function createFunctionCodeGenerator(
       null
     );
 
-    const restoreEsp: WAInstuction[] = [...writeEspCode([`local.get $ebp`])];
-    const returnValueInRegisterIfAny: WAInstuction[] = functionReturnsInRegister
-      ? [`local.get ${returnValueLocalName}`]
-      : [];
+    const saveEsp: WAInstuction[] = [
+      ...readEspCode,
+      `local.set $ebp ;; Save esp -> ebp`,
+    ];
+    const restoreEsp: WAInstuction[] = [
+      `;; Restore esp`,
+      ...writeEspCode([`local.get $ebp`]),
+    ];
+
+    const addLocalsSizeToEsp = writeEspCode([
+      `local.get $ebp`,
+      `i32.const ${inFuncAddress}`,
+      `i32.add ;; Add all locals to esp`,
+    ]);
 
     const functionParamsDeclarations: WAInstuction[] = [];
-    const functionParamsInitializers: WAInstuction[] = [];
+    const functionParamsInitializers: WAInstuction[] = [`;; Initialize params`];
     for (const param of func.declaration.typename.parameters) {
       if (param.type !== "declarator") {
         error(
@@ -334,32 +341,31 @@ export function createFunctionCodeGenerator(
       (functionReturnsInRegister
         ? ` (result ${functionReturnsInRegister})`
         : "") +
-      `  (local $ebp i32)` +
-      (functionReturnsInRegister
-        ? `  (local ${returnValueLocalName} ${functionReturnsInRegister})`
-        : "");
+      `  (local $ebp i32)`;
+
+    const mainFunctionBlock = `block ${
+      functionReturnsInRegister ? `(result ${functionReturnsInRegister})` : ""
+    };; main function block `;
+    const mainFunctionBlockDefaultValue = functionReturnsInRegister
+      ? `${functionReturnsInRegister}.const 0 ;; function default value`
+      : "";
+    const mainFunctionBlockEnd = "end ;; main function block end";
 
     return [
       `;; Function ${func.declaration.identifier} localSize=${inFuncAddress}`,
       functionHeader,
 
-      ...readEspCode,
-      `local.set $ebp ;; Save esp -> ebp`,
+      ...saveEsp,
+      ...addLocalsSizeToEsp,
 
-      ...writeEspCode([
-        `local.get $ebp`,
-        `i32.const ${inFuncAddress}`,
-        `i32.add ;; Add all locals to esp`,
-      ]),
-      `;; Initialize params`,
       ...functionParamsInitializers,
-      `;; Function body`,
-      `block ;; main function block `,
+
+      mainFunctionBlock,
       ...funcCode,
-      "end ;; main function block end",
-      `;; Cleanup`,
+      mainFunctionBlockDefaultValue,
+      mainFunctionBlockEnd,
+
       ...restoreEsp,
-      ...returnValueInRegisterIfAny,
       `)`,
       "",
       `(export "${func.declaration.identifier}" (func $F${func.declaration.declaratorId}))`,
