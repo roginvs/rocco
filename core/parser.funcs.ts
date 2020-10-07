@@ -325,43 +325,6 @@ export function createParser(
     return { specifier, storageClassSpecifier, functionSpecifier };
   }
 
-  /*
-  function readPointers(base: Typename): Typename {
-    const token = scanner.current();
-    if (token.type !== "*") {
-      return base;
-    }
-    scanner.readNext();
-
-    const pointer: Typename = {
-      type: "pointer",
-      const: false,
-      pointsTo: base,
-    };
-
-    const qualifiers: TypeQualifier[] = [];
-    while (true) {
-      const qualifier = isCurrentTokenTypeQualifier();
-      if (qualifier) {
-        scanner.readNext();
-        qualifiers.push(qualifier);
-      } else {
-        break;
-      }
-    }
-
-    if (isQualifiersListHaveDuplicates(qualifiers)) {
-      throwError("Qualifiers have duplicates");
-    }
-
-    if (qualifiers.indexOf("const") > -1) {
-      pointer.const = true;
-    }
-
-    return readPointers(pointer);
-  }
-  */
-
   /**
    * Imagine this as nullable Typename, a chain of nested type where
    *   last part is null because it is unknown at this moment.
