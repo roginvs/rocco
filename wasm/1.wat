@@ -148,7 +148,7 @@
     i32.const 89
   )
 
-    (func $test_nested_br_3 (export "test_nested_br_3") (result i32)
+  (func $test_nested_br_3 (export "test_nested_br_3") (result i32)
     (block (result i64) ;; Or like this
       (block 
         (block (result i32) 
@@ -166,6 +166,18 @@
 
     drop
     i32.const 89
+  )
+
+  (func $test_nested_br_4 (export "test_nested_br_4") (result i32)
+    (block (result i32)
+      i32.const 1
+      i32.const 2
+      i32.const 3
+      br 0
+    ) 
+
+   
+
   )
 
   (func $test_stack_values (export "test_stack_values") (result i32)
