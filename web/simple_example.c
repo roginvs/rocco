@@ -40,3 +40,9 @@ void arrays_and_pointers(int i)
   // Call function by address
   int r = (*(i % 2 == 0 ? array[0][0] : array[0][1]))(7, 9);
 }
+
+void strcpy(char *s, const char *t)
+{
+  while (*s++ = *t++)
+    ;
+}
