@@ -4,13 +4,13 @@
     <div id="main1" style="display: none">
       <textarea id="src"></textarea>
       <div class="controls">
+        <button id="compile">Compile!</button>
+
+        <span id="built_time">...</span>
+        <a id="test_coverage"> </a>
         <button id="load_simple">Load simple example</button>
         <button id="load_aes">Load aes example</button>
         <button id="load_crc32">Load crc32 example</button>
-        <span id="built_time">...</span>
-        <a id="test_coverage"> </a>
-
-        <button id="compile">Compile!</button>
       </div>
     </div>
     <div id="main2" style="display: none">
@@ -22,7 +22,7 @@
     <style>
       #main1 {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         height: 100%;
       }
 
@@ -34,34 +34,33 @@
       }
 
       #compile {
-        margin-left: auto;
-        width: 300px;
-        margin-right: 0px;
+        margin-bottom: auto;
+        padding-top: 30px;
+        padding-bottom: 30px;
       }
       .controls {
-        flex-shrink: 0;
         flex-grow: 0;
         display: flex;
+        flex-direction: column;
         font-family: monospace;
         align-items: stretch;
+        margin-left: 10px;
       }
       .controls button {
-        margin-right: 10px;
         font-family: monospace;
       }
       .controls #built_time {
-        margin-left: 30px;
-        margin-right: 10px;
         color: gray;
         font-size: smaller;
-        align-self: center;
+        text-align: center;
+        margin-bottom: 5px;
       }
       .controls #test_coverage {
-        margin-left: 30px;
-        margin-right: 10px;
         color: gray;
         font-size: smaller;
-        align-self: center;
+        text-align: center;
+        margin-bottom: 5px;
+        text-decoration: underline;
       }
       a {
         text-decoration: none;
