@@ -11,6 +11,7 @@ import * as monaco from "monaco-editor";
 
 (self as any).MonacoEnvironment = {
   getWorkerUrl: function (moduleId: any, label: any) {
+    console.info("Monaco getWorkerUrl", moduleId, label);
     if (label === "json") {
       return "./json.worker.js";
     }
@@ -23,17 +24,23 @@ import * as monaco from "monaco-editor";
     if (label === "typescript" || label === "javascript") {
       return "./ts.worker.js";
     }
+
     return "./editor.worker.js";
   },
 };
 
-(window as any).xxx = monaco.editor.create(
+const editor = monaco.editor.create(
   document.getElementById("monaco_container") as HTMLDivElement,
   {
     value: ["function x() {", '\tconsole.log("Hello world!");', "}"].join("\n"),
-    language: "javascript",
+    language: "c",
+    theme: "vs-dark",
   }
 );
+(window as any).editor = editor;
+setTimeout(() => {
+  editor.layout();
+}, 10);
 
 const aesCode = readFileSync(__dirname + "/../test/emitter.aes.c").toString();
 const crc32Code = readFileSync(
@@ -125,7 +132,7 @@ function go() {
   }
 }
 
-textArea.value = simpleExampleCode;
+editor.setValue(simpleExampleCode);
 
 // Demoing
 // setTimeout(() => go(), 1);
