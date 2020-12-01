@@ -7,34 +7,6 @@ import { writeEspCode } from "../core/emitter.utils";
 import pad from "pad";
 import { writeAst } from "./ast";
 
-import * as monaco from "monaco-editor";
-
-(self as any).MonacoEnvironment = {
-  getWorkerUrl: function (moduleId: any, label: any) {
-    if (label === "json") {
-      return "./json.worker.js";
-    }
-    if (label === "css") {
-      return "./css.worker.js";
-    }
-    if (label === "html") {
-      return "./html.worker.js";
-    }
-    if (label === "typescript" || label === "javascript") {
-      return "./ts.worker.js";
-    }
-    return "./editor.worker.js";
-  },
-};
-
-(window as any).xxx = monaco.editor.create(
-  document.getElementById("monaco_container") as HTMLDivElement,
-  {
-    value: ["function x() {", '\tconsole.log("Hello world!");', "}"].join("\n"),
-    language: "javascript",
-  }
-);
-
 const aesCode = readFileSync(__dirname + "/../test/emitter.aes.c").toString();
 const crc32Code = readFileSync(
   __dirname + "/../test/emitter.crc32.c"
