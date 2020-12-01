@@ -50,8 +50,6 @@ const simpleExampleCode = readFileSync(
   __dirname + "/simple_example.c"
 ).toString();
 
-const textArea = document.getElementById("src") as HTMLTextAreaElement;
-
 (document.getElementById("compile") as HTMLButtonElement).onclick = go;
 
 const main1 = document.getElementById("main1") as HTMLDivElement;
@@ -73,17 +71,17 @@ function write(msg: string) {
 };
 
 (document.getElementById("load_simple") as HTMLButtonElement).onclick = () => {
-  textArea.value = simpleExampleCode;
+  editor.setValue(simpleExampleCode);
 };
 (document.getElementById("load_aes") as HTMLButtonElement).onclick = () => {
-  textArea.value = aesCode;
+  editor.setValue(aesCode);
 };
 (document.getElementById("load_crc32") as HTMLButtonElement).onclick = () => {
-  textArea.value = crc32Code;
+  editor.setValue(crc32Code);
 };
 
 function go() {
-  const input = textArea.value;
+  const input = editor.getValue();
 
   main1.style.display = "none";
 
