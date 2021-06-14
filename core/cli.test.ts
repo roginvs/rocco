@@ -15,7 +15,7 @@ describe("Testing cli", () => {
       .execSync(`./rocco test/emitter.crc32.c ${tmpFileName}`)
       .toString();
 
-    expect(result.indexOf("Done") > -1).toBe(true);
+    expect(result).toContain("Done");
 
     const fData = fs.readFileSync(tmpFileName).toString();
     expect(fData.length > 1000).toBe(true);
