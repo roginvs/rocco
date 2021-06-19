@@ -9,7 +9,7 @@
     "start": "BUILD_TIME=$(date +%s) parcel serve --port 5002 web/*.html",
     "build": "BUILD_TIME=$(date +%s) parcel build --public-url ./ web/*.html",
     "postinstall": "npm run buildmonaco",
-    "buildmonaco": "cp -vR ./node_modules/monaco-editor/min/vs/ dist/monaco"
+    "buildmonaco": "mkdir -p dist && cp -vR ./node_modules/monaco-editor/min/vs/ dist/monaco"
   },
   "author": "",
   "license": "ISC",
