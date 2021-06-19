@@ -8,11 +8,20 @@ const aesCode = readFileSync(__dirname + "/../test/emitter.aes.c").toString();
 const crc32Code = readFileSync(
   __dirname + "/../test/emitter.crc32.c"
 ).toString();
-const simpleExampleCode = readFileSync(
-  __dirname + "/simple_example.c"
+const simpleExampleCode1 = readFileSync(
+  __dirname + "/simple_example_1.c"
+).toString();
+const simpleExampleCode2 = readFileSync(
+  __dirname + "/simple_example_2.c"
+).toString();
+const simpleExampleCode3 = readFileSync(
+  __dirname + "/simple_example_3.c"
+).toString();
+const simpleExampleCode4 = readFileSync(
+  __dirname + "/simple_example_4.c"
 ).toString();
 
-const INITIAL_CODE = simpleExampleCode;
+const INITIAL_CODE = simpleExampleCode1;
 
 console.info(aesCode.length);
 
@@ -58,6 +67,7 @@ const ControlsContainer: React.FC = (props) => {
 };
 
 const Button = styled("button")({
+  marginTop: 4,
   fontFamily: "monospace",
 });
 const CompileButton = styled(Button)({
@@ -119,9 +129,20 @@ export function App() {
         <TestCoverage href="coverage/lcov-report/core/index.html">
           Test coverage
         </TestCoverage>
-        <Button>Load simple example</Button>
-        <Button>Load aes example</Button>
-        <Button>Load crc32 example</Button>
+        <Button onClick={() => setCode(simpleExampleCode1)}>
+          Load simple example 1
+        </Button>
+        <Button onClick={() => setCode(simpleExampleCode2)}>
+          Load simple example 2
+        </Button>
+        <Button onClick={() => setCode(simpleExampleCode3)}>
+          Load simple example 3
+        </Button>
+        <Button onClick={() => setCode(simpleExampleCode4)}>
+          Load simple example 4
+        </Button>
+        <Button onClick={() => setCode(aesCode)}>Load aes example</Button>
+        <Button onClick={() => setCode(crc32Code)}>Load crc32 example</Button>
       </ControlsContainer>
     </RootContainer>
   );
