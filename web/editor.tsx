@@ -2,7 +2,8 @@ import * as React from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import MonacoEditor from "@monaco-editor/react";
 import { loader } from "@monaco-editor/react";
-import { useIsMobile } from "./useIsMobile";
+import { useIsMobile } from "./hooks";
+
 loader.config({ paths: { vs: "./monaco" } });
 
 export function Editor({

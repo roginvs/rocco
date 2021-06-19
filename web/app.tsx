@@ -2,7 +2,8 @@ import * as React from "react";
 import { readFileSync } from "fs";
 import { Editor } from "./editor";
 import styled, { CSSObject } from "styled-components";
-import { useIsMobile } from "./useIsMobile";
+
+import { useIsMobile, useWindowSize } from "./hooks";
 const aesCode = readFileSync(__dirname + "/../test/emitter.aes.c").toString();
 const crc32Code = readFileSync(
   __dirname + "/../test/emitter.crc32.c"
@@ -17,12 +18,15 @@ console.info(aesCode.length);
 
 const RootContainer: React.FC<{}> = (props) => {
   const isMobile = useIsMobile();
+  const windowSize = useWindowSize();
   return (
     <div
       style={{
         display: "flex",
         flexDirection: isMobile ? "column" : "row",
-        height: isMobile ? undefined : "100%",
+        height: isMobile ? undefined : windowSize.height - 1,
+        overflow: "hidden",
+        padding: 5,
       }}
     >
       {props.children}
@@ -75,11 +79,32 @@ const TestCoverage = styled("a")({
   textDecoration: "underline",
 });
 
+function MainCss() {
+  const style = `
+  body,html {
+    margin: 0;
+    padding: 0;
+}
+* {
+    box-sizing: border-box;
+}`;
+  React.useEffect(() => {
+    const tag = document.createElement("style");
+    document.body.appendChild(tag);
+    tag.appendChild(document.createTextNode(style));
+    return () => {
+      document.body.removeChild(tag);
+    };
+  });
+  return null;
+}
+
 export function App() {
   const [code, setCode] = React.useState(INITIAL_CODE);
 
   return (
     <RootContainer>
+      <MainCss />
       <EditorContainer>
         <Editor value={code} onChange={(newCode) => setCode(newCode)} />
       </EditorContainer>
