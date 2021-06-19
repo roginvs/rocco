@@ -1,4 +1,13 @@
-import { readFileSync } from "fs";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import { App } from "./app";
+
+const root = document.createElement("div");
+document.body.appendChild(root);
+
+ReactDOM.render(<App />, root);
+
+/*
 import { Scanner } from "../core/scanner";
 import { createScannerFunc } from "../core/scanner.func";
 import { readTranslationUnit } from "../core/parser";
@@ -30,6 +39,7 @@ import * as monaco from "monaco-editor";
 };
 
 const editor = monaco.editor.create(
+
   document.getElementById("monaco_container") as HTMLDivElement,
   {
     value: ["function x() {", '\tconsole.log("Hello world!");', "}"].join("\n"),
@@ -147,3 +157,4 @@ const testCoverageLink = document.getElementById(
 ) as HTMLAnchorElement;
 testCoverageLink.href = "coverage/lcov-report/core/index.html";
 testCoverageLink.innerText = "Test coverage";
+*/
