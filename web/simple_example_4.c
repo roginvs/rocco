@@ -1,4 +1,15 @@
-// Example of nested data structures
+int summ(int i, int j)
+{
+  return i + j;
+}
+int multiply(int i, int j)
+{
+  int result = i * j;
+  return result;
+}
+
+
+// Example of pointers
 void arrays_and_pointers(int i)
 {
   // Array of array of pointers to function
