@@ -4,6 +4,7 @@ import { Editor } from "./editor";
 import styled, { CSSObject } from "styled-components";
 
 import { useIsMobile, useWindowSize } from "./hooks";
+import { getComliledOutput } from "./compile";
 const aesCode = readFileSync(__dirname + "/../test/emitter.aes.c").toString();
 const crc32Code = readFileSync(
   __dirname + "/../test/emitter.crc32.c"
@@ -23,8 +24,6 @@ const simpleExampleCode4 = readFileSync(
 
 const INITIAL_CODE = simpleExampleCode1;
 
-console.info(aesCode.length);
-
 const RootContainer: React.FC<{}> = (props) => {
   const isMobile = useIsMobile();
   const windowSize = useWindowSize();
@@ -33,7 +32,7 @@ const RootContainer: React.FC<{}> = (props) => {
       style={{
         display: "flex",
         flexDirection: isMobile ? "column" : "row",
-        height: isMobile ? undefined : windowSize.height - 1,
+        height: isMobile ? undefined : windowSize.innerHeight - 1,
         overflow: "hidden",
         padding: 5,
       }}
@@ -109,8 +108,25 @@ function MainCss() {
   return null;
 }
 
+const CompiledContainer = styled("div")({
+  fontFamily: "monospace",
+  whiteSpace: "pre",
+});
 export function App() {
   const [code, setCode] = React.useState(INITIAL_CODE);
+
+  const [compiled, setCompiled] = React.useState("");
+
+  if (compiled) {
+    return (
+      <CompiledContainer>
+        <div onClick={() => setCompiled("")}>
+          <button>Click here to go back</button>
+        </div>
+        {compiled}
+      </CompiledContainer>
+    );
+  }
 
   return (
     <RootContainer>
@@ -119,7 +135,13 @@ export function App() {
         <Editor value={code} onChange={(newCode) => setCode(newCode)} />
       </EditorContainer>
       <ControlsContainer>
-        <CompileButton>Compile!</CompileButton>
+        <CompileButton
+          onClick={() => {
+            setCompiled(getComliledOutput(code));
+          }}
+        >
+          Compile!
+        </CompileButton>
         <SmallInfo>
           Built at{" "}
           {new Date(

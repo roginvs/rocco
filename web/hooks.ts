@@ -2,8 +2,8 @@ import * as React from "react";
 
 export function useWindowSize() {
   const getValue = () => ({
-    width: window.innerWidth,
-    height: window.innerHeight,
+    outerWidth: window.outerWidth,
+    innerHeight: window.innerHeight,
   });
   const [value, setValue] = React.useState(getValue());
 
@@ -17,5 +17,5 @@ export function useWindowSize() {
 }
 export function useIsMobile() {
   const size = useWindowSize();
-  return size.width < 600;
+  return size.outerWidth < 600;
 }
