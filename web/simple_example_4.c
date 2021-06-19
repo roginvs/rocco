@@ -1,4 +1,4 @@
-
+// Example of nested data structures
 void arrays_and_pointers(int i)
 {
   // Array of array of pointers to function

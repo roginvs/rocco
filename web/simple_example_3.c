@@ -8,3 +8,4 @@ int multiply(int i, int j)
   distortion++;
   return result;
 }
+
