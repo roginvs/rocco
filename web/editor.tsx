@@ -1,5 +1,5 @@
 import * as React from "react";
-
+import TextareaAutosize from "react-textarea-autosize";
 import MonacoEditor from "@monaco-editor/react";
 import { loader } from "@monaco-editor/react";
 import { useIsMobile } from "./useIsMobile";
@@ -15,8 +15,12 @@ export function Editor({
   const isMobile = useIsMobile();
   if (isMobile) {
     return (
-      <textarea
-        style={{ width: "100%", height: "100%" }}
+      <TextareaAutosize
+        style={{
+          width: "100%",
+          boxSizing: "border-box",
+          marginBottom: 10,
+        }}
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />

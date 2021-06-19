@@ -67,6 +67,7 @@ const smallInfoStyles: CSSObject = {
   fontSize: "smaller",
   textAlign: "center",
   marginBottom: 5,
+  marginTop: 5,
 };
 const SmallInfo = styled("span")(smallInfoStyles);
 const TestCoverage = styled("a")({
