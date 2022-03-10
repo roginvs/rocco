@@ -11,11 +11,12 @@ describe("Testing cli", () => {
     if (fs.existsSync(tmpFileName)) {
       fs.unlinkSync(tmpFileName);
     }
-    const result = child_process
-      .execSync(`./rocco test/emitter.crc32.c ${tmpFileName}`)
-      .toString();
+    const result = child_process.spawnSync(`./rocco`, [
+      `test/emitter.crc32.c`,
+      `${tmpFileName}`,
+    ]);
 
-    expect(result).toContain("Done");
+    expect(result.status).toBe(0);
 
     const fData = fs.readFileSync(tmpFileName).toString();
     expect(fData.length > 1000).toBe(true);

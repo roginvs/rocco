@@ -39,9 +39,7 @@ try {
   }
 
   fs.writeFileSync(outFileName, outData);
-
-  console.info("Done");
-} catch (e) {
+} catch (e: any) {
   const err = {
     name: e.name,
     message: e.message,
