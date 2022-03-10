@@ -528,6 +528,28 @@ describe("Parser test", () => {
       },
     ],
   });
+
+  checkExpression("*(char*)arr++", {
+    type: "unary-operator",
+    operator: "*",
+    target: {
+      type: "cast",
+      typename: {
+        type: "pointer",
+        const: false,
+        pointsTo: {
+          type: "arithmetic",
+          arithmeticType: "char",
+          const: false,
+          signedUnsigned: null,
+        },
+      },
+      target: {
+        type: "postfix ++",
+        target: { type: "identifier", value: "arr", declaratorNodeId: "arr" },
+      },
+    },
+  });
 });
 
 // @TODO: Add throwing tests
