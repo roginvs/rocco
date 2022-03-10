@@ -546,7 +546,11 @@ describe("Parser test", () => {
       },
       target: {
         type: "postfix ++",
-        target: { type: "identifier", value: "arr", declaratorNodeId: "arr" },
+        target: {
+          type: "identifier",
+          value: "arr",
+          declaratorNodeId: "arr" as DeclaratorId,
+        },
       },
     },
   });
