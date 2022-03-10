@@ -233,7 +233,7 @@ export function createExpressionParser(
 
     if (unaryOperator) {
       scanner.readNext();
-      const right = readUnaryExpression();
+      const right = readCastExpression();
 
       const node: ExpressionNode = {
         type: "unary-operator",
