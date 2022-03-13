@@ -8,6 +8,7 @@ describe(`Emits and compiles`, () => {
       counter(): number;
     }>("emitter1.c");
 
+    // We also ensure that ESP is the same when we return from WebAssembly
     const initialEsp = d.compiled._debug_get_esp();
 
     d.compiled.void_func();

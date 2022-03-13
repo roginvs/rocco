@@ -8,7 +8,6 @@ describe(`Emits and compiles`, () => {
       get_arr_ints_size(): number;
       get_arr_chars_address(): number;
       get_arr_ints_address(): number;
-      get_hacky_esp(): number;
       int_identity(x: number): number;
       int_sum(x: number, y: number): number;
       change_chars_array(idx: number, value: number): void;
@@ -25,8 +24,6 @@ describe(`Emits and compiles`, () => {
     expect(d.compiled.get_arr_ints_address()).toBeGreaterThan(STACK_SIZE);
 
     // expect(d.compiled._debug_get_esp()).toBe(20 + 11 * 4);
-
-    // expect(d.compiled.get_hacky_esp()).toBe(d.compiled._debug_get_esp());
 
     for (const x of [0, 99, 113, 600]) {
       expect(d.compiled.int_identity(x)).toBe(x);
