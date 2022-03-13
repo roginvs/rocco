@@ -80,6 +80,8 @@ export async function compile<E extends WebAssembly.Exports>(
 
     // const esp = new WebAssembly.Global({ value: "i32", mutable: true }, 0);
     const memory = new WebAssembly.Memory({
+      // Should be enough to save STACK_SIZE + globals
+      // Reminder: units here are pages which are 64KB each
       initial: 100,
       maximum: 1000,
     });
