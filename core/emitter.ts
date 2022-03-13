@@ -6,6 +6,9 @@ import {
   readEspCode,
   ESP_ADDRESS,
   dataString,
+  GLOBALS_BEGIN_ADDRESS,
+  ESP_INITIAL_VALUE,
+  HEAP_BEGIN_ADDRESS,
 } from "./emitter.utils";
 import { createHelpers } from "./emitter.helpers";
 import { createExpressionAndTypes } from "./emitter.expressionsandtypes";
@@ -48,7 +51,7 @@ export function emit(unit: TranslationUnit) {
   );
 
   // Initial step: assign global memory
-  let memoryOffsetForGlobals = 8; // 4 for move from 0 address, and 0x4 for esp
+  let memoryOffsetForGlobals = GLOBALS_BEGIN_ADDRESS;
 
   let functionIdAddress = 1;
   const globalDataInitializers: WAInstuction[] = [];
@@ -147,7 +150,11 @@ export function emit(unit: TranslationUnit) {
 
   const setupEspData: WAInstuction[] = [
     `;; Initializer for ESP`,
-    `(data (i32.const ${ESP_ADDRESS}) "${dataString.int4(
+    `(data (i32.const ${ESP_ADDRESS}) "${dataString.int4(ESP_INITIAL_VALUE)}")`,
+  ];
+  const setupHeapBeginAddress: WAInstuction[] = [
+    `;; Initializer for HEAP_BEGIN`,
+    `(data (i32.const ${HEAP_BEGIN_ADDRESS}) "${dataString.int4(
       memoryOffsetForGlobals
     )}")`,
   ];
@@ -155,6 +162,10 @@ export function emit(unit: TranslationUnit) {
   const debugHelpers: WAInstuction[] = [
     `(func (export "_debug_get_esp") (result i32)`,
     ...readEspCode,
+    ")",
+    `(func (export "_debug_get_heap_offset") (result i32)`,
+    `i32.const ${HEAP_BEGIN_ADDRESS} ;; Read heap begin address`,
+    "i32.load offset=0 align=2 ;; Read heap begin address",
     ")",
   ];
 
@@ -192,6 +203,7 @@ export function emit(unit: TranslationUnit) {
     ...functionsCode,
 
     ...setupEspData,
+    ...setupHeapBeginAddress,
     ...globalDataInitializers,
 
     ...debugHelpers,

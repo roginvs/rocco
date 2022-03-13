@@ -57,8 +57,9 @@ export function createFunctionCodeGenerator(
       if (size.type !== "static") {
         error(declaration, "Dynamic or incomplete size is not supported yet");
       }
-      declaration.memoryOffset = functionDataStackOffset;
+
       declaration.memoryIsGlobal = false;
+      declaration.memoryOffset = functionDataStackOffset;
 
       const sizeValue = size.value;
       if (sizeValue === 0) {
@@ -118,6 +119,11 @@ export function createFunctionCodeGenerator(
 
               if (!initializerInfo.value) {
                 error(statement.initializer.expression, "Must return a value");
+              }
+              if (statement.memoryOffset === undefined) {
+                throw new Error(
+                  `Internal error: statement.memoryOffset is undefined`
+                );
               }
               code.push(
                 `;; Initializer for local ${statement.identifier} id=${statement.declaratorId}`,
@@ -306,10 +312,10 @@ export function createFunctionCodeGenerator(
       ...writeEspCode([`local.get $ebp`]),
     ];
 
-    const addLocalsSizeToEsp = writeEspCode([
-      `local.get $ebp`,
+    const subLocalsSizeFromEsp = writeEspCode([
+      ...readEspCode,
       `i32.const ${functionDataStackOffset}`,
-      `i32.add ;; Add all locals to esp`,
+      `i32.sub ;; Sub all locals size from esp`,
     ]);
 
     const functionParamsDeclarations: WAInstuction[] = [];
@@ -365,8 +371,8 @@ export function createFunctionCodeGenerator(
       `;; Function ${func.declaration.identifier} localSize=${functionDataStackOffset}`,
       functionHeader,
 
+      ...subLocalsSizeFromEsp,
       ...saveEsp,
-      ...addLocalsSizeToEsp,
 
       ...functionParamsInitializers,
 

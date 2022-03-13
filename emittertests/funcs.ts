@@ -78,7 +78,10 @@ export async function compile<E extends WebAssembly.Exports>(
     const module = await WebAssembly.compile(wasmdata.buffer);
 
     // const esp = new WebAssembly.Global({ value: "i32", mutable: true }, 0);
-    const memory = new WebAssembly.Memory({ initial: 10, maximum: 100 });
+    const memory = new WebAssembly.Memory({
+      initial: 100,
+      maximum: 1000,
+    });
 
     const instance = await WebAssembly.instantiate(module, {
       js: { memory: memory },
