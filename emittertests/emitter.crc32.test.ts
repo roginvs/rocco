@@ -10,7 +10,7 @@ describe(`Emits and compiles`, () => {
 
     d.compiled.crc32_init_table();
 
-    const data_pos = 1000;
+    const data_pos = d.compiled._debug_get_heap_offset();
 
     // crc32 <(echo -n 'Vasilii')
 

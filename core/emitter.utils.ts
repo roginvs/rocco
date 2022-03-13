@@ -1,6 +1,7 @@
 import { Typename } from "./parser.definitions";
 import { assertNever } from "./assertNever";
 import { RegisterType, WAInstuction } from "./emitter.definitions";
+import { ESP_ADDRESS } from "./emitter.memory";
 
 export function getRegisterForTypename(
   typename: Typename
@@ -28,8 +29,6 @@ export function getRegisterForTypename(
     return null;
   }
 }
-
-export const ESP_ADDRESS = 4;
 
 export const readEspCode: WAInstuction[] = [
   `i32.const ${ESP_ADDRESS} ;; Read $esp`,

@@ -22,14 +22,6 @@ int get_arr_ints_address()
   return &arr_ints;
 }
 
-int get_hacky_esp()
-{
-  // We know that local variable will be on the stack, and nothing else
-  // This is compiler-specific thing
-  int x;
-  return (int)&x;
-}
-
 int int_identity(int x)
 {
   return x;

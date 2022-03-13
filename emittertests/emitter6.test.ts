@@ -1,3 +1,4 @@
+import { STACK_SIZE } from "../core/emitter.memory";
 import { compile } from "./funcs";
 
 describe(`Emits and compiles`, () => {
@@ -57,5 +58,23 @@ describe(`Emits and compiles`, () => {
     expect(m.conditional(1, 11, 33)).toBe(11);
     expect(m.conditional(11, 11, 33)).toBe(11);
     expect(m.conditional(0, 11, 33)).toBe(33);
+  });
+
+  it(`Stack is overflowing`, async () => {
+    const d = await compile<{
+      compare_eq(x: number, y: number): number;
+      factor(x: number): number;
+      op_u(type: number, x: number, y: number): number;
+      op_s(type: number, x: number, y: number): number;
+      conditional(cond: number, left: number, right: number): number;
+    }>("emitter6.c");
+    const m = d.compiled;
+
+    // We know that factor functions uses 4 bytes on stack frame
+    // This is current implementation because we do not do any optimizations
+    // For example, function params can be accessed directly in WebAssembly
+    m.factor(Math.floor(STACK_SIZE / 4));
+
+    expect(() => m.factor(Math.floor(STACK_SIZE / 4) + 10)).toThrow();
   });
 });
