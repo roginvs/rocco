@@ -309,7 +309,11 @@ export function createFunctionCodeGenerator(
     ];
     const restoreEsp: WAInstuction[] = [
       `;; Restore esp`,
-      ...writeEspCode([`local.get $ebp`]),
+      ...writeEspCode([
+        `local.get $ebp ;;`,
+        `i32.const ${functionDataStackOffset}`,
+        `i32.add ;; `,
+      ]),
     ];
 
     const subLocalsSizeFromEsp = writeEspCode([

@@ -1,3 +1,4 @@
+import { STACK_SIZE } from "../core/emitter.memory";
 import { compile } from "./funcs";
 
 describe(`Emits and compiles`, () => {
@@ -68,6 +69,12 @@ describe(`Emits and compiles`, () => {
       conditional(cond: number, left: number, right: number): number;
     }>("emitter6.c");
     const m = d.compiled;
-    expect(() => m.factor(100000)).toThrow();
+
+    // We know that factor functions uses 4 bytes on stack frame
+    // This is current implementation because we do not do any optimizations
+    // For example, function params can be accessed directly in WebAssembly
+    m.factor(Math.floor(STACK_SIZE / 4));
+
+    expect(() => m.factor(Math.floor(STACK_SIZE / 4) + 10)).toThrow();
   });
 });
