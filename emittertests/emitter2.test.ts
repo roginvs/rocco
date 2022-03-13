@@ -1,3 +1,4 @@
+import { STACK_SIZE } from "../core/emitter.memory";
 import { compile } from "./funcs";
 
 describe(`Emits and compiles`, () => {
@@ -20,12 +21,12 @@ describe(`Emits and compiles`, () => {
     expect(d.compiled.get_arr_chars_size()).toBe(9);
     expect(d.compiled.get_arr_ints_size()).toBe(11 * 4);
 
-    expect(d.compiled.get_arr_chars_address()).toBe(8);
-    expect(d.compiled.get_arr_ints_address()).toBe(8 + 9 + /* padding */ 3);
+    expect(d.compiled.get_arr_chars_address()).toBeGreaterThan(STACK_SIZE);
+    expect(d.compiled.get_arr_ints_address()).toBeGreaterThan(STACK_SIZE);
 
-    expect(d.compiled._debug_get_esp()).toBe(20 + 11 * 4);
+    // expect(d.compiled._debug_get_esp()).toBe(20 + 11 * 4);
 
-    expect(d.compiled.get_hacky_esp()).toBe(d.compiled._debug_get_esp());
+    // expect(d.compiled.get_hacky_esp()).toBe(d.compiled._debug_get_esp());
 
     for (const x of [0, 99, 113, 600]) {
       expect(d.compiled.int_identity(x)).toBe(x);
@@ -33,26 +34,26 @@ describe(`Emits and compiles`, () => {
 
     expect(d.compiled.int_sum(2, 15)).toBe(17);
 
-    // Bytes 8-11
-    d.mem32[2] = 0;
+    const chars_mem32_addr = d.compiled.get_arr_chars_address() / 4;
+    d.mem32[chars_mem32_addr] = 0;
     d.compiled.change_chars_array(0, 10);
-    expect(d.mem32[2]).toBe(10);
+    expect(d.mem32[chars_mem32_addr]).toBe(10);
     d.compiled.change_chars_array(1, 44);
-    expect(d.mem32[2]).toBe(44 * 256 + 10);
+    expect(d.mem32[chars_mem32_addr]).toBe(44 * 256 + 10);
     d.compiled.change_chars_array(2, 33);
-    expect(d.mem32[2]).toBe(33 * 256 * 256 + 44 * 256 + 10);
+    expect(d.mem32[chars_mem32_addr]).toBe(33 * 256 * 256 + 44 * 256 + 10);
     d.compiled.change_chars_array(3, 255);
-    expect(d.mem32[2]).toBe(
+    expect(d.mem32[chars_mem32_addr]).toBe(
       255 * 256 * 256 * 256 + 33 * 256 * 256 + 44 * 256 + 10
     );
 
-    // Bytes 20-23
-    d.mem32[5] = 0;
-    d.mem32[6] = 0;
+    const ints_mem32_addr = d.compiled.get_arr_ints_address() / 4;
+    d.mem32[ints_mem32_addr] = 0;
+    d.mem32[ints_mem32_addr] = 0;
     d.compiled.change_ints_array(0, 44);
-    d.compiled.change_ints_array(1, 0xffffffff);
-    expect(d.mem32[5]).toBe(44);
-    expect(d.mem32[6]).toBe(0xffffffff);
+    d.compiled.change_ints_array(1, 0x1fffffff);
+    expect(d.mem32[ints_mem32_addr]).toBe(44);
+    expect(d.mem32[ints_mem32_addr + 1]).toBe(0x1fffffff);
 
     expect(d.compiled.get_arr_ints_address()).toBe(
       d.compiled.get_arr_ints_address_of_index(0)
@@ -61,8 +62,8 @@ describe(`Emits and compiles`, () => {
       d.compiled.get_arr_ints_address_of_index(2)
     );
 
-    d.mem32[6] = 0x0fffffff;
-    d.mem32[7] = 0x0eadbeef;
+    d.mem32[ints_mem32_addr + 1] = 0x0fffffff;
+    d.mem32[ints_mem32_addr + 2] = 0x0eadbeef;
     expect(d.compiled.get_arr_ints_value_of_index(0)).toBe(44);
     expect(d.compiled.get_arr_ints_value_of_index(1)).toBe(0x0fffffff);
     expect(d.compiled.get_arr_ints_value_of_index(2)).toBe(0x0eadbeef);
