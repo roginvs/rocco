@@ -58,4 +58,16 @@ describe(`Emits and compiles`, () => {
     expect(m.conditional(11, 11, 33)).toBe(11);
     expect(m.conditional(0, 11, 33)).toBe(33);
   });
+
+  it(`Stack is overflowing`, async () => {
+    const d = await compile<{
+      compare_eq(x: number, y: number): number;
+      factor(x: number): number;
+      op_u(type: number, x: number, y: number): number;
+      op_s(type: number, x: number, y: number): number;
+      conditional(cond: number, left: number, right: number): number;
+    }>("emitter6.c");
+    const m = d.compiled;
+    expect(() => m.factor(100000)).toThrow();
+  });
 });
