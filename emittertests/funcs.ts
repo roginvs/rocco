@@ -20,6 +20,7 @@ function writeErrorInfo(e: any) {
 
 interface DebugHelpersExports {
   _debug_get_esp: () => number;
+  _debug_get_heap_offset: () => number;
 }
 
 export async function compile<E extends WebAssembly.Exports>(

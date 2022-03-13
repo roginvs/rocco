@@ -1,3 +1,4 @@
+import { STACK_SIZE } from "../core/emitter.memory";
 import { compile } from "./funcs";
 
 describe(`Emits and compiles`, () => {
@@ -22,6 +23,11 @@ describe(`Emits and compiles`, () => {
     expect(d.compiled.counter()).toBe(2);
     expect(d.compiled.counter()).toBe(3);
     expect(d.compiled.counter()).toBe(4);
+  });
+
+  it(`_debug_get_heap_offset`, async () => {
+    const d = await compile<{}>("emitter1.c");
+    expect(d.compiled._debug_get_heap_offset()).toBeGreaterThan(STACK_SIZE);
   });
 });
 
