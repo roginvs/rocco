@@ -1,15 +1,14 @@
 import { TranslationUnit, Node } from "./parser.definitions";
 
 import { WAInstuction } from "./emitter.definitions";
+import { dataString, readEspCode } from "./emitter.utils";
 import {
-  writeEspCode,
-  readEspCode,
   ESP_ADDRESS,
-  dataString,
   GLOBALS_BEGIN_ADDRESS,
   ESP_INITIAL_VALUE,
   HEAP_BEGIN_ADDRESS,
-} from "./emitter.utils";
+} from "./emitter.memory";
+
 import { createHelpers } from "./emitter.helpers";
 import { createExpressionAndTypes } from "./emitter.expressionsandtypes";
 import { createFunctionCodeGenerator } from "./emitter.functionscode";
